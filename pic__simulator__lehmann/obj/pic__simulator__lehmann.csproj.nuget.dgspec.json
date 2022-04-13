@@ -1,25 +1,31 @@
 {
   "format": 1,
   "restore": {
-    "/home/mburr/IdeaProjects/pic_simulator_lehmann/pic__simulator__lehmann/pic__simulator__lehmann.csproj": {}
+    "C:\\Users\\fadr\\Source\\Repos\\HardcoreBlub\\pic_simulator_lehmann\\pic__simulator__lehmann\\pic__simulator__lehmann.csproj": {}
   },
   "projects": {
-    "/home/mburr/IdeaProjects/pic_simulator_lehmann/pic__simulator__lehmann/pic__simulator__lehmann.csproj": {
+    "C:\\Users\\fadr\\Source\\Repos\\HardcoreBlub\\pic_simulator_lehmann\\pic__simulator__lehmann\\pic__simulator__lehmann.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/mburr/IdeaProjects/pic_simulator_lehmann/pic__simulator__lehmann/pic__simulator__lehmann.csproj",
+        "projectUniqueName": "C:\\Users\\fadr\\Source\\Repos\\HardcoreBlub\\pic_simulator_lehmann\\pic__simulator__lehmann\\pic__simulator__lehmann.csproj",
         "projectName": "pic__simulator__lehmann",
-        "projectPath": "/home/mburr/IdeaProjects/pic_simulator_lehmann/pic__simulator__lehmann/pic__simulator__lehmann.csproj",
-        "packagesPath": "/home/mburr/.nuget/packages/",
-        "outputPath": "/home/mburr/IdeaProjects/pic_simulator_lehmann/pic__simulator__lehmann/obj/",
+        "projectPath": "C:\\Users\\fadr\\Source\\Repos\\HardcoreBlub\\pic_simulator_lehmann\\pic__simulator__lehmann\\pic__simulator__lehmann.csproj",
+        "packagesPath": "C:\\Users\\fadr\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\fadr\\Source\\Repos\\HardcoreBlub\\pic_simulator_lehmann\\pic__simulator__lehmann\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "/home/mburr/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\fadr\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -37,17 +43,6 @@
       "frameworks": {
         "net6.0": {
           "targetAlias": "net6.0",
-          "dependencies": {
-            "Microsoft.AspNetCore.Components.WebAssembly": {
-              "target": "Package",
-              "version": "[6.0.2, )"
-            },
-            "Microsoft.AspNetCore.Components.WebAssembly.DevServer": {
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[6.0.2, )"
-            }
-          },
           "imports": [
             "net461",
             "net462",
@@ -58,22 +53,7 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[6.0.2, 6.0.2]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Runtime.Mono.browser-wasm",
-              "version": "[6.0.2, 6.0.2]"
-            }
-          ],
-          "frameworkReferences": {
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            }
-          },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/6.0.102/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.406\\RuntimeIdentifierGraph.json"
         }
       },
       "runtimes": {
