@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace pic__simulator__lehmann.Class
+﻿namespace pic__simulator__lehmann.Models
 {
     public class PIC16
     {

@@ -1,14 +1,74 @@
 @page "/einlesen"
-@using pic__simulator__lehmann.Class
-<h3>Einlesen</h3>
-<EditForm Model="@Programmspeicher">
-    
-</EditForm>
-@code {
-    private Programmspeicher _speicher = new Programmspeicher(size);
+@using Microsoft.AspNetCore.Components.WebAssembly.Hosting
+@inject ILogger<Einlesen> Logger
 
-    private void HandleValidFile()
+<h3>Programm im LST Format</h3>
+<form @onsubmit="OnSubmit">
+    <InputFile OnChange="@LoadFiles"></InputFile>
+    <br>
+    <button type="submit">Upload Selected File(s)</button>
+</form>
+
+
+@if (isLoading) {
+    <p>Uploading...</p>
+}
+else {
+        <ul>
+     @foreach (var file in loadedFiles)
     {
-        
+        <li>
+            <ul>
+                <li>Name: @file.Name</li>
+                <li>Last modified: @file.LastModified.ToString()</li>
+                <li>Size (bytes): @file.Size</li>
+                <li>Content type: @file.ContentType</li>
+            </ul>
+        </li>
     }
+    </ul>
+}
+
+@code {
+    private List<IBrowserFile> loadedFiles = new();
+    private long maxFileSize = 1024 * 15;
+    private int maxAllowedFiles = 3;
+    private bool isLoading;
+
+    private async void LoadFiles(InputFileChangeEventArgs e)
+    {
+        isLoading = true;
+        loadedFiles.Clear();
+
+        foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+        {
+            try
+            {
+                Logger.LogInformation("Datei ausgewählt");
+                loadedFiles.Add(file);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("File: {Filename} Error: {Error}",
+                    file.Name, ex.Message);
+            }
+        }
+
+        isLoading = false;
+    }
+
+    private async void OnSubmit()
+    {
+        foreach (var file in loadedFiles)
+        {
+            Stream stream = file.OpenReadStream();
+            MemoryStream ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            ms.Seek(0,SeekOrigin.Begin);
+            StreamReader sr = new StreamReader(ms);
+            Logger.LogInformation(sr.ReadToEnd());
+            stream.Close();
+        }
+    }
+
 }

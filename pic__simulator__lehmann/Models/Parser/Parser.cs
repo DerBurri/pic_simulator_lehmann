@@ -1,4 +1,4 @@
-namespace pic__simulator__lehmann.Class.Parser;
+namespace pic__simulator__lehmann.Models.Parser;
 
 public class Parser
 {
