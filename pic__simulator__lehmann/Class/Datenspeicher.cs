@@ -7,6 +7,14 @@ namespace pic__simulator__lehmann.Class
 {
     public class Datenspeicher: Speicher
     {
-        protected override int[65536][1024] datenspeicher;
+        public Datenspeicher(int size) : base(size)
+        {
+
+        }
+
+        public override void Write(int addr, int value)
+        {
+            _speicher[addr] = value;
+        }
     }
 }

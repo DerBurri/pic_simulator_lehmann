@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 
 namespace pic__simulator__lehmann.Class
 {
-    public class Programmspeicher: Speicher
+    public class Programmspeicher : Speicher
     {
-        protected override int[65536][1024] programmspeicher;
+        public Programmspeicher(int size) : base(size)
+        {
+        }
     }
 }
