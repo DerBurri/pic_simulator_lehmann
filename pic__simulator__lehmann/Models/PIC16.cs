@@ -4,6 +4,9 @@
     {
         private Programmspeicher _programmspeicher;
         private Datenspeicher _datenspeicher;
+        
+        
+        
         public PIC16()
         {
             throw new NotImplementedException();

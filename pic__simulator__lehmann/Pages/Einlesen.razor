@@ -64,9 +64,7 @@ else {
             Stream stream = file.OpenReadStream();
             MemoryStream ms = new MemoryStream();
             await stream.CopyToAsync(ms);
-            ms.Seek(0,SeekOrigin.Begin);
-            StreamReader sr = new StreamReader(ms);
-            Logger.LogInformation(sr.ReadToEnd());
+            
             stream.Close();
         }
     }

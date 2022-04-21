@@ -14,9 +14,6 @@
         }
         
         public void Read(int index){}
-
-        public virtual void Write(int addr, int value)
-        {
-        }
+        
     }
 }
