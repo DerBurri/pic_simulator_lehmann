@@ -36,17 +36,25 @@
 
             //BIT-ORIENTED FILE REGISTER OPERATIONS
             {"BCF", "01 00bb bfff ffff"},
-            {"BSF", ""},
-            {"BTFSC", ""},
-            {"BTFSS", ""},
+            {"BSF", "01 01bb bfff ffff"},
+            {"BTFSC", "01 10bb bfff ffff"},
+            {"BTFSS", "01 11bb bfff ffff"},
 
+            //Literal and control operation
+            {"ADDLW", "11 111x kkkk kkkk"},
+            {"ANDLW", "11 1001 kkkk kkkk"},
+            {"CALL", "10 0kkk kkkk kkkk"},
+            {"CLRWDT", "00 0000 0110 0100"},
+            {"GOTO", "10 1kkkk kkkk kkkk"},
+            {"IORLW", "11 1000 kkkk kkkk" },
+            {"MOVLW", "11 00xx kkkk kkkk" },
+            {"RETFIE", "00 0000 0000 1001" },
+            {"RETLW", "11 01xx kkkk kkkk" },
+            {"RETURN", "00 0000 0000 1000" },
+            {"SLEEP", "00 0000 0110 0011" },
+            {"SUBLW", "11 110x kkkk kkkk" },
+            {"XORLW", "11 1010 kkkk kkkk" },
 
-
-            {"", ""},
-            {"", ""},
-            {"", ""},
-            {"", ""},
-            {"", ""},
 
 
         };
