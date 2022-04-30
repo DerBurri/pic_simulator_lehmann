@@ -1,5 +1,6 @@
 @page "/einlesen"
 @using Microsoft.AspNetCore.Components.WebAssembly.Hosting
+@using System.Net
 @inject ILogger<Einlesen> Logger
 
 <h3>Programm im LST Format</h3>
@@ -35,7 +36,7 @@ else {
     private int maxAllowedFiles = 3;
     private bool isLoading;
 
-    private async void LoadFiles(InputFileChangeEventArgs e)
+    private void LoadFiles(InputFileChangeEventArgs e)
     {
         isLoading = true;
         loadedFiles.Clear();
@@ -61,11 +62,9 @@ else {
     {
         foreach (var file in loadedFiles)
         {
-            Stream stream = file.OpenReadStream();
-            MemoryStream ms = new MemoryStream();
-            await stream.CopyToAsync(ms);
-            
-            stream.Close();
+            await using FileStream fs = new("geladenesProgramm", FileMode.Create);
+            await file.OpenReadStream().CopyToAsync(fs);
+            Logger.LogInformation("Upload abgeschlossen");
         }
     }
 

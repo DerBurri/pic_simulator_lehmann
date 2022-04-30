@@ -1,9 +1,44 @@
 ﻿@page "/"
+@using pic__simulator__lehmann.Models
+@using System.Xml.Linq
+@using System.ComponentModel.Design
 
 <PageTitle>Index</PageTitle>
 
 <h1>Willkommen beim PIC16 Simulator!</h1>
 
-Welcome to your new app.
+<button class="btn btn-primary" @onclick="StartSimulation">Start Programm!</button>
+ @if (_geladenesProgramm != null)
+ {
+     <table>
+         <TableHeader>
+             <th>ID</th>
+             <th>Breakpoints</th>
+             <th>Befehle</th>
+         </TableHeader>
+         <tbody>
 
-<SurveyPrompt Title="How is Blazor working for you?"/>
+         @foreach (var programmzeile in _geladenesProgramm._programm)
+         {
+             <tr>
+                 <td>@programmzeile</td>
+                 <td>@programmzeile</td>
+                 <td>@programmzeile</td>
+                 <td>@programmzeile</td>
+             </tr>
+         }
+         </tbody>
+     </table>
+ }
+ else
+ {
+     <h2>Noch kein Programm geladen</h2>
+ }
+@code
+{
+    private Programm? _geladenesProgramm;
+    public void StartSimulation()
+    {
+        _geladenesProgramm = new Programm();
+    }
+}
