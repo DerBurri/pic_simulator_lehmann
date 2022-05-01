@@ -4,13 +4,13 @@ namespace pic__simulator__lehmann.Models;
 
 public class Programm
 {
-    public readonly string _name;
-    public readonly PIC16 _controller;
+    private readonly string _name;
+    private readonly PIC16 _controller;
     public readonly SortedDictionary<int, String> _programm;
     
-    public Programm()
+    public Programm(int interval)
     {
-        _controller = new PIC16();
+        _controller = new PIC16(interval);
         int i = 0;
         _programm = new SortedDictionary<int, string>();
         FileStream fs = new FileStream("geladenesProgramm", FileMode.Open);

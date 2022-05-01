@@ -8,6 +8,7 @@
 <h1>Willkommen beim PIC16 Simulator!</h1>
 
 <button class="btn btn-primary" @onclick="StartSimulation">Start Programm!</button>
+<p><input @bind="_interval" /> s</p>
  @if (_geladenesProgramm != null)
  {
      <table>
@@ -21,10 +22,9 @@
          @foreach (var programmzeile in _geladenesProgramm._programm)
          {
              <tr>
-                 <td>@programmzeile</td>
-                 <td>@programmzeile</td>
-                 <td>@programmzeile</td>
-                 <td>@programmzeile</td>
+                 <td>0</td>
+                 <td><InputCheckbox></InputCheckbox></td>
+                 <td>@programmzeile.Value</td>
              </tr>
          }
          </tbody>
@@ -36,9 +36,11 @@
  }
 @code
 {
+    private int _interval = 5;
     private Programm? _geladenesProgramm;
-    public void StartSimulation()
+    
+    private void StartSimulation()
     {
-        _geladenesProgramm = new Programm();
+        _geladenesProgramm = new Programm(_interval);
     }
 }

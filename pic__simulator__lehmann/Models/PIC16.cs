@@ -1,18 +1,34 @@
-﻿namespace pic__simulator__lehmann.Models
+﻿using System.Timers;
+
+namespace pic__simulator__lehmann.Models
 {
     public class PIC16
     {
         private Programmspeicher _programmspeicher;
         private Datenspeicher _datenspeicher;
-        
-        
-        
-        public PIC16()
+        private System.Timers.Timer _taktgeber;
+
+
+        public PIC16(int interval)
         {
             _programmspeicher = new Programmspeicher(4096);
             _datenspeicher = new Datenspeicher(4096);
+            KonfiguriereTimer(interval);
             //throw new NotImplementedException();
         }
+
+        private void KonfiguriereTimer(int interval)
+        {
+            _taktgeber = new System.Timers.Timer(interval);
+            _taktgeber.Elapsed += OnTakt;
+            
+        }
+        
+        private void OnTakt(Object source, System.Timers.ElapsedEventArgs e)
+        {
+            
+        }
+        
         
     }
 }
