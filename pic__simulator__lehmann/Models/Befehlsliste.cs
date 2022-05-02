@@ -45,7 +45,5 @@ public class Befehlsliste
         {"SUBLW", "11 110x kkkk kkkk" },
         {"XORLW", "11 1010 kkkk kkkk" },
 
-
-
     };
 }
