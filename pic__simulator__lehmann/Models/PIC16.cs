@@ -30,7 +30,23 @@ namespace pic__simulator__lehmann.Models
         {
             
         }
-        
+
+        public void Stop()
+        {
+            _taktgeber.Stop();
+        }
+
+        public void Start()
+        {
+            _taktgeber.Start();
+            _taktgeber.AutoReset = true;
+        }
+
+        public void Step()
+        {
+            _taktgeber.AutoReset = false;
+            _taktgeber.Start();
+        }
         
     }
 }

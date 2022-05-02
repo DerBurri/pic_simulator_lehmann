@@ -2,15 +2,25 @@
 @using pic__simulator__lehmann.Models
 @using System.Xml.Linq
 @using System.ComponentModel.Design
-@inject ILogger<Programm> logger;
+@inject ILogger<Programm> _logger;
 <PageTitle>Index</PageTitle>
 
 <h1>Willkommen beim PIC16 Simulator!</h1>
 
-<button class="btn btn-primary" @onclick="StartSimulation">Start Programm!</button>
-<p><input @bind="_interval" /> s</p>
+<button class="btn btn-primary" @onclick="LoadProgram">Lade Programm</button>
  @if (_geladenesProgramm != null)
  {
+     @if (!_running)
+     {
+         <button class="btn btn-primary" @onclick="ToggleRun">Start</button>
+     }
+    else
+     {
+         <button class="btn btn-primary" @onclick="ToggleRun">Pause</button>
+         <button class="btn btn-primary" @onclick="Step">Step</button>
+     }
+<p><input @bind="_interval" /> s</p>
+
      <table>
          <thead>
              <tr>
@@ -24,7 +34,7 @@
          {
              <tr>
                  <td>0</td>
-                 <td><input type="checkbox"></td>
+                 <td style="text-align: center"><input type="checkbox" class="btn" @onchange="eventArgs => { CheckboxClicked(eventArgs.Value); }"></td>
                  <td>@programmzeile</td>
              </tr>
          }
@@ -38,10 +48,40 @@
 @code
 {
     private int _interval = 5;
+    private bool _running = false;
     private Programm? _geladenesProgramm;
     
-    private void StartSimulation()
+    [Parameter] public Dictionary<int,string> SelectedBreakpoints { get; set; }  
+
+    
+    private void LoadProgram()
     {
-        _geladenesProgramm = new Programm(_interval,logger);
+        _geladenesProgramm = new Programm(_interval,_logger);
     }
+
+    private void ToggleRun()
+    {
+        if (_running)
+        {
+            _geladenesProgramm.Stop();
+            _running = !_running;
+        }
+        else
+        {
+            _geladenesProgramm.Start();
+            _running = !_running;
+        }
+    }
+
+
+    private void Step()
+    {
+        _geladenesProgramm.Step();
+    //TODO Implement Step
+    }
+    
+    public void CheckboxClicked(object aChecked)
+    {
+        _logger.LogInformation(((bool)aChecked).ToString());
+    }  
 }

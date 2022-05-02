@@ -27,4 +27,19 @@ public class Programm
         }
         fs.Close();
     }
+
+    public void Start()
+    {
+        _controller.Start();
+    }
+
+    public void Stop()
+    {
+        _controller.Stop();
+    }
+
+    public void Step()
+    {
+        _controller.Step();
+    }
 }
