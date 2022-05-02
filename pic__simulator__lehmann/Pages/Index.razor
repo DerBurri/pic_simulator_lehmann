@@ -11,8 +11,8 @@
 <p><input @bind="_interval" /> s</p>
  @if (_geladenesProgramm != null)
  {
-     <table>
-         <thead>
+    <table>
+        <thead>
              <tr>
              <th>ID</th>
              <th>Breakpoints</th>
@@ -22,8 +22,8 @@
          <tbody>
          @foreach (var programmzeile in _geladenesProgramm._programm)
          {
-             <tr>
-                 <td>0</td>
+                <tr>
+                    <td>@IncrementLineCounter()</td>
                  <td></td>
                  <td>@programmzeile</td>
              </tr>
@@ -38,10 +38,21 @@
 @code
 {
     private int _interval = 5;
+    int lineCounter;
     private Programm? _geladenesProgramm;
-    
+
     private void StartSimulation()
     {
+        lineCounter = 0;
+
         _geladenesProgramm = new Programm(_interval,logger);
+
     }
+
+    private int IncrementLineCounter()
+    {
+        lineCounter++;
+        return lineCounter;
+    }
+
 }
