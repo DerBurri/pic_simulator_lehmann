@@ -33,9 +33,9 @@
          @foreach (var programmzeile in _geladenesProgramm._programm)
          {
              <tr>
-                 <td>0</td>
-                 <td style="text-align: center"><input type="checkbox" class="btn" @onchange="eventArgs => { CheckboxClicked(eventArgs.Value); }"></td>
-                 <td>@programmzeile</td>
+                <td>@IncrementLineCounter()</td>
+                <td style="text-align: center"><input type="checkbox" class="btn" @onchange="eventArgs => { CheckboxClicked(eventArgs.Value); }"></td>
+                <td>@programmzeile</td>
              </tr>
          }
          </tbody>
@@ -48,6 +48,7 @@
 @code
 {
     private int _interval = 5;
+    int lineCounter;
     private bool _running = false;
     private Programm? _geladenesProgramm;
     
@@ -56,11 +57,16 @@
     
     private void LoadProgram()
     {
+        lineCounter = 0;
         _geladenesProgramm = new Programm(_interval,_logger);
     }
 
     private void ToggleRun()
     {
+        lineCounter = 0;
+
+        _geladenesProgramm = new Programm(_interval,logger);
+
         if (_running)
         {
             _geladenesProgramm.Stop();
@@ -72,6 +78,13 @@
             _running = !_running;
         }
     }
+
+    private int IncrementLineCounter()
+    {
+        lineCounter++;
+        return lineCounter;
+    }
+
 
 
     private void Step()
