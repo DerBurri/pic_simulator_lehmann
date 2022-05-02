@@ -2,6 +2,11 @@
 {
     public class Datenspeicher: Speicher
     {
+
+        private StatusRegister _StatusRegister;
+        private PortA _portA;
+        private PortB _portB;
+        
         public Datenspeicher(int size) : base(size)
         {
             
