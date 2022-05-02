@@ -12,12 +12,13 @@
  @if (_geladenesProgramm != null)
  {
      <table>
-         <TableHeader>
+         <thead>
+             <tr>
              <th>ID</th>
              <th>Breakpoints</th>
              <th>Befehle</th>
-         </TableHeader>
-         
+             </tr>
+         </thead>
          <tbody>
          @foreach (var programmzeile in _geladenesProgramm._programm)
          {
