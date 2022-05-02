@@ -10,12 +10,22 @@
 
 <h1>Willkommen beim PIC16 Simulator!</h1>
 
-<button class="btn btn-primary" @onclick="StartSimulation">Start Programm!</button>
-<p><input @bind="_interval" /> s</p>
+<button class="btn btn-primary" @onclick="LoadProgram">Lade Programm</button>
  @if (_geladenesProgramm != null)
  {
-    <table>
-        <thead>
+     @if (!_running)
+     {
+         <button class="btn btn-primary" @onclick="ToggleRun">Start</button>
+     }
+    else
+     {
+         <button class="btn btn-primary" @onclick="ToggleRun">Pause</button>
+         <button class="btn btn-primary" @onclick="Step">Step</button>
+     }
+<p><input @bind="_interval" /> s</p>
+
+     <table>
+         <thead>
              <tr>
              <th>ID</th>
              <th>Breakpoints</th>
@@ -25,10 +35,10 @@
          <tbody>
          @foreach (var programmzeile in _geladenesProgramm._programm)
          {
-                <tr>
-                    <td>@IncrementLineCounter()</td>
-                 <td></td>
-                 <td>@programmzeile</td>
+             <tr>
+                <td>@IncrementLineCounter()</td>
+                <td style="text-align: center"><input type="checkbox" class="btn" @onchange="eventArgs => { CheckboxClicked(eventArgs.Value); }"></td>
+                <td>@programmzeile</td>
              </tr>
          }
          </tbody>
@@ -131,12 +141,31 @@
 	private bool[] portB = new bool[] { false, false, false, false, false, false, false, false };
 
 	private int[,] ram = new int[8,16];
+    
+    [Parameter] public Dictionary<int,string> SelectedBreakpoints { get; set; }  
 
-    private void StartSimulation()
+    
+    private void LoadProgram()
+    {
+        lineCounter = 0;
+        _geladenesProgramm = new Programm(_interval,_logger);
+    }
+
+    private void ToggleRun()
     {
         lineCounter = 0;
         _geladenesProgramm = new Programm(_interval,logger);
 
+        if (_running)
+        {
+            _geladenesProgramm.Stop();
+            _running = !_running;
+        }
+        else
+        {
+            _geladenesProgramm.Start();
+            _running = !_running;
+        }
     }
 
     private int IncrementLineCounter()
@@ -145,4 +174,16 @@
         return lineCounter;
     }
 
+
+
+    private void Step()
+    {
+        _geladenesProgramm.Step();
+    //TODO Implement Step
+    }
+    
+    public void CheckboxClicked(object aChecked)
+    {
+        _logger.LogInformation(((bool)aChecked).ToString());
+    }  
 }

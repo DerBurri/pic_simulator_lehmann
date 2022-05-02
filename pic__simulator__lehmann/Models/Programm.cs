@@ -1,4 +1,5 @@
 
+using System.Text;
 using Microsoft.AspNetCore.Components;
 
 namespace pic__simulator__lehmann.Models;
@@ -17,7 +18,7 @@ public class Programm
         int i = 0;
         _programm = new List<String>();
         FileStream fs = new FileStream("geladenesProgramm", FileMode.Open);
-        StreamReader sr = new StreamReader(fs);
+        StreamReader sr = new StreamReader(fs,Encoding.Latin1);
         String line;
         while ((line = sr.ReadLine()) != null)
         {
@@ -25,5 +26,20 @@ public class Programm
             _programm.Add(line);
         }
         fs.Close();
+    }
+
+    public void Start()
+    {
+        _controller.Start();
+    }
+
+    public void Stop()
+    {
+        _controller.Stop();
+    }
+
+    public void Step()
+    {
+        _controller.Step();
     }
 }
