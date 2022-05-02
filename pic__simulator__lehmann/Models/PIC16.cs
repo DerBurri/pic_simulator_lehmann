@@ -1,4 +1,5 @@
 ﻿using System.Timers;
+using RingByteBuffer;
 
 namespace pic__simulator__lehmann.Models
 {
@@ -7,14 +8,16 @@ namespace pic__simulator__lehmann.Models
         private Programmspeicher _programmspeicher;
         private Datenspeicher _datenspeicher;
         private System.Timers.Timer _taktgeber;
-
+        
         private int _programmcounter;
+        private RingBuffer _stack;
         
 
         public PIC16(int interval)
         {
             _programmspeicher = new Programmspeicher(4096);
             _datenspeicher = new Datenspeicher(4096);
+            _stack = new SequentialRingBuffer(7);
             KonfiguriereTimer(interval);
             //throw new NotImplementedException();
         }
@@ -28,7 +31,8 @@ namespace pic__simulator__lehmann.Models
         
         private void OnTakt(Object source, System.Timers.ElapsedEventArgs e)
         {
-            
+           //TODO checkInterrupt();
+           
         }
 
         public void Stop()
