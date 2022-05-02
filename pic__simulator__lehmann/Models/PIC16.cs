@@ -8,6 +8,8 @@ namespace pic__simulator__lehmann.Models
         private Datenspeicher _datenspeicher;
         private System.Timers.Timer _taktgeber;
 
+        private int _programmcounter;
+        
 
         public PIC16(int interval)
         {
@@ -21,7 +23,7 @@ namespace pic__simulator__lehmann.Models
         {
             _taktgeber = new System.Timers.Timer(interval);
             _taktgeber.Elapsed += OnTakt;
-            
+            _taktgeber.Start();
         }
         
         private void OnTakt(Object source, System.Timers.ElapsedEventArgs e)
