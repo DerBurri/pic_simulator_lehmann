@@ -1,28 +1,29 @@
-using System.ComponentModel;
+
+using Microsoft.AspNetCore.Components;
 
 namespace pic__simulator__lehmann.Models;
-
 public class Programm
 {
     private readonly string _name;
     private readonly PIC16 _controller;
-    public readonly SortedDictionary<int, String> _programm;
+    public readonly List<String> _programm;
+
+    public readonly ILogger<Programm> _logger;
     
-    public Programm(int interval)
+    public Programm(int interval, ILogger<Programm> logger)
     {
+        _logger = logger;
         _controller = new PIC16(interval);
         int i = 0;
-        _programm = new SortedDictionary<int, string>();
+        _programm = new List<String>();
         FileStream fs = new FileStream("geladenesProgramm", FileMode.Open);
-        using (StreamReader sr = new StreamReader(fs))
+        StreamReader sr = new StreamReader(fs);
+        String line;
+        while ((line = sr.ReadLine()) != null)
         {
-            String line;
-            while ((line = sr.ReadLine()) != null)
-            {
-                _programm[i] = line;
-            }
-            fs.Close();
+           logger.LogInformation(line);
+            _programm.Add(line);
         }
-
+        fs.Close();
     }
 }

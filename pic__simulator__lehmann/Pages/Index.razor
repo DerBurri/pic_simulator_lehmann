@@ -2,7 +2,7 @@
 @using pic__simulator__lehmann.Models
 @using System.Xml.Linq
 @using System.ComponentModel.Design
-
+@inject ILogger<Programm> logger;
 <PageTitle>Index</PageTitle>
 
 <h1>Willkommen beim PIC16 Simulator!</h1>
@@ -17,14 +17,14 @@
              <th>Breakpoints</th>
              <th>Befehle</th>
          </TableHeader>
+         
          <tbody>
-
          @foreach (var programmzeile in _geladenesProgramm._programm)
          {
              <tr>
                  <td>0</td>
-                 <td><InputCheckbox></InputCheckbox></td>
-                 <td>@programmzeile.Value</td>
+                 <td></td>
+                 <td>@programmzeile</td>
              </tr>
          }
          </tbody>
@@ -41,6 +41,6 @@
     
     private void StartSimulation()
     {
-        _geladenesProgramm = new Programm(_interval);
+        _geladenesProgramm = new Programm(_interval,logger);
     }
 }
