@@ -1,0 +1,18 @@
+﻿body {
+}
+
+
+.IO div {
+    border: 1px solid black;
+}
+
+
+.ram {
+}
+.ram table{
+    border: 1px solid black;
+}
+    .ram td {
+        padding: 0.5rem;
+        border: 1px solid black;
+    }
