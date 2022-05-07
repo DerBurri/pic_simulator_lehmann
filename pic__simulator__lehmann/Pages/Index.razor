@@ -14,14 +14,15 @@
  {
      @if (!_running)
      {
-         <button class="btn btn-primary" @onclick="ToggleRun">Start</button>
+	     <button class="btn btn-primary" @onclick="ToggleRun">Start</button>
+	     <button class="btn btn-primary" @onclick="Step">Step</button>
+	     <button class="btn btn-primary" @onclick="Reset">Reset</button>
      }
     else
      {
          <button class="btn btn-primary" @onclick="ToggleRun">Pause</button>
-         <button class="btn btn-primary" @onclick="Step">Step</button>
      }
-<p><input @bind="_interval" /> s</p>
+<p><input @bind="_interval"/> s</p>
 
      <table>
          <thead>
@@ -142,21 +143,21 @@
 
 @code
 {
-    
-	private int _interval = 5;
-	private bool _running = false;
 	private Programm? _geladenesProgramm;
+
+	private int _interval = 5;
+
+	
+	private bool _running = false;
 	private bool[] portA = new bool[] { false, false, false, false, false, false, false, false };
 	private bool[] portB = new bool[] { false, false, false, false, false, false, false, false };
-
 	private int[,] ram = new int[8,16];
-    
-    [Parameter] public Dictionary<int,string> SelectedBreakpoints { get; set; }  
-
-
+	private List<int> _SelectedBreakpoints { get; set; }  
+	
     private void LoadProgram()
     {
         _geladenesProgramm = new Programm(_interval,_logger);
+	    _SelectedBreakpoints = new List<int>();
     }
 
     private void ToggleRun()
@@ -173,23 +174,26 @@
         }
     }
 
-    
-    private void Step()
+	private void Reset()
+	{
+		_geladenesProgramm.Reset();
+	}
+
+	private void Step()
     {
         _geladenesProgramm.Step();
     //TODO Implement Step
     }
     
-    public void BreakpointCheckBoxClicked(int linecounter, object aChecked)
+    private void BreakpointCheckBoxClicked(int lineCounter, object aChecked)
     {
         if ((bool) aChecked)
         {
-            SelectedBreakpoints.Add(linecounter);
+	        _SelectedBreakpoints.Add(lineCounter);
         }
         else
         {
-            SelectedBreakpoints.Remove(linecounter);
+	        _SelectedBreakpoints.Remove(lineCounter);
         }
-        _logger.LogInformation(((bool)aChecked).ToString());
-    }  
+    }
 }

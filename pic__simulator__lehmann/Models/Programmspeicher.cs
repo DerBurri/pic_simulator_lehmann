@@ -1,34 +1,29 @@
-﻿using System.Linq.Expressions;
+﻿using System.Globalization;
+using System.Linq.Expressions;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace pic__simulator__lehmann.Models
 {
     public class Programmspeicher : Speicher
     {
-        public Programmspeicher(int size) : base(size)
+        public Programmspeicher(int size, List<String> programm) : base(size)
         {
-
-            if (!File.Exists("geladenesProgramm"))
+            int b = 0;
+            foreach (String line in programm)
             {
-                throw new FileNotFoundException();
-            }
-            else
-            {
-                FileStream fs = new FileStream("geladenesProgramm", FileMode.Open);
-                using (StreamReader sr = new StreamReader(fs,Encoding.UTF8))
+                //TODO Regex ändern und only First Match einfügen
+                Match match = Regex.Match(line,@" [0-9a-fA-F]{4} ");
+                if (match.Success)
                 {
-                    String line;
-                    int i = 0;
-                    while((line = sr.ReadLine()) != null)
-                    {
-                        if (!line.StartsWith(" "))
-                        {
-                            String[] tokens = line.Split(" ");
-                            _speicher[i] = Int32.Parse(tokens[1],System.Globalization.NumberStyles.HexNumber);
-                        }
-                    }
+                    match.Value.Trim();
+                    _speicher[b] = Int32.Parse(match.Value,NumberStyles.HexNumber);
+                    b++;
                 }
-                fs.Close();
+
+                
+
+
             }
         }
     }

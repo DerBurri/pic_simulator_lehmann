@@ -2,7 +2,24 @@ namespace pic__simulator__lehmann.Models;
 
 public class Befehlsliste
 {
-    private Dictionary<string, string> Befehle = new Dictionary<string, string>()
+
+    public enum Befehle
+    {
+        // Literal 00 Befehle
+        CLRWDT = 0b00000001100100,
+        RETFIE = 0b00000000001001,
+        RETURN = 0b00000000001000,
+        SLEEP = 0b00000001100011,
+        
+        //00 Befehle Befehle müssen entsprechend Datenblatt maskiert werden zur Befehlserkennung
+        MOVWF = 0b00000010000000,
+        //11 Befehle
+        MOVLW = 0b11000000000000,
+        
+        
+    };
+    
+    private static Dictionary<string, string> AlteBefehle = new Dictionary<string, string>()
     {
         //BYTE-ORIENTED FILE REGISTER OPERATIONS
         {"ADDWF", "00 0111 dfff ffff"},
