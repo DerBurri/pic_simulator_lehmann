@@ -22,7 +22,7 @@
      {
          <button class="btn btn-primary" @onclick="ToggleRun">Pause</button>
      }
-<p><input @bind="_interval"/> s</p>
+<p><input @bind="Interval"/> s</p>
 
      <table>
          <thead>
@@ -147,7 +147,13 @@
 
 	private int _interval = 5;
 
-	
+	public int Interval
+	{
+		get => _interval;
+		set { _interval = value; _geladenesProgramm.IntervalChange(value);}
+	}
+
+
 	private bool _running = false;
 	private bool[] portA = new bool[] { false, false, false, false, false, false, false, false };
 	private bool[] portB = new bool[] { false, false, false, false, false, false, false, false };
