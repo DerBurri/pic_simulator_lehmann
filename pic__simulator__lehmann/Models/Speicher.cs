@@ -9,7 +9,10 @@
         public Speicher(int size)
         {
             _speicher = new object[size];
-            _speicher.Initialize();
+            for (int i = 0; i < size; i++)
+            {
+                _speicher[i] = 0;
+            }
             _size = size;
         }
 
