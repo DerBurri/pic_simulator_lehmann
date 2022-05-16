@@ -42,11 +42,7 @@ public class Programm
     {
         _controller.Stop();
     }
-
-    public void Reset()
-    {
-        _controller.Reset();
-    }
+    
     public void Step()
     {
         _controller.Step();
@@ -70,5 +66,15 @@ public class Programm
     public int GetSFR()
     {
         throw new NotImplementedException();
+    }
+
+    public int GetWRegister()
+    {
+        return _controller.W_register;
+    }
+
+    public bool[] getStatusRegister()
+    {
+        return _controller.StatusRegister;
     }
 }

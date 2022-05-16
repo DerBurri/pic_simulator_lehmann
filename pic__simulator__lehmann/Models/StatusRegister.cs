@@ -65,16 +65,23 @@ public class StatusRegister : Register
     public override int Read()
     {
         int bits = 0;
-
-        bits = bits << Convert.ToInt32(Carry);
-        bits = bits << Convert.ToInt32(DigitCarry);
-        bits = bits << Convert.ToInt32(ZeroBit);
-        bits = bits << Convert.ToInt32(PowerDownBit);
-        bits = bits << Convert.ToInt32(TimeOutBit);
-        bits = bits << Convert.ToInt32(RegisterBankSelectBit0);
-        bits = bits << Convert.ToInt32(RegisterBankSelectBit1);
-        bits = bits << Convert.ToInt32(IndirectRegisterBankSelectBit);
-
+        bits+= Convert.ToInt32(IndirectRegisterBankSelectBit);
+        bits <<= 1;
+        bits +=  Convert.ToInt32(RegisterBankSelectBit1);
+        bits <<= 1;
+        bits += Convert.ToInt32(RegisterBankSelectBit0);
+        bits <<= 1;
+        bits += Convert.ToInt32(TimeOutBit);
+        bits <<= 1;
+        bits+= Convert.ToInt32(PowerDownBit);
+        bits <<= 1;
+        bits += Convert.ToInt32(ZeroBit);
+        bits <<= 1;
+        bits += Convert.ToInt32(DigitCarry);
+        bits <<= 1;
+        
+        bits += Convert.ToInt32(Carry);
+        Console.WriteLine("Diese Bits stehen im Status Register {0}", Convert.ToString(bits,2));
         return bits;
     }
 
@@ -83,6 +90,7 @@ public class StatusRegister : Register
      switch (bit)
      {
       case 0: Carry = value;
+      Console.WriteLine("Carry Method in Write Bit Methode aufgerufen neuer Wert: {0}",Carry);
        break;
       case 1: DigitCarry = value;
        break;

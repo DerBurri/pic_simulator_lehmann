@@ -16,7 +16,7 @@
      {
 	     <button class="btn btn-primary" @onclick="ToggleRun">Start</button>
 	     <button class="btn btn-primary" @onclick="Step">Step</button>
-	     <button class="btn btn-primary" @onclick="Reset">Reset</button>
+	     <button class="btn btn-primary" @onclick="LoadProgram">Reset</button>
      }
     else
      {
@@ -25,34 +25,68 @@
 	 <p><input @bind="Interval"/> s</p>
 	 
 	 <button @onclick="@(()=>modal.Show<Einlesen>("Modal Popup Example"))"class="btn btn-primary">View</button>  
-     <table>
-         <thead>
-             <tr>
-             <th>ID</th>
-             <th>Breakpoints</th>
-             <th>Befehle</th>
-             </tr>
-         </thead>
-         <tbody>
-         @{
-             int lineCounter = 0;
-             foreach (var programmzeile in _geladenesProgramm._programm)
-             {
-                 //Im Ausführungsblock wird eine andere Referenz benutzt deswegen muss eine neue lokale Variable erstellt werden.
-                 int foo = lineCounter;
-                 lineCounter++;
+	 <table>
+		 <thead>
+		 <tr>
+			 <th>ID</th>
+			 <th>Breakpoints</th>
+			 <th>Befehle</th>
+		 </tr>
+		 </thead>
+		 <tbody>
+		 @{
+			 int lineCounter = 0;
+			 foreach (var programmzeile in _geladenesProgramm._programm)
+			 {
+				 //Im Ausführungsblock wird eine andere Referenz benutzt deswegen muss eine neue lokale Variable erstellt werden.
+				 int foo = lineCounter;
+				 lineCounter++;
 
-                 <tr>
-                     <td>@lineCounter</td>
-                     <td style="text-align: center">
-                         <input type="checkbox" class="btn"  @onchange="eventArgs => { BreakpointCheckBoxClicked(foo, eventArgs.Value); }">
-                     </td>
-                     <td>@programmzeile</td>
-                 </tr>
-             }
-         }
-         </tbody>
-     </table>
+				 <tr>
+					 <td>@lineCounter</td>
+					 <td style="text-align: center">
+						 <input type="checkbox" class="btn"  @onchange="eventArgs => { BreakpointCheckBoxClicked(foo, eventArgs.Value); }">
+					 </td>
+					 <td>@programmzeile</td>
+				 </tr>
+			 }
+		 }
+		 </tbody>
+	 </table>
+	 <h2>Register</h2>
+	 <table>
+		 <thead>
+		 <tr>W</tr>
+		 </thead>
+		 <tbody>
+		 <tr>
+			 @Convert.ToString(_geladenesProgramm.GetWRegister(),16);
+		 </tr>
+		 </tbody>
+	 </table>
+	 <h2>Flags</h2>
+	 <table class="tg">
+	 <thead>
+	 <tr>
+		 <th class="tg-0lax">C</th>
+		 <th class="tg-0lax">DC</th>
+		 <th class="tg-0lax">Z</th>
+		 <th class="tg-0lax">PD</th>
+		 <th class="tg-0lax">TO</th>
+		 <th class="tg-0lax">RB0</th>
+		 <th class="tg-0lax">RB1</th>
+		 <th class="tg-0lax">IRBS</th>
+	 </tr>
+	 </thead>
+	 <tbody>
+	 <tr>
+		 @foreach (bool statusflag in _geladenesProgramm.getStatusRegister())
+		 {
+			 <td class="tg-0lax">@Convert.ToInt32(statusflag)</td>
+		 }
+	 </tr>
+	 </tbody>
+	 </table>
  }
  else
  {
@@ -77,6 +111,7 @@
 	}
 	</tbody>
 </table>
+
 
 
 @code
@@ -117,11 +152,7 @@
             _running = !_running;
         }
     }
-
-	private void Reset()
-	{
-		_geladenesProgramm.Reset();
-	}
+	
 
 	private void Step()
     {

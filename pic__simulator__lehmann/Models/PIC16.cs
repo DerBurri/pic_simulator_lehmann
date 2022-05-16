@@ -1,4 +1,5 @@
-﻿using System.Timers;
+﻿using System.Collections;
+using System.Timers;
 using RingByteBuffer;
 using static pic__simulator__lehmann.Models.Befehlsliste;
 
@@ -15,6 +16,20 @@ namespace pic__simulator__lehmann.Models
 
         private int _programmcounter;
         private RingBuffer _stack;
+        
+        public int W_register
+        {
+            get { return _w_register; }
+        }
+
+        public bool[] StatusRegister
+        {
+            get
+            {
+                _logger.LogCritical("Status Flags {0}",_datenspeicher.Read(3).Read().ToString());
+                return new BitArray(new byte[] {(byte) _datenspeicher.Read(3).Read()}).Cast<bool>().ToArray();
+            }
+        }
 
 
         public PIC16(int interval, ILogger<Programm> logger, List<String> _programm)
@@ -111,14 +126,17 @@ namespace pic__simulator__lehmann.Models
                     case Befehlsliste.Befehle.BTFSS :
                     break;
                     case Befehlsliste.Befehle.ADDLW :
+                        addlw(value);
                     break;
                     case Befehlsliste.Befehle.ANDLW :
+                        andlw(value);
                     break;
                     case Befehlsliste.Befehle.CALL  :
                     break;
                     case Befehlsliste.Befehle.GOTO  :
                     break;
                     case Befehlsliste.Befehle.IORLW :
+                        iorlw(value);
                     break;
                     case Befehlsliste.Befehle.MOVLW :
                         movlw(value);
@@ -126,13 +144,15 @@ namespace pic__simulator__lehmann.Models
                     case Befehlsliste.Befehle.RETLW :
                     break;
                     case Befehlsliste.Befehle.SUBLW :
+                        sublw(value);
                     break;
                     case Befehlsliste.Befehle.XORLW :
+                        xorlw(value);
                     break;
                     case Befehlsliste.Befehle.ERROR :
                     break;
             }
-            throw new NotImplementedException();
+            _logger.LogCritical("Inhalt W Register: {0}",_w_register);
         }
 
         private Befehlsliste.Befehle Decode(int Befehl)
@@ -274,11 +294,6 @@ namespace pic__simulator__lehmann.Models
             OnTakt(null,null);
         }
 
-        public void Reset()
-        {
-            _taktgeber.Stop();
-            _programmcounter = 0;
-        }
         
         public void IntervalChange(int interval)
         {
@@ -314,7 +329,7 @@ namespace pic__simulator__lehmann.Models
             value1 = value1 & 15;
             value2 = value2 & 15;
             int ergebnis = value2 + value1;
-
+            
             if (ergebnis > 15)
             {
                 return true;
@@ -346,6 +361,7 @@ namespace pic__simulator__lehmann.Models
             payload += 1;
 
             _w_register += payload;
+            _w_register = ~_w_register;
             
             //Fehler im PIC, Carry wird falsch gesetzt. Carryflag müsste invertiert werden. Wenn Ergebnis von Subtraktion < 0 dann muss Carry gelöscht werden. Wenn Ergebnis > 0 muss Carry gesetzt werden
             if (checkCarry())
@@ -355,9 +371,10 @@ namespace pic__simulator__lehmann.Models
             else
             {
                 _datenspeicher._speicher[3].WriteBit(0,true);
+                _logger.LogCritical("Carry Set");
             }
             // Setze übrige Bits aus Integer auf 0;
-            _w_register = _w_register & 255;
+            _w_register &= 255;
 
             if (checkDC(_w_register,payload))
             {
@@ -366,6 +383,7 @@ namespace pic__simulator__lehmann.Models
             else
             {
                 _datenspeicher._speicher[3].WriteBit(1,true);
+                _logger.LogCritical("DigitCarry Set");
 
             }
             
