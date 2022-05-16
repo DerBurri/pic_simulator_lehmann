@@ -51,7 +51,7 @@ namespace pic__simulator__lehmann.Models
                 var decoded = Decode(befehl);
                 Console.WriteLine("Folgender Befehl wurde erkannt {0}", decoded);
                 //Execute
-                execute(decoded);
+                execute(decoded, befehl);
                 //_logger.LogInformation("takt");
                 _programmcounter++;
             }
@@ -62,8 +62,76 @@ namespace pic__simulator__lehmann.Models
             }
         }
 
-        private void execute(Befehlsliste.Befehle decoded)
+        private void execute(Befehlsliste.Befehle decoded, int value)
         {
+            switch (decoded)
+            {
+                    case Befehlsliste.Befehle.ADDWF :
+                    break;
+                    case Befehlsliste.Befehle.ANDWF :
+                    break;
+                    case Befehlsliste.Befehle.CLRF  :
+                    break;
+                    case Befehlsliste.Befehle.CLRW  :
+                    break;
+                    case Befehlsliste.Befehle.COMF  :
+                    break;
+                    case Befehlsliste.Befehle.DECF  :
+                    break;
+                    case Befehlsliste.Befehle.DECFSZ:
+                    break;
+                    case Befehlsliste.Befehle.INCF  :
+                    break;
+                    case Befehlsliste.Befehle.INCFSZ:
+                    break;
+                    case Befehlsliste.Befehle.IORWF :
+                    break;
+                    case Befehlsliste.Befehle.MOVF  :
+                    break;
+                    case Befehlsliste.Befehle.MOVWF :
+                    break;
+                    case Befehlsliste.Befehle.NOP   :
+                    break;
+                    case Befehlsliste.Befehle.RLF   :
+                    break;
+                    case Befehlsliste.Befehle.RRF   :
+                    break;
+                    case Befehlsliste.Befehle.SUBWF :
+                    break;
+                    case Befehlsliste.Befehle.SWAPF :
+                    break;
+                    case Befehlsliste.Befehle.XORWF :
+                    break;
+                    case Befehlsliste.Befehle.BCF   :
+                    break;
+                    case Befehlsliste.Befehle.BSF   :
+                    break;
+                    case Befehlsliste.Befehle.BTFSC :
+                    break;
+                    case Befehlsliste.Befehle.BTFSS :
+                    break;
+                    case Befehlsliste.Befehle.ADDLW :
+                    break;
+                    case Befehlsliste.Befehle.ANDLW :
+                    break;
+                    case Befehlsliste.Befehle.CALL  :
+                    break;
+                    case Befehlsliste.Befehle.GOTO  :
+                    break;
+                    case Befehlsliste.Befehle.IORLW :
+                    break;
+                    case Befehlsliste.Befehle.MOVLW :
+                        movlw(value);
+                    break;
+                    case Befehlsliste.Befehle.RETLW :
+                    break;
+                    case Befehlsliste.Befehle.SUBLW :
+                    break;
+                    case Befehlsliste.Befehle.XORLW :
+                    break;
+                    case Befehlsliste.Befehle.ERROR :
+                    break;
+            }
             throw new NotImplementedException();
         }
 
