@@ -52,6 +52,28 @@
          */
 
 
+        public Intcon()
+        {
+            RBIF = false;
+            INTF = false;
+            T0IF = false;
+            RBIE = false;
+            INTE = false;
+            T0IE = false;
+            EEIE = false;
+            GIE = false;
 
+
+        }
+
+
+        public override int Read()
+        {
+            int bits = 0;
+
+            //bits = bits << Convert.ToInt32();
+
+            return bits;
+        }
     }
 }

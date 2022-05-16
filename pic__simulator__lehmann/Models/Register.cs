@@ -1,6 +1,8 @@
 namespace pic__simulator__lehmann.Models;
 
-public class Register
+public abstract class Register
 {
+    abstract public int Read();
+    
     
 }

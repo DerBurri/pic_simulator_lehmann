@@ -55,5 +55,30 @@
          * 1 = PORTB pull-ups are disabled 
          */
 
+
+
+        public OptionReg()
+        {
+            PS0 = false;
+            PS1 = false;
+            PS2 = false;
+            PSA = false;
+            T0SE = false;
+            T0CS = false;
+            INTEDG = false;
+            RBPU = false;
+
+
+        }
+
+
+        public override int Read()
+        {
+            int bits = 0;
+
+            //bits = bits << Convert.ToInt32();
+
+            return bits;
+        }
     }
 }

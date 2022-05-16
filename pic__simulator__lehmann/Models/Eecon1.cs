@@ -31,5 +31,26 @@
         /*
          * Bit 5 - 7 unimplemented : Read as '0'
          */
+
+        public Eecon1()
+        {
+            RD = false;
+            WR = false;
+            WREN = false;
+            WRERR = false;
+            EEIF = false;
+
+
+        }
+
+
+        public override int Read()
+        {
+            int bits = 0;
+
+            //bits = bits << Convert.ToInt32();
+
+            return bits;
+        }
     }
 }

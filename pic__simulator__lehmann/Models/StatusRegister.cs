@@ -14,7 +14,7 @@ public class StatusRegister : Register
      * 1 = a carry-out from the 4th lower order bit of the result occured
     */
 
-    private bool zeroBit { get; set; }
+    private bool ZeroBit { get; set; }
     /*
      * 0 = result of arithmetic or logic operation is not zero
      * 1 = result of arithmetic or logic operation is zero
@@ -53,11 +53,28 @@ public class StatusRegister : Register
     {
         Carry = false;
         DigitCarry = false;
-        zeroBit = false;
+        ZeroBit = false;
         PowerDownBit = false;
         TimeOutBit = false;
         RegisterBankSelectBit0 = false;
         RegisterBankSelectBit1 = false;
         IndirectRegisterBankSelectBit = false;
+    }
+
+
+    public override int Read()
+    {
+        int bits = 0;
+
+        bits = bits << Convert.ToInt32(Carry);
+        bits = bits << Convert.ToInt32(DigitCarry);
+        bits = bits << Convert.ToInt32(ZeroBit);
+        bits = bits << Convert.ToInt32(PowerDownBit);
+        bits = bits << Convert.ToInt32(TimeOutBit);
+        bits = bits << Convert.ToInt32(RegisterBankSelectBit0);
+        bits = bits << Convert.ToInt32(RegisterBankSelectBit1);
+        bits = bits << Convert.ToInt32(IndirectRegisterBankSelectBit);
+
+        return bits;
     }
 }
