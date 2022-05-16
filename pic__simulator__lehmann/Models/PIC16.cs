@@ -10,6 +10,7 @@ namespace pic__simulator__lehmann.Models
 
         private Programmspeicher _programmspeicher;
         private Datenspeicher _datenspeicher;
+        private int _w_registar;
         private System.Timers.Timer _taktgeber;
 
         private int _programmcounter;
@@ -25,7 +26,6 @@ namespace pic__simulator__lehmann.Models
             {
                 _logger.LogWarning(opcode.ToString());
             }
-
             _datenspeicher = new Datenspeicher(4096);
             _stack = new SequentialRingBuffer(7);
             _programmcounter = 0;
@@ -215,6 +215,29 @@ namespace pic__simulator__lehmann.Models
         public void IntervalChange(int interval)
         {
             _taktgeber.Interval = interval* 1000;
+        }
+
+        private void movlw()
+        {
+            
+        }
+        
+        private void andlw(){}
+        
+        private void iorlw(){}
+        
+        private void sublw(){}
+        
+        private void xorlw(){}
+
+        private void addlw()
+        {
+            _datenspeicher.Write(0, 0);
+        }
+        
+        private void _goto()
+        {
+            
         }
         
     }

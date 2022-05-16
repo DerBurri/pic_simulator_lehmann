@@ -3,7 +3,7 @@
 @using System.Xml.Linq
 @using System.ComponentModel.Design
 @inject ILogger<Programm> _logger;
-  
+@inject IModalService modal;
 
 <PageTitle>Index</PageTitle>
 
@@ -22,8 +22,9 @@
      {
          <button class="btn btn-primary" @onclick="ToggleRun">Pause</button>
      }
-<p><input @bind="Interval"/> s</p>
-
+	 <p><input @bind="Interval"/> s</p>
+	 
+	 <button @onclick="@(()=>modal.Show<Einlesen>("Modal Popup Example"))"class="btn btn-primary">View</button>  
      <table>
          <thead>
              <tr>
@@ -57,89 +58,26 @@
  {
      <h2>Noch kein Programm geladen</h2>
  }
-
-
-<div class="IO">
-	<h3>Ports</h3>
-	<table>
-		<thead>
-			<tr>
-				<th>Port A</th>
-				<th></th>
-				<th>Port B</th>
-				<th></th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td>RA0</td>
-				<td><input type="checkbox" @bind="@portA[0]" /></td>
-				<td>RB0</td>
-				<td><input type="checkbox" @bind="@portB[0]" /></td>
-			</tr>
-			<tr>
-				<td>RA1</td>
-				<td><input type="checkbox" @bind="@portA[1]" /></td>
-				<td>RB1</td>
-				<td><input type="checkbox" @bind="@portB[1]" /></td>
-			</tr>
-			<tr>
-				<td>RA2</td>
-				<td><input type="checkbox" @bind="@portA[2]" /></td>
-				<td>RB2</td>
-				<td><input type="checkbox" @bind="@portB[2]" /></td>
-			</tr>
-			<tr>
-				<td>RA3</td>
-				<td><input type="checkbox" @bind="@portA[3]" /></td>
-				<td>RB3</td>
-				<td><input type="checkbox" @bind="@portB[3]" /></td>
-			</tr>
-			<tr>
-				<td>RA4</td>
-				<td><input type="checkbox" @bind="@portA[4]" /></td>
-				<td>RB4</td>
-				<td><input type="checkbox" @bind="@portB[4]" /></td>
-			</tr>
-			<tr>
-				<td></td>
-				<td><input type="checkbox" @bind="@portA[5]" /></td>
-				<td>RB5</td>
-				<td><input type="checkbox" @bind="@portB[5]" /></td>
-			</tr>
-			<tr>
-				<td></td>
-				<td><input type="checkbox" @bind="@portA[6]" /></td>
-				<td>RB6</td>
-				<td><input type="checkbox" @bind="@portB[6]" /></td>
-			</tr>
-			<tr>
-				<td></td>
-				<td><input type="checkbox" @bind="@portA[7]" /></td>
-				<td>RB7</td>
-				<td><input type="checkbox" @bind="@portB[7]" /></td>
-			</tr>
-		</tbody>
-	</table>
-</div>
+<button style="margin-bottom: 5px;" @onclick="@(()=>modal.Show<Ports>("Port Settings"))"class="btn btn-primary">Port Settings</button>  
 
 
 <table class="ram">
 	<thead>
-		<tr>  
-		</tr>
+	<tr>  
+	</tr>
 	</thead>
 	<tbody>
-		@for(int row = 0; row < 16; row++){
+	@for(int row = 0; row < 16; row++){
 		<tr>
 			@for(int column = 0; column < 8; column++){
 				ram[column, row] = 0;
-			<td>@ram[column, row ]</td>
+				<td>@ram[column, row ]</td>
 			}
 		</tr>
-		}
+	}
 	</tbody>
 </table>
+
 
 @code
 {
@@ -155,8 +93,8 @@
 
 
 	private bool _running = false;
-	private bool[] portA = new bool[] { false, false, false, false, false, false, false, false };
-	private bool[] portB = new bool[] { false, false, false, false, false, false, false, false };
+	public bool[] portA = new bool[] { false, false, false, false, false, false, false, false };
+	public bool[] portB = new bool[] { false, false, false, false, false, false, false, false };
 	private int[,] ram = new int[8,16];
 	private List<int> _SelectedBreakpoints { get; set; }  
 	

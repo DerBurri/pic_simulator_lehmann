@@ -1,11 +1,11 @@
 
 using System.Text;
-using Microsoft.AspNetCore.Components;
 
 namespace pic__simulator__lehmann.Models;
+
 public class Programm
 {
-    private readonly PIC16 _controller;
+    private PIC16 _controller;
     public  List<String> _programm;
     public readonly ILogger<Programm> _logger;
     
@@ -52,5 +52,20 @@ public class Programm
     public void IntervalChange(int interval)
     {
         _controller.IntervalChange(interval);
+    }
+    
+    public int GetLst()
+    {
+        throw new NotImplementedException();
+    }
+
+    public int GetGPR()
+    {
+        throw new NotImplementedException();
+    }
+
+    public int GetSFR()
+    {
+        throw new NotImplementedException();
     }
 }

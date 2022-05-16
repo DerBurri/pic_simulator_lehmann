@@ -1,6 +1,6 @@
 namespace pic__simulator__lehmann.Models;
 
-public class PortB : Register
+public class TrisB : Register
 {
     private bool RB0 { get; set; }
     private bool RB1 { get; set; }
@@ -11,7 +11,7 @@ public class PortB : Register
     private bool RB6 { get; set; }
     private bool RB7 { get; set; }
 
-    public PortB()
+    public TrisB()
     {
         RB0 = false;
         RB1 = false;
@@ -33,4 +33,5 @@ public class PortB : Register
 
         return bits;
     }
+
 }
