@@ -25,6 +25,10 @@
 
         }
 
+        public override void Write(int value)
+        {
+            fsr_0 = true;
+        }
 
         public override int Read()
         {

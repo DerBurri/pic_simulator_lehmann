@@ -1,12 +1,18 @@
 ﻿namespace pic__simulator__lehmann.Models
 {
-    public class Datenspeicher: Speicher
+    public class Datenspeicher
     {
         // Bank0 = 0 - 127
         // Bank1 = 128 - 255
-
-        public Datenspeicher(int size) : base(size)
+        private readonly Register[] _speicher;
+        private readonly int _size;
+        
+        public Datenspeicher(int size)
         {
+            _size = size;
+            _speicher = new Register[_size];
+
+            bool bank;
             //Bank 0
             _speicher[0] = new Fsr(); //indf
             _speicher[1] = new Tmr0(); ;
@@ -22,26 +28,36 @@
             _speicher[11] = new Intcon();
 
             //Bank 1
-            _speicher[12] = new Fsr();  //indf 
-            _speicher[13] = new OptionReg();
-            _speicher[14] = new Pcl();
-            _speicher[15] = new StatusRegister();
-            _speicher[16] = new Fsr();
-            _speicher[17] = new TrisA();
-            _speicher[18] = new TrisB();
+            _speicher[128] = new Fsr();  //indf 
+            _speicher[129] = new OptionReg();
+            _speicher[130] = new Pcl();
+            _speicher[131] = new StatusRegister();
+            _speicher[132] = new Fsr();
+            _speicher[133] = new TrisA();
+            _speicher[134] = new TrisB();
             //_speicher[19] = ;
-            _speicher[20] = new Eecon1();
-            _speicher[21] = new Eecon2();
-            _speicher[22] = new Pclath();
-            _speicher[23] = new Intcon();
+            _speicher[136] = new Eecon1();
+            _speicher[137] = new Eecon2();
+            _speicher[138] = new Pclath();
+            _speicher[139] = new Intcon();
         } 
 
-
+        public Register Read(int index)
+        {
+            if (index > _size)
+            {
+                throw new OverflowException("Programmspeicher Ende erreicht");
+            }
+            
+            return _speicher[index];
+        }
+        
+        
    
 
         public void Write(int addr, int value)
         {
-            _speicher[addr] = value;
+            _speicher[addr].Write(value);
         }
     }
 }

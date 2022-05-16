@@ -194,8 +194,11 @@ namespace pic__simulator__lehmann.Models
         private void sublw(){}
         
         private void xorlw(){}
-        
-        private void addlw(){}
+
+        private void addlw()
+        {
+            _datenspeicher.Write(0, 0);
+        }
         
         private void _goto()
         {
