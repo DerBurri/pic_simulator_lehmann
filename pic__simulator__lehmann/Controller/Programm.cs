@@ -53,7 +53,7 @@ public class Programm
     {
         _controller.IntervalChange(interval);
     }
-
+    
     public int GetLst()
     {
         throw new NotImplementedException();
