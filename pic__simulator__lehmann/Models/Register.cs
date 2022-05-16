@@ -6,5 +6,7 @@ public abstract class Register
 
     public virtual void Write(int value) { }
 
+    public virtual void WriteBit(int bit, bool value) { }
+
 
 }

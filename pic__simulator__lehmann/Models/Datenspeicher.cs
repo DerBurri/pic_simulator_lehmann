@@ -4,7 +4,7 @@
     {
         // Bank0 = 0 - 127
         // Bank1 = 128 - 255
-        private readonly Register[] _speicher;
+        public readonly Register[] _speicher;
         private readonly int _size;
         
         public Datenspeicher(int size)
