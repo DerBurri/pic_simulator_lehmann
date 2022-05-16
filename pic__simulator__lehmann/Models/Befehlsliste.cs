@@ -42,16 +42,18 @@ public class Befehlsliste
         ADDLW,
         ANDLW,
         CALL,
-        CLRWDT = 0b000001100100,
+        
         GOTO,
         IORLW,
         MOVLW,
-        RETFIE = 0b00000000001001,
         RETLW,
+        SUBLW,
+        XORLW,
+        ERROR,
+        CLRWDT = 0b00000001100100,
+        RETFIE = 0b00000000001001,
         RETURN = 0b00000000001000,
         SLEEP =  0b00000001100011,
-        SUBLW,
-        XORLW
         
         //Statische Befehle
         

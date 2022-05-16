@@ -11,7 +11,7 @@
         {
             
         }
-
+        
         public void Write(int addr, int value)
         {
             _speicher[addr] = value;

@@ -1,5 +1,6 @@
 ﻿using System.Timers;
 using RingByteBuffer;
+using static pic__simulator__lehmann.Models.Befehlsliste;
 
 namespace pic__simulator__lehmann.Models
 {
@@ -38,19 +39,27 @@ namespace pic__simulator__lehmann.Models
             _taktgeber.Elapsed += OnTakt;
         }
 
-        private void OnTakt(Object source, System.Timers.ElapsedEventArgs e)
+        private void OnTakt(Object source, ElapsedEventArgs e)
         {
-            //TODO checkInterrupt();
-            //Fetch
-            int befehl = _programmspeicher.Read(_programmcounter);
-            Console.Write(befehl);
-            //Decode
-            var decoded = Decode(befehl);
-            Console.WriteLine("Folgender Befehl wurde erkannt {0}", decoded);
-            //Execute
-            execute(decoded);
-            //_logger.LogInformation("takt");
-            _programmcounter++;
+            try
+            {
+                //TODO checkInterrupt();
+                //Fetch
+                int befehl = _programmspeicher.Read(_programmcounter);
+                Console.Write(befehl);
+                //Decode
+                var decoded = Decode(befehl);
+                Console.WriteLine("Folgender Befehl wurde erkannt {0}", decoded);
+                //Execute
+                execute(decoded);
+                //_logger.LogInformation("takt");
+                _programmcounter++;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(ex.Message);
+                _programmcounter++;
+            }
         }
 
         private void execute(Befehlsliste.Befehle decoded)
@@ -60,32 +69,36 @@ namespace pic__simulator__lehmann.Models
 
         private Befehlsliste.Befehle Decode(int Befehl)
         {
-            int Befehlteil1 = (Befehl & (int) Befehlsliste.Befehlsmaske.MASKE2) / 256;
-            int Befehlsteil2 = (Befehl & (int) Befehlsliste.Befehlsmaske.MASKE3) / 16;
-            
-            switch (Befehl)
+            int befehlteil1 = (Befehl & (int) Befehlsmaske.MASKE2) / 256;
+            int befehlsteil2 = (Befehl & (int) Befehlsmaske.MASKE3) / 16;
+            _logger.LogCritical(Befehl.ToString());
+            _logger.LogCritical(Convert.ToString(Befehl,2));
+            /*switch (Befehl)
             {
                 case (int) Befehlsliste.Befehle.CLRWDT: //CLRWDT
+                {
+                    
                     break;
+                }
                 case (int) Befehlsliste.Befehle.RETFIE: //RETFIE
                     break;
                 case (int) Befehlsliste.Befehle.RETURN: //RETURN
                     break;
                 case (int) Befehlsliste.Befehle.SLEEP: //SLEEP
                     break;
-            }
+            }*/
             if (Befehl == 0)
             {
                 return Befehlsliste.Befehle.NOP;
             }
             if (Befehl is < 4096 and > 0)
             { // 0x00
-                switch (Befehlteil1)
+                switch (befehlteil1)
                 {
                     case 0:
                         return Befehlsliste.Befehle.MOVWF;
                     case 1:
-                        if (Befehlsteil2 > 128)
+                        if (befehlsteil2 > 128)
                         {
                             return Befehlsliste.Befehle.CLRF;
                         }
@@ -132,8 +145,10 @@ namespace pic__simulator__lehmann.Models
             }
             else if (Befehl is < 12288 and > 8191) //0x10
             {
-                if (false)
-                {}
+                if (befehlteil1 is < 16 and > 7)
+                {
+                    return Befehlsliste.Befehle.GOTO;
+                }
                 else
                 {
                     throw new NotImplementedException("Befehle noch nicht implementiert");
@@ -141,17 +156,37 @@ namespace pic__simulator__lehmann.Models
             }
             else if (Befehl is < 16384 and > 12287) //0x11
             {
-                if (Befehlteil1 is < 3 and >= 0)
+                if (befehlteil1 is < 3 and >= 0)
                 {
-                    _logger.LogCritical("HEUREKA!! DAS WAR EIN MOVLW DU FIGGER");
                     return Befehlsliste.Befehle.MOVLW;
+                }
+                else if (befehlteil1 is 0b1001)
+                {
+                    return Befehlsliste.Befehle.ANDLW;
+                }
+                else if (befehlteil1 is 0b1010)
+                {
+                    return Befehlsliste.Befehle.XORLW;
+                }
+                else if (befehlteil1 is 0b1110 or 0b1111)
+                {
+                    return Befehlsliste.Befehle.ADDLW;
+                }
+                else if (befehlteil1 is 0b1000)
+                {
+                    return Befehlsliste.Befehle.IORLW;
+                }
+                else if (befehlteil1 is 0b1100 or 0b1101)
+                {
+                    return Befehlsliste.Befehle.SUBLW;
                 }
                 else
                 {
                     throw new NotImplementedException("Befehe noch nicht vorhadnden");
                 }
             }
-            throw new Exception("Kein gültiger Befehl");
+
+            return Befehlsliste.Befehle.ERROR;
         }
     
 
