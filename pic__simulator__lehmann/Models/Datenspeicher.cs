@@ -5,10 +5,15 @@
         // Bank0 = 0 - 127
         // Bank1 = 128 - 255
 
+        private Fsr _fsr;
+        private Tmr0 _tmr0;
+        private Pcl _pcl;
         private StatusRegister _statusRegister;
         private PortA _portA;
         private PortB _portB;
-
+        private Eedata _eedata;
+        private Eeadr _eeadr;
+        private Pclath _pclath;
         private Intcon _intcon;
 
         private OptionReg _optionReg;
@@ -16,7 +21,8 @@
         private TrisA _trisA;
         private TrisB _trisB;
 
-
+        private Eecon1 _eecon1;
+        private Eecon2 _eecon2;
 
 
         public Datenspeicher(int size) : base(size)
