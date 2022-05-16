@@ -3,12 +3,12 @@
     public abstract class Speicher
     {
         
-        public int[] _speicher;
+        public object[] _speicher;
         protected int _size;
 
         public Speicher(int size)
         {
-            _speicher = new int[size];
+            _speicher = new object[size];
             _speicher.Initialize();
             _size = size;
         }
@@ -19,7 +19,10 @@
             {
                 throw new OverflowException("Programmspeicher Ende erreicht");
             }
-            return _speicher[index];
+
+            int inhalt = Convert.ToInt32(_speicher[index]);
+
+            return inhalt;
         }
         
     }

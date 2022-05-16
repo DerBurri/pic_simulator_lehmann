@@ -1,6 +1,6 @@
 namespace pic__simulator__lehmann.Models;
 
-public class PortB : Register
+public class TrisB : Register
 {
     private bool RB0 { get; set; }
     private bool RB1 { get; set; }
