@@ -3,22 +3,60 @@ namespace pic__simulator__lehmann.Models;
 public class Befehlsliste
 {
 
+    public enum Befehlsmaske
+    {
+        MASKE4 = 0b00000000001111,
+        MASKE3 = 0b00000011110000,
+        MASKE2 = 0b00111100000000,
+        MASKE1 = 0b11000000000000
+    };
+
     public enum Befehle
     {
-        // Literal 00 Befehle
-        CLRWDT = 0b00000001100100,
+        //00 Befehle
+        ADDWF,
+        ANDWF,
+        CLRF,
+        CLRW,
+        COMF,
+        DECF,
+        DECFSZ,
+        INCF,
+        INCFSZ,
+        IORWF,
+        MOVF,
+        MOVWF,
+        NOP,
+        RLF,
+        RRF,
+        SUBWF,
+        SWAPF,
+        XORWF,
+        
+        //01 Befehle
+        BCF,
+        BSF,
+        BTFSC,
+        BTFSS,
+        
+        ADDLW,
+        ANDLW,
+        CALL,
+        CLRWDT = 0b000001100100,
+        GOTO,
+        IORLW,
+        MOVLW,
         RETFIE = 0b00000000001001,
+        RETLW,
         RETURN = 0b00000000001000,
-        SLEEP = 0b00000001100011,
+        SLEEP =  0b00000001100011,
+        SUBLW,
+        XORLW
         
-        //00 Befehle Befehle müssen entsprechend Datenblatt maskiert werden zur Befehlserkennung
-        MOVWF = 0b00000010000000,
-        //11 Befehle
-        MOVLW = 0b11000000000000,
+        //Statische Befehle
         
         
-    };
-    
+    }
     private static Dictionary<string, string> AlteBefehle = new Dictionary<string, string>()
     {
         //BYTE-ORIENTED FILE REGISTER OPERATIONS
