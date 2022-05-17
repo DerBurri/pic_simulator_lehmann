@@ -24,9 +24,10 @@
         public override int Read()
         {
             int bits = 0;
-
-            //bits = bits << Convert.ToInt32();
-
+            bits += Convert.ToInt32(pclath_4);
+            bits <<= 1;
+            bits += Convert.ToInt32(pclath_3);
+            bits <<= 1;
             return bits;
         }
     }

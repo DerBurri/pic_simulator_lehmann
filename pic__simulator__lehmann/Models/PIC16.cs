@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Timers;
 using RingByteBuffer;
+
 using static pic__simulator__lehmann.Models.Befehlsliste;
 
 namespace pic__simulator__lehmann.Models
@@ -67,7 +68,7 @@ namespace pic__simulator__lehmann.Models
                 Console.WriteLine("Folgender Befehl wurde erkannt {0}", decoded);
                 //Execute
                 execute(decoded, befehl);
-                //_logger.LogInformation("takt");
+                _logger.LogCritical("Programmzähler: {0}",_programmcounter.ToString());
                 _programmcounter++;
             }
             catch (Exception ex)
@@ -134,6 +135,7 @@ namespace pic__simulator__lehmann.Models
                     case Befehlsliste.Befehle.CALL  :
                     break;
                     case Befehlsliste.Befehle.GOTO  :
+                        _goto(value);
                     break;
                     case Befehlsliste.Befehle.IORLW :
                         iorlw(value);
@@ -357,11 +359,10 @@ namespace pic__simulator__lehmann.Models
         private void sublw(int befehl)
         {
             int payload = (befehl & 255);
-            payload = ~payload;
-            payload += 1;
-
-            _w_register += payload;
             _w_register = ~_w_register;
+            _w_register += 1;
+            _w_register += payload;
+           
             
             //Fehler im PIC, Carry wird falsch gesetzt. Carryflag müsste invertiert werden. Wenn Ergebnis von Subtraktion < 0 dann muss Carry gelöscht werden. Wenn Ergebnis > 0 muss Carry gesetzt werden
             if (checkCarry())
@@ -386,7 +387,7 @@ namespace pic__simulator__lehmann.Models
                 _logger.LogCritical("DigitCarry Set");
 
             }
-            
+
         }
 
 
@@ -423,11 +424,15 @@ namespace pic__simulator__lehmann.Models
             _w_register &= 255;
         }
         
-        private void _goto()
+        private void _goto(int Befehl)
         {
-            //TODO 2. Zyklus einfügen.
+            int payload = Befehl & 1023;
             _programmcounter++;
-            _programmcounter = _programmcounter & 2047;
+            _programmcounter = _datenspeicher.Read(4).Read();
+            _programmcounter <<= 11;
+            //Programmzähler wird wieder um eins erhöht dann steht die richtige Adresse drinnen.
+            _programmcounter += payload - 1;
+            _logger.LogCritical("Programm Counter {0}", payload);
         }
         
     }
