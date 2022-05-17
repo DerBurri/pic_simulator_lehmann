@@ -77,4 +77,37 @@ public class StatusRegister : Register
 
         return bits;
     }
+
+    public override void WriteBit(int bit, bool value)
+    {
+     switch (bit)
+     {
+      case 0: Carry = value;
+       break;
+      case 1: DigitCarry = value;
+       break;
+      case 2: ZeroBit = value;
+       break;
+      case 3: PowerDownBit = value;
+       break;
+      case 4: TimeOutBit = value;
+       break;
+      case 5: RegisterBankSelectBit0 = value;
+       break;
+      case 6: RegisterBankSelectBit1 = value;
+       break;
+      case 7: IndirectRegisterBankSelectBit = value;
+       break;
+     }
+    }
+
+    public void setCarry()
+    {
+     Carry = true;
+    }
+
+    public void removeCarry()
+    {
+     Carry = false;
+    }
 }

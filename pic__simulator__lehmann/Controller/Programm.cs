@@ -8,10 +8,13 @@ public class Programm
     private PIC16 _controller;
     public  List<String> _programm;
     public readonly ILogger<Programm> _logger;
+
+    public List<int> _SelectedBreakpoints { get; set; }  
     
     public Programm(int interval, ILogger<Programm> logger)
     {
         _logger = logger;
+        _SelectedBreakpoints = new List<int>();
         Einlesen();
         _controller = new PIC16(interval, logger,_programm);
     }

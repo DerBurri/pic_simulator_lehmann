@@ -96,12 +96,12 @@
 	public bool[] portA = new bool[] { false, false, false, false, false, false, false, false };
 	public bool[] portB = new bool[] { false, false, false, false, false, false, false, false };
 	private int[,] ram = new int[8,16];
-	private List<int> _SelectedBreakpoints { get; set; }  
+	
 	
     private void LoadProgram()
     {
         _geladenesProgramm = new Programm(_interval,_logger);
-	    _SelectedBreakpoints = new List<int>();
+	   
     }
 
     private void ToggleRun()
@@ -133,11 +133,11 @@
     {
         if ((bool) aChecked)
         {
-	        _SelectedBreakpoints.Add(lineCounter);
+	        _geladenesProgramm._SelectedBreakpoints.Add(lineCounter);
         }
         else
         {
-	        _SelectedBreakpoints.Remove(lineCounter);
+	        _geladenesProgramm._SelectedBreakpoints.Remove(lineCounter);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace pic__simulator__lehmann.Models
 
         private Programmspeicher _programmspeicher;
         private Datenspeicher _datenspeicher;
-        private int _w_registar;
+        private int _w_register;
         private System.Timers.Timer _taktgeber;
 
         private int _programmcounter;
@@ -285,27 +285,131 @@ namespace pic__simulator__lehmann.Models
             _taktgeber.Interval = interval* 1000;
         }
 
-        private void movlw()
+        public void checkZero()
         {
-            
+            if (_w_register == 0)
+            {
+                _datenspeicher._speicher[3].WriteBit(2, true);
+            }
+            else
+            {
+                _datenspeicher._speicher[3].WriteBit(2,false);
+            }
         }
         
-        private void andlw(){}
-        
-        private void iorlw(){}
-        
-        private void sublw(){}
-        
-        private void xorlw(){}
-
-        private void addlw()
+        private bool checkCarry()
         {
-            _datenspeicher.Write(0, 0);
+            if (_w_register > 255)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool checkDC(int value1, int value2)
+        {
+            value1 = value1 & 15;
+            value2 = value2 & 15;
+            int ergebnis = value2 + value1;
+
+            if (ergebnis > 15)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private void movlw(int befehl)
+        {
+            _w_register = (byte) befehl;
+        }
+
+        private void andlw(int befehl)
+        {
+            _w_register = _w_register & (befehl & 255);
+            checkZero();
+        }
+
+        private void iorlw(int befehl)
+        {
+            _w_register = _w_register | (befehl & 255);
+            checkZero();
+        }
+
+        private void sublw(int befehl)
+        {
+            int payload = (befehl & 255);
+            payload = ~payload;
+            payload += 1;
+
+            _w_register += payload;
+            
+            //Fehler im PIC, Carry wird falsch gesetzt. Carryflag müsste invertiert werden. Wenn Ergebnis von Subtraktion < 0 dann muss Carry gelöscht werden. Wenn Ergebnis > 0 muss Carry gesetzt werden
+            if (checkCarry())
+            {
+                 _datenspeicher._speicher[3].WriteBit(0,false);
+            }
+            else
+            {
+                _datenspeicher._speicher[3].WriteBit(0,true);
+            }
+            // Setze übrige Bits aus Integer auf 0;
+            _w_register = _w_register & 255;
+
+            if (checkDC(_w_register,payload))
+            {
+                _datenspeicher._speicher[3].WriteBit(1,false);
+            }
+            else
+            {
+                _datenspeicher._speicher[3].WriteBit(1,true);
+
+            }
+            
+        }
+
+
+
+        private void xorlw(int befehl)
+        {
+            int payload = befehl & 255;
+            _w_register = payload ^ _w_register;
+            checkZero();
+        }
+
+        private void addlw(int befehl)
+        {
+            int payload = befehl & 255;
+            _w_register += payload;
+            if (checkCarry())
+            {
+                _datenspeicher._speicher[3].WriteBit(0,true);
+            }
+            else
+            {
+                _datenspeicher._speicher[3].WriteBit(0,false);
+            }
+
+            if (checkDC(payload, befehl))
+            {
+                _datenspeicher._speicher[3].WriteBit(1, true);
+            }
+            else
+            {
+                _datenspeicher._speicher[3].WriteBit(1,false);
+            }
+            checkZero();
+            _w_register &= 255;
         }
         
         private void _goto()
         {
-            
+            //TODO 2. Zyklus einfügen.
+            _programmcounter++;
+            _programmcounter = _programmcounter & 2047;
         }
         
     }
