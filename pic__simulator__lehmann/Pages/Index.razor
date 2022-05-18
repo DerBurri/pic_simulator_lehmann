@@ -12,6 +12,7 @@
 <button class="btn btn-primary" @onclick="LoadProgram">Lade Programm</button>
  @if (_geladenesProgramm != null)
  {
+
      @if (!_running)
      {
 	     <button class="btn btn-primary" @onclick="ToggleRun">Start</button>
@@ -25,7 +26,8 @@
 	 <p><input @bind="Interval"/> s</p>
 	 
 	 <button @onclick="@(()=>modal.Show<Einlesen>("Modal Popup Example"))"class="btn btn-primary">View</button>  
-	 <table>
+
+	 <table class="programmcode">
 		 <thead>
 		 <tr>
 			 <th>ID</th>
@@ -42,17 +44,20 @@
 				 int foo = lineCounter;
 				 lineCounter++;
 
-				 <tr>
+				 <tr class="codeLine">
 					 <td>@lineCounter</td>
 					 <td style="text-align: center">
 						 <input type="checkbox" class="btn"  @onchange="eventArgs => { BreakpointCheckBoxClicked(foo, eventArgs.Value); }">
 					 </td>
 					 <td>@programmzeile</td>
 				 </tr>
-			 }
-		 }
-		 </tbody>
-	 </table>
+				}
+			}
+		</tbody>
+	</table>
+
+	 
+
 	 <h2>Register</h2>
 	 <table>
 		 <thead>
@@ -98,11 +103,22 @@
 <table class="ram">
 	<thead>
 	<tr>  
+		<th id="adressRam">&nbsp</th>
+		<th>0</th>
+		<th>1</th>
+		<th>2</th>
+		<th>3</th>
+		<th>4</th>
+		<th>5</th>
+		<th>6</th>
+		<th>7</th>
 	</tr>
 	</thead>
 	<tbody>
-	@for(int row = 0; row < 16; row++){
+	@for(int row = 0; row < 32; row++){
 		<tr>
+			<td id="adressRam">@Convert.ToString((row*8),16)</td>
+
 			@for(int column = 0; column < 8; column++){
 				ram[column, row] = 0;
 				<td>@ram[column, row ]</td>
@@ -130,7 +146,7 @@
 	private bool _running = false;
 	public bool[] portA = new bool[] { false, false, false, false, false, false, false, false };
 	public bool[] portB = new bool[] { false, false, false, false, false, false, false, false };
-	private int[,] ram = new int[8,16];
+	private int[,] ram = new int[8,32];
 	
 	
     private void LoadProgram()

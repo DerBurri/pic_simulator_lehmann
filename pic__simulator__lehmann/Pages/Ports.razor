@@ -2,7 +2,7 @@
 
 <div class="IO">
 	<h3>Ports</h3>
-	<table>
+@*	<table class="ports">
 		<thead>
 			<tr>
 				<th>Port A</th>
@@ -61,7 +61,85 @@
 				<td><input type="checkbox" @bind="@portB[7]" /></td>
 			</tr>
 		</tbody>
+	</table>*@
+
+	<div class="ports">
+			<table id="portA">
+				<thead>
+					<tr>
+						<th>Port A</th>
+						<th></th>
+
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>RA0</td>
+						<td><input type="checkbox" @bind="@portA[0]" /></td>
+					</tr>
+					<tr>
+						<td>RA1</td>
+						<td><input type="checkbox" @bind="@portA[1]" /></td>
+					</tr>
+					<tr>
+						<td>RA2</td>
+						<td><input type="checkbox" @bind="@portA[2]" /></td>
+					</tr>
+					<tr>
+						<td>RA3</td>
+						<td><input type="checkbox" @bind="@portA[3]" /></td>
+					</tr>
+					<tr>
+						<td>RA4</td>
+						<td><input type="checkbox" @bind="@portA[4]" /></td>
+					</tr>
+				</tbody>
+			</table>
+
+			<table id="portB">
+				<thead>
+					<tr>
+						<th>Port B</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>RB0</td>
+						<td><input type="checkbox" @bind="@portB[0]" /></td>
+					</tr>
+					<tr>
+						<td>RB1</td>
+						<td><input type="checkbox" @bind="@portB[1]" /></td>
+					</tr>
+					<tr>
+						<td>RB2</td>
+						<td><input type="checkbox" @bind="@portB[2]" /></td>
+					</tr>
+					<tr>
+						<td>RB3</td>
+						<td><input type="checkbox" @bind="@portB[3]" /></td>
+					</tr>
+					<tr>
+						<td>RB4</td>
+						<td><input type="checkbox" @bind="@portB[4]" /></td>
+					</tr>
+					<tr>
+						<td>RB5</td>
+						<td><input type="checkbox" @bind="@portB[5]" /></td>
+					</tr>
+					<tr>
+						<td>RB6</td>
+						<td><input type="checkbox" @bind="@portB[6]" /></td>
+					</tr>
+					<tr>
+						<td>RB7</td>
+						<td><input type="checkbox" @bind="@portB[7]" /></td>
+					</tr>
+				</tbody>
 	</table>
+
+	</div>
 </div>
 
 @code {

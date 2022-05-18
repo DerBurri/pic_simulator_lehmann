@@ -1,0 +1,41 @@
+﻿body {
+}
+
+/*.ports {
+}
+
+    .ports table {
+        border: 1px solid black;
+    }
+
+    .ports tr {
+        padding: 0.5rem;
+        border: 1px solid black;
+    }*/
+
+.ports{
+    padding-top: 1rem;
+}
+
+#portA {
+    float: left;
+    /*border: 1px solid black;*/
+    margin: 0.5rem;
+    margin-right: 2rem;
+}
+    #portA tr:nth-child(even) 
+    {background-color: #f2f2f2;
+    }
+
+
+}
+
+#portB {
+    float: left;
+    /*border: 1px solid black;*/
+    margin: 0.5rem;
+}
+
+#portB tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
