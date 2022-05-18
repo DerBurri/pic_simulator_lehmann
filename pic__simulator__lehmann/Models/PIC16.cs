@@ -27,7 +27,6 @@ namespace pic__simulator__lehmann.Models
         {
             get
             {
-                _logger.LogCritical("Status Flags {0}",_datenspeicher.At(3).Read().ToString());
                 return new BitArray(new byte[] {(byte) _datenspeicher.At(3).Read()}).Cast<bool>().ToArray();
             }
         }
@@ -77,112 +76,22 @@ namespace pic__simulator__lehmann.Models
                 _programmcounter++;
             }
         }
-
-        private void execute(Befehlsliste.Befehle decoded, int value)
-        {
-            switch (decoded)
-            {
-                    case Befehlsliste.Befehle.ADDWF :
-                    break;
-                    case Befehlsliste.Befehle.ANDWF :
-                    break;
-                    case Befehlsliste.Befehle.CLRF  :
-                    break;
-                    case Befehlsliste.Befehle.CLRW  :
-                    break;
-                    case Befehlsliste.Befehle.COMF  :
-                    break;
-                    case Befehlsliste.Befehle.DECF  :
-                    break;
-                    case Befehlsliste.Befehle.DECFSZ:
-                    break;
-                    case Befehlsliste.Befehle.INCF  :
-                    break;
-                    case Befehlsliste.Befehle.INCFSZ:
-                    break;
-                    case Befehlsliste.Befehle.IORWF :
-                    break;
-                    case Befehlsliste.Befehle.MOVF  :
-                    break;
-                    case Befehlsliste.Befehle.MOVWF :
-                    break;
-                    case Befehlsliste.Befehle.NOP   :
-                    break;
-                    case Befehlsliste.Befehle.RLF   :
-                    break;
-                    case Befehlsliste.Befehle.RRF   :
-                    break;
-                    case Befehlsliste.Befehle.SUBWF :
-                    break;
-                    case Befehlsliste.Befehle.SWAPF :
-                    break;
-                    case Befehlsliste.Befehle.XORWF :
-                    break;
-                    case Befehlsliste.Befehle.BCF   :
-                    break;
-                    case Befehlsliste.Befehle.BSF   :
-                    break;
-                    case Befehlsliste.Befehle.BTFSC :
-                    break;
-                    case Befehlsliste.Befehle.BTFSS :
-                    break;
-                    case Befehlsliste.Befehle.ADDLW :
-                        addlw(value);
-                    break;
-                    case Befehlsliste.Befehle.ANDLW :
-                        andlw(value);
-                    break;
-                    case Befehlsliste.Befehle.CALL  :
-                    break;
-                    case Befehlsliste.Befehle.GOTO  :
-                        _goto(value);
-                    break;
-                    case Befehlsliste.Befehle.IORLW :
-                        iorlw(value);
-                    break;
-                    case Befehlsliste.Befehle.MOVLW :
-                        movlw(value);
-                    break;
-                    case Befehlsliste.Befehle.RETLW :
-                    break;
-                    case Befehlsliste.Befehle.SUBLW :
-                        sublw(value);
-                    break;
-                    case Befehlsliste.Befehle.XORLW :
-                        xorlw(value);
-                    break;
-                    case Befehlsliste.Befehle.ERROR :
-                    break;
-            }
-            _logger.LogCritical("Inhalt W Register: {0}",_w_register);
-        }
-
         private Befehlsliste.Befehle Decode(int Befehl)
         {
             int befehlteil1 = (Befehl & (int) Befehlsmaske.MASKE2) / 256;
             int befehlsteil2 = (Befehl & (int) Befehlsmaske.MASKE3) / 16;
             _logger.LogCritical(Befehl.ToString());
             _logger.LogCritical(Convert.ToString(Befehl,2));
-            /*switch (Befehl)
-            {
-                case (int) Befehlsliste.Befehle.CLRWDT: //CLRWDT
-                {
-                    
-                    break;
-                }
-                case (int) Befehlsliste.Befehle.RETFIE: //RETFIE
-                    break;
-                case (int) Befehlsliste.Befehle.RETURN: //RETURN
-                    break;
-                case (int) Befehlsliste.Befehle.SLEEP: //SLEEP
-                    break;
-            }*/
             if (Befehl == 0)
             {
                 return Befehlsliste.Befehle.NOP;
             }
             if (Befehl is < 4096 and > 0)
             { // 0x00
+                if (Befehl == 8)
+                {
+                    return Befehlsliste.Befehle.RETURN;
+                }
                 switch (befehlteil1)
                 {
                     case 0:
@@ -239,6 +148,11 @@ namespace pic__simulator__lehmann.Models
                 {
                     return Befehlsliste.Befehle.GOTO;
                 }
+
+                if (befehlteil1 is < 8)
+                {
+                    return Befehlsliste.Befehle.CALL;
+                }
                 else
                 {
                     throw new NotImplementedException("Befehle noch nicht implementiert");
@@ -249,6 +163,10 @@ namespace pic__simulator__lehmann.Models
                 if (befehlteil1 is < 3 and >= 0)
                 {
                     return Befehlsliste.Befehle.MOVLW;
+                }
+                else if (befehlteil1 is < 7 and > 3)
+                {
+                    return Befehlsliste.Befehle.RETLW;
                 }
                 else if (befehlteil1 is 0b1001)
                 {
@@ -279,7 +197,90 @@ namespace pic__simulator__lehmann.Models
             return Befehlsliste.Befehle.ERROR;
         }
     
-
+        private void execute(Befehlsliste.Befehle decoded, int value)
+        {
+            switch (decoded)
+            {
+                    case Befehlsliste.Befehle.ADDWF :
+                    break;
+                    case Befehlsliste.Befehle.ANDWF :
+                    break;
+                    case Befehlsliste.Befehle.CLRF  :
+                    break;
+                    case Befehlsliste.Befehle.CLRW  :
+                    break;
+                    case Befehlsliste.Befehle.COMF  :
+                    break;
+                    case Befehlsliste.Befehle.DECF  :
+                    break;
+                    case Befehlsliste.Befehle.DECFSZ:
+                    break;
+                    case Befehlsliste.Befehle.INCF  :
+                    break;
+                    case Befehlsliste.Befehle.INCFSZ:
+                    break;
+                    case Befehlsliste.Befehle.IORWF :
+                    break;
+                    case Befehlsliste.Befehle.MOVF  :
+                    break;
+                    case Befehlsliste.Befehle.MOVWF :
+                    break;
+                    case Befehlsliste.Befehle.NOP   :
+                    break;
+                    case Befehlsliste.Befehle.RLF   :
+                    break;
+                    case Befehlsliste.Befehle.RRF   :
+                    break;
+                    case Befehlsliste.Befehle.SUBWF :
+                    break;
+                    case Befehlsliste.Befehle.SWAPF :
+                    break;
+                    case Befehlsliste.Befehle.XORWF :
+                    break;
+                    case Befehlsliste.Befehle.BCF   :
+                    break;
+                    case Befehlsliste.Befehle.BSF   :
+                    break;
+                    case Befehlsliste.Befehle.BTFSC :
+                    break;
+                    case Befehlsliste.Befehle.BTFSS :
+                    break;
+                    case Befehlsliste.Befehle.ADDLW :
+                        addlw(value);
+                    break;
+                    case Befehlsliste.Befehle.ANDLW :
+                        andlw(value);
+                    break;
+                    case Befehlsliste.Befehle.CALL  :
+                        call(value);
+                    break;
+                    case Befehlsliste.Befehle.GOTO  :
+                        _goto(value);
+                    break;
+                    case Befehlsliste.Befehle.IORLW :
+                        iorlw(value);
+                    break;
+                    case Befehlsliste.Befehle.MOVLW :
+                        movlw(value);
+                    break;
+                    case Befehlsliste.Befehle.RETLW :
+                        retlw(value);
+                    break;
+                    case Befehlsliste.Befehle.RETURN:
+                        _return();
+                        break;
+                    case Befehlsliste.Befehle.SUBLW :
+                        sublw(value);
+                    break;
+                    case Befehlsliste.Befehle.XORLW :
+                        xorlw(value);
+                    break;
+                    case Befehlsliste.Befehle.ERROR :
+                    break;
+            }
+            _logger.LogCritical("Inhalt W Register: {0}",_w_register);
+        }
+        
     public void Stop()
         {
             _taktgeber.Stop();
@@ -438,14 +439,82 @@ namespace pic__simulator__lehmann.Models
         private void call(int Befehl)
         {
             _stack.PushFront(_programmcounter);
+            _logger.LogInformation("Stack Inhalt nach Call {0} vorne und {1} hinten", _stack.Front(), _stack.Back());
             _goto(Befehl);
         }
         
-        private void _return(int Befehl)
+        private void _return()
         {
-            _programmcounter = _stack.Front();
+            _programmcounter = _stack.Back();
             _stack.PopBack();
+            _logger.LogInformation("Stack Inhalt nach Return {0} vorne und {1} hinten", _stack.Front(), _stack.Back());
+        }
+
+        private void retlw(int Befehl)
+        {
+            _w_register = Befehl & 255;
+            _return();
+        }
+
+        private void movwf(int Befehl)
+        {
+            int addr = Befehl & 127;
+            _datenspeicher.At(addr).Write(_w_register);
         }
         
+        private void addwf(int Befehl)
+        {
+            
+        }
+
+        private void clrf(int Befehl)
+        {
+            
+        }
+
+        private void comf(int Befehl)
+        {
+            
+        }
+
+        private void decf(int Befehl)
+        {
+            
+        }
+
+        private void incf(int Befehl)
+        {
+            
+        }
+
+        private void movf()
+        {
+            
+        }
+
+        private void iorwf()
+        {
+            
+        }
+
+        private void subwf()
+        {
+            
+        }
+
+        private void swapwf()
+        {
+            
+        }
+
+        private void xorwf()
+        {
+            
+        }
+
+        private void clrw()
+        {
+            
+        }
     }
 }
