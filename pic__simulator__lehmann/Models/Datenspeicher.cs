@@ -42,7 +42,7 @@
             _speicher[139] = new Intcon();
         } 
 
-        public Register Read(int index)
+        public Register At(int index)
         {
             if (index > _size)
             {

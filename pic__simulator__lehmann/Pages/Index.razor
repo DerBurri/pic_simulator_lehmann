@@ -5,6 +5,8 @@
 @inject ILogger<Programm> _logger;
 @inject IModalService modal;
 
+<link href="Index.razor.css" rel="stylesheet">
+
 <PageTitle>Index</PageTitle>
 
 <h1>Willkommen beim PIC16 Simulator!</h1>
@@ -103,7 +105,7 @@
 <table class="ram">
 	<thead>
 	<tr>  
-		<th id="adressRam">&nbsp</th>
+		<th class="adressRam">&nbsp</th>
 		<th>0</th>
 		<th>1</th>
 		<th>2</th>

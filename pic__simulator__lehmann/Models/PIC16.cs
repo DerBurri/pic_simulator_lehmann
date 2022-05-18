@@ -16,7 +16,7 @@ namespace pic__simulator__lehmann.Models
         private System.Timers.Timer _taktgeber;
 
         private int _programmcounter;
-        private RingBuffer _stack;
+        private CircularBuffer<int> _stack;
         
         public int W_register
         {
@@ -27,8 +27,8 @@ namespace pic__simulator__lehmann.Models
         {
             get
             {
-                _logger.LogCritical("Status Flags {0}",_datenspeicher.Read(3).Read().ToString());
-                return new BitArray(new byte[] {(byte) _datenspeicher.Read(3).Read()}).Cast<bool>().ToArray();
+                _logger.LogCritical("Status Flags {0}",_datenspeicher.At(3).Read().ToString());
+                return new BitArray(new byte[] {(byte) _datenspeicher.At(3).Read()}).Cast<bool>().ToArray();
             }
         }
 
@@ -43,7 +43,7 @@ namespace pic__simulator__lehmann.Models
                 _logger.LogWarning(opcode.ToString());
             }
             _datenspeicher = new Datenspeicher(4096);
-            _stack = new SequentialRingBuffer(7);
+            _stack = new CircularBuffer<int>(7);
             _programmcounter = 0;
             KonfiguriereTimer(interval);
             //throw new NotImplementedException();
@@ -428,11 +428,23 @@ namespace pic__simulator__lehmann.Models
         {
             int payload = Befehl & 1023;
             _programmcounter++;
-            _programmcounter = _datenspeicher.Read(4).Read();
+            _programmcounter = _datenspeicher.At(4).Read();
             _programmcounter <<= 11;
             //Programmzähler wird wieder um eins erhöht dann steht die richtige Adresse drinnen.
             _programmcounter += payload - 1;
             _logger.LogCritical("Programm Counter {0}", payload);
+        }
+
+        private void call(int Befehl)
+        {
+            _stack.PushFront(_programmcounter);
+            _goto(Befehl);
+        }
+        
+        private void _return(int Befehl)
+        {
+            _programmcounter = _stack.Front();
+            _stack.PopBack();
         }
         
     }
