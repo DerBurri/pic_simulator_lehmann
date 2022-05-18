@@ -1,4 +1,6 @@
-﻿namespace pic__simulator__lehmann.Models
+﻿using System.Data;
+
+namespace pic__simulator__lehmann.Models
 {
     public class Datenspeicher
     {
@@ -11,7 +13,10 @@
         {
             _size = size;
             _speicher = new Register[_size];
-
+            for (int i = 0; i < _speicher.Length; i++)
+            {
+                _speicher[i] = new Register();
+            }
             bool bank;
             //Bank 0
             _speicher[0] = new Fsr(); //indf
@@ -51,6 +56,7 @@
             
             return _speicher[index];
         }
+        
         
         
    

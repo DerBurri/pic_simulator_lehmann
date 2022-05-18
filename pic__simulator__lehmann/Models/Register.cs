@@ -1,12 +1,37 @@
+using System.Collections;
+
 namespace pic__simulator__lehmann.Models;
 
-public abstract class Register
+public class Register
 {
-    public virtual int Read() { return 0; }
+    protected BitArray _inhalt;
 
-    public virtual void Write(int value) { }
+    public Register()
+    {
+        _inhalt = new BitArray(10);
+        _inhalt.SetAll(false);
+    }
+    public virtual int Read()
+    {
+        int value = 0;
+        for (int i = 0; i < _inhalt.Count; i++)
+        {
+            if (_inhalt[i])
+                value += Convert.ToInt16(Math.Pow(2, i));
+        }
+        return value;
+    }
 
-    public virtual void WriteBit(int bit, bool value) { }
+    public virtual void Write(int value)
+    {
+        value = value & 255;
+        _inhalt = new BitArray(new int[] {value});
+    }
+
+    public virtual void WriteBit(int bit, bool value)
+    {
+        _inhalt.Set(bit, value);
+    }
 
 
 }

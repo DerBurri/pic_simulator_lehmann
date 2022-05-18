@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using System.ComponentModel;
+using System.Security.Cryptography;
 using System.Timers;
 using RingByteBuffer;
 
@@ -97,7 +99,7 @@ namespace pic__simulator__lehmann.Models
                     case 0:
                         return Befehlsliste.Befehle.MOVWF;
                     case 1:
-                        if (befehlsteil2 > 128)
+                        if (befehlsteil2 > 7)
                         {
                             return Befehlsliste.Befehle.CLRF;
                         }
@@ -202,28 +204,38 @@ namespace pic__simulator__lehmann.Models
             switch (decoded)
             {
                     case Befehlsliste.Befehle.ADDWF :
+                        addwf(value);
                     break;
                     case Befehlsliste.Befehle.ANDWF :
-                    break;
+                        andwf(value);
+                        break;
                     case Befehlsliste.Befehle.CLRF  :
+                        clrf(value);
                     break;
                     case Befehlsliste.Befehle.CLRW  :
+                        clrw();
                     break;
                     case Befehlsliste.Befehle.COMF  :
+                        comf(value);
                     break;
                     case Befehlsliste.Befehle.DECF  :
+                        decf(value);
                     break;
                     case Befehlsliste.Befehle.DECFSZ:
-                    break;
+                        break;
                     case Befehlsliste.Befehle.INCF  :
+                        incf(value);
                     break;
                     case Befehlsliste.Befehle.INCFSZ:
                     break;
                     case Befehlsliste.Befehle.IORWF :
+                        iorwf(value);
                     break;
                     case Befehlsliste.Befehle.MOVF  :
+                        movf(value);
                     break;
                     case Befehlsliste.Befehle.MOVWF :
+                        movwf(value);
                     break;
                     case Befehlsliste.Befehle.NOP   :
                     break;
@@ -232,10 +244,13 @@ namespace pic__simulator__lehmann.Models
                     case Befehlsliste.Befehle.RRF   :
                     break;
                     case Befehlsliste.Befehle.SUBWF :
+                        subwf(value);
                     break;
                     case Befehlsliste.Befehle.SWAPF :
+                        swapwf(value);
                     break;
                     case Befehlsliste.Befehle.XORWF :
+                        xorwf(value);
                     break;
                     case Befehlsliste.Befehle.BCF   :
                     break;
@@ -303,9 +318,9 @@ namespace pic__simulator__lehmann.Models
             _taktgeber.Interval = interval* 1000;
         }
 
-        public void checkZero()
+        public void checkZero(int value)
         {
-            if (_w_register == 0)
+            if (value == 0)
             {
                 _datenspeicher._speicher[3].WriteBit(2, true);
             }
@@ -315,9 +330,20 @@ namespace pic__simulator__lehmann.Models
             }
         }
         
-        private bool checkCarry()
+        public void checkZeroNeg(int value)
         {
-            if (_w_register > 255)
+            if (value == 0)
+            {
+                _datenspeicher._speicher[3].WriteBit(2, false);
+            }
+            else
+            {
+                _datenspeicher._speicher[3].WriteBit(2,true);
+            }
+        }
+        private bool checkCarry(int value)
+        {
+            if (value > 255)
             {
                 return true;
             }
@@ -348,13 +374,28 @@ namespace pic__simulator__lehmann.Models
         private void andlw(int befehl)
         {
             _w_register = _w_register & (befehl & 255);
-            checkZero();
+            checkZero(_w_register);
+        }
+
+        private void andwf(int befehl)
+        {
+            int addr = befehl & 127;
+            int value = _w_register & _datenspeicher.At(addr).Read();
+            checkZero(value);
+            bool destinationbit = Convert.ToBoolean(value & 128);
+
+            if (destinationbit) _datenspeicher.At(addr).Write(value);
+            else _w_register = value;
+
+
+
+
         }
 
         private void iorlw(int befehl)
         {
             _w_register = _w_register | (befehl & 255);
-            checkZero();
+            checkZero(_w_register);
         }
 
         private void sublw(int befehl)
@@ -366,7 +407,7 @@ namespace pic__simulator__lehmann.Models
            
             
             //Fehler im PIC, Carry wird falsch gesetzt. Carryflag müsste invertiert werden. Wenn Ergebnis von Subtraktion < 0 dann muss Carry gelöscht werden. Wenn Ergebnis > 0 muss Carry gesetzt werden
-            if (checkCarry())
+            if (checkCarry(_w_register))
             {
                  _datenspeicher._speicher[3].WriteBit(0,false);
             }
@@ -397,14 +438,14 @@ namespace pic__simulator__lehmann.Models
         {
             int payload = befehl & 255;
             _w_register = payload ^ _w_register;
-            checkZero();
+            checkZero(_w_register);
         }
 
         private void addlw(int befehl)
         {
             int payload = befehl & 255;
             _w_register += payload;
-            if (checkCarry())
+            if (checkCarry(_w_register))
             {
                 _datenspeicher._speicher[3].WriteBit(0,true);
             }
@@ -421,7 +462,7 @@ namespace pic__simulator__lehmann.Models
             {
                 _datenspeicher._speicher[3].WriteBit(1,false);
             }
-            checkZero();
+            checkZero(_w_register);
             _w_register &= 255;
         }
         
@@ -464,56 +505,203 @@ namespace pic__simulator__lehmann.Models
         
         private void addwf(int Befehl)
         {
+            int addr = Befehl & 127;
+            int value = _w_register + _datenspeicher.At(addr).Read();
             
+            if (checkCarry(value))
+            {
+                _datenspeicher._speicher[3].WriteBit(0,true);
+            }
+            else
+            {
+                _datenspeicher._speicher[3].WriteBit(0,false);
+            }
+
+            if (checkDC(value, _w_register))
+            {
+                _datenspeicher._speicher[3].WriteBit(1,true);
+            }
+            else
+            {
+                _datenspeicher._speicher[3].WriteBit(1,false);
+            }
+            
+            bool destinationbit = Convert.ToBoolean(Befehl & 128);
+            _w_register &= 255;
+            if (destinationbit)
+            {
+               _datenspeicher.At(addr).Write(value);
+            }
+            else
+            { 
+                _w_register = value;
+            } 
         }
 
         private void clrf(int Befehl)
         {
-            
+            int addr = Befehl & 127;
+            _datenspeicher.At(addr).Write(0);
+            checkZero(_datenspeicher.At(addr).Read());
         }
 
         private void comf(int Befehl)
         {
-            
+            int addr = Befehl & 127;
+            int value = _datenspeicher.At(addr).Read();
+            value = ~value;
+            value = value & 255;
+            bool destinationbit = Convert.ToBoolean(Befehl & 128);
+
+            if (destinationbit)
+            {
+                _datenspeicher.At(addr).Write(value);
+            }
+            else _w_register = value;
+            checkZero(value);
         }
 
         private void decf(int Befehl)
         {
+            int addr = Befehl & 127;
+            int value = _datenspeicher.At(addr).Read() - 1;
+            value &= 255;
+            checkZero(value);
+            bool destinationbit = Convert.ToBoolean(Befehl & 128);
+            if (destinationbit)
+            {
+                _datenspeicher.At(addr).Write(value);
+            }
+            else
+            {
+                _w_register = value;
+            }
             
         }
 
         private void incf(int Befehl)
         {
-            
+            int addr = Befehl & 127;
+            int value = _datenspeicher.At(addr).Read() + 1;
+            value &= 255;
+            checkZero(value);
+            bool destinationbit = Convert.ToBoolean(Befehl & 128);
+            if (destinationbit)
+            {
+                _datenspeicher.At(addr).Write(value);
+            }
+            else
+            {
+                _w_register = value;
+            }
+
         }
 
-        private void movf()
+        private void movf(int Befehl)
         {
-            
+            int addr = Befehl & 127;
+            int value = _datenspeicher.At(addr).Read();
+            checkZero(value);
+            bool destinationbit = Convert.ToBoolean(Befehl & 128);
+            if (destinationbit)
+            {
+                _datenspeicher.At(addr).Write(value);
+            }
+            else _w_register = value;
         }
 
-        private void iorwf()
+        private void iorwf(int Befehl)
         {
-            
+            int addr = Befehl & 127;
+            int value = _datenspeicher.At(addr).Read() | _w_register;
+            checkZeroNeg(value);
+            bool destinationbit = Convert.ToBoolean(Befehl & 128);
+            if (destinationbit)
+            {
+                _datenspeicher.At(addr).Write(value);
+            }
+            else _w_register = value;
         }
 
-        private void subwf()
+        private void subwf(int Befehl)
         {
+            //TODO Implementieren
+            int addr = Befehl & 127;
+            //Value - W Register
+            int value = _datenspeicher.At(addr).Read();
+
+            int subtrahend = ~_w_register;
+            subtrahend += 1;
+            value += subtrahend;
             
+            //Fehler im PIC, Carry wird falsch gesetzt. Carryflag müsste invertiert werden. Wenn Ergebnis von Subtraktion < 0 dann muss Carry gelöscht werden. Wenn Ergebnis > 0 muss Carry gesetzt werden
+            if (checkCarry(value))
+            {
+                _datenspeicher._speicher[3].WriteBit(0,false);
+            }
+            else
+            {
+                _datenspeicher._speicher[3].WriteBit(0,true);
+                _logger.LogCritical("Carry Set");
+            }
+            // Setze übrige Bits aus Integer auf 0;
+            value &= 255;
+
+            if (checkDC(value,_datenspeicher.At(addr).Read()))
+            {
+                _datenspeicher._speicher[3].WriteBit(1,false);
+            }
+            else
+            {
+                _datenspeicher._speicher[3].WriteBit(1,true);
+                _logger.LogCritical("DigitCarry Set");
+
+            }
+
+            bool destinationbit = Convert.ToBoolean(Befehl & 128);
+            if (destinationbit) _datenspeicher.At(addr).Write(value);
+            else _w_register = value;
+
         }
 
-        private void swapwf()
+        private void swapwf(int Befehl)
         {
-            
+            int addr = Befehl & 127;
+            int teil1 = _datenspeicher.At(addr).Read() & 15;
+            int teil2 = _datenspeicher.At(addr).Read() & 240;
+
+            teil1 <<= 4;
+            teil2 >>= 4;
+
+            int value = teil1 + teil2;
+
+            bool destinationbit = Convert.ToBoolean(Befehl & 128);
+            if (destinationbit) _datenspeicher.At(addr).Write(value);
+            else _w_register = value;
         }
 
-        private void xorwf()
+        private void xorwf(int Befehl)
         {
+            int addr = Befehl & 127;
             
+            int value = _datenspeicher.At(addr).Read() ^ _w_register;
+            checkZero(value);
+            bool destinationbit = Convert.ToBoolean(Befehl & 128);
+            if (destinationbit) _datenspeicher.At(addr).Write(value);
+            else _w_register = value;
         }
 
         private void clrw()
         {
+            _w_register = 0;
+            checkZero(_w_register);
+        }
+
+        private void rlf(int Befehl)
+        {
+            int addr = Befehl & 127;
+            int value = _datenspeicher.At(addr).Read();
+            
             
         }
     }
