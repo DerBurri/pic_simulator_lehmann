@@ -12,123 +12,201 @@
 <h1>Willkommen beim PIC16 Simulator!</h1>
 
 <button class="btn btn-primary" @onclick="LoadProgram">Lade Programm</button>
- @if (_geladenesProgramm != null)
- {
+@if (_geladenesProgramm != null)
+{
 
-     @if (!_running)
-     {
-	     <button class="btn btn-primary" @onclick="ToggleRun">Start</button>
-	     <button class="btn btn-primary" @onclick="Step">Step</button>
-	     <button class="btn btn-primary" @onclick="LoadProgram">Reset</button>
-     }
-    else
-     {
-         <button class="btn btn-primary" @onclick="ToggleRun">Pause</button>
-     }
-	 <p><input @bind="Interval"/> s</p>
-	 
-	 <button @onclick="@(()=>modal.Show<Einlesen>("Modal Popup Example"))"class="btn btn-primary">View</button>  
+	@if (!_running)
+	{
+		<button class="btn btn-primary" @onclick="ToggleRun">Start</button>
+		<button class="btn btn-primary" @onclick="Step">Step</button>
+		<button class="btn btn-primary" @onclick="LoadProgram">Reset</button>
+	}
+	else
+	{
+		<button class="btn btn-primary" @onclick="ToggleRun">Pause</button>
+	}
+	<p><input @bind="Interval" /> s</p>
 
-	 <table class="programmcode">
-		 <thead>
-		 <tr>
-			 <th>ID</th>
-			 <th>Breakpoints</th>
-			 <th>Befehle</th>
-		 </tr>
-		 </thead>
-		 <tbody>
-		 @{
-			 int lineCounter = 0;
-			 foreach (var programmzeile in _geladenesProgramm._programm)
-			 {
-				 //Im Ausführungsblock wird eine andere Referenz benutzt deswegen muss eine neue lokale Variable erstellt werden.
-				 int foo = lineCounter;
-				 lineCounter++;
+	<button @onclick="@(()=>modal.Show<Einlesen>("Modal Popup Example"))" class="btn btn-primary">View</button>
 
-				 <tr class="codeLine">
-					 <td>@lineCounter</td>
-					 <td style="text-align: center">
-						 <input type="checkbox" class="btn"  @onchange="eventArgs => { BreakpointCheckBoxClicked(foo, eventArgs.Value); }">
-					 </td>
-					 <td>@programmzeile</td>
-				 </tr>
-				}
+	<div id="box">
+		<div class="programmcode">
+			<table class="programmcode" id="programmcode">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Breakpoints</th>
+						<th>Befehle</th>
+					</tr>
+				</thead>
+				<tbody>
+					@{
+						int lineCounter = 0;
+						foreach (var programmzeile in _geladenesProgramm._programm)
+						{
+							//Im Ausführungsblock wird eine andere Referenz benutzt deswegen muss eine neue lokale Variable erstellt werden.
+							int foo = lineCounter;
+							lineCounter++;
+
+							<tr class="codeLine">
+								<td>@lineCounter</td>
+								<td style="text-align: center">
+									<input type="checkbox" class="btn" @onchange="eventArgs => { BreakpointCheckBoxClicked(foo, eventArgs.Value); }">
+								</td>
+								<td>@programmzeile</td>
+							</tr>
+						}
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+
+	@*<button @onclick="ChangeColorRow">change</button>*@
+
+
+	<div id="box">
+		<h2>Register</h2>
+		<table>
+			<tbody>
+				<tr>
+					<td>
+						W-Register:
+					</td>
+					<td>
+						@Convert.ToString(_geladenesProgramm.GetWRegister(),16);
+					</td>
+				</tr>
+				<tr>
+					<td>
+						PCL:
+					</td>
+					<td>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						PCLATH:
+					</td>
+					<td>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						PC intern:
+					</td>
+					<td>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						Status:
+					</td>
+					<td>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						FSR:
+					</td>
+					<td>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						Option:
+					</td>
+					<td>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						Vorteiler:
+					</td>
+					<td>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						Timer0:
+					</td>
+					<td>
+					</td>
+				</tr>
+
+			</tbody>
+		</table>
+	</div>
+
+
+
+
+	<div id="box">
+		<h2>Flags</h2>
+		<h4>Status-Register</h4>
+		<table class="tg">
+			<thead>
+				<tr>
+					<th class="tg-0lax">C</th>
+					<th class="tg-0lax">DC</th>
+					<th class="tg-0lax">Z</th>
+					<th class="tg-0lax">PD</th>
+					<th class="tg-0lax">TO</th>
+					<th class="tg-0lax">RB0</th>
+					<th class="tg-0lax">RB1</th>
+					<th class="tg-0lax">IRBS</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					@foreach (bool statusflag in _geladenesProgramm.getStatusRegister())
+					{
+						<td class="tg-0lax">@Convert.ToInt32(statusflag)</td>
+					}
+				</tr>
+			</tbody>
+		</table>
+	</div>
+}
+else
+{
+	<h2>Noch kein Programm geladen</h2>
+}
+
+<button style="margin-bottom: 5px;" @onclick="@(()=>modal.Show<Ports>("Port Settings"))" class="btn btn-primary">Port Settings</button>
+
+<div id="box">
+	<table class="ram">
+		<thead>
+			<tr>
+				<th id="adressRam">&nbsp</th>
+				<th>0</th>
+				<th>1</th>
+				<th>2</th>
+				<th>3</th>
+				<th>4</th>
+				<th>5</th>
+				<th>6</th>
+				<th>7</th>
+			</tr>
+		</thead>
+		<tbody>
+			@for (int row = 0; row < 32; row++)
+			{
+				<tr>
+					<td id="adressRam">@Convert.ToString((row*8),16)</td>
+
+					@for (int column = 0; column < 8; column++)
+					{
+						ram[column, row] = 0;
+						<td>@ram[column, row ]</td>
+					}
+				</tr>
 			}
 		</tbody>
 	</table>
-
-	 
-
-	 <h2>Register</h2>
-	 <table>
-		 <thead>
-		 <tr>W</tr>
-		 </thead>
-		 <tbody>
-		 <tr>
-			 @Convert.ToString(_geladenesProgramm.GetWRegister(),16);
-		 </tr>
-		 </tbody>
-	 </table>
-	 <h2>Flags</h2>
-	 <table class="tg">
-	 <thead>
-	 <tr>
-		 <th class="tg-0lax">C</th>
-		 <th class="tg-0lax">DC</th>
-		 <th class="tg-0lax">Z</th>
-		 <th class="tg-0lax">PD</th>
-		 <th class="tg-0lax">TO</th>
-		 <th class="tg-0lax">RB0</th>
-		 <th class="tg-0lax">RB1</th>
-		 <th class="tg-0lax">IRBS</th>
-	 </tr>
-	 </thead>
-	 <tbody>
-	 <tr>
-		 @foreach (bool statusflag in _geladenesProgramm.getStatusRegister())
-		 {
-			 <td class="tg-0lax">@Convert.ToInt32(statusflag)</td>
-		 }
-	 </tr>
-	 </tbody>
-	 </table>
- }
- else
- {
-     <h2>Noch kein Programm geladen</h2>
- }
-<button style="margin-bottom: 5px;" @onclick="@(()=>modal.Show<Ports>("Port Settings"))"class="btn btn-primary">Port Settings</button>  
-
-
-<table class="ram">
-	<thead>
-	<tr>  
-		<th class="adressRam">&nbsp</th>
-		<th>0</th>
-		<th>1</th>
-		<th>2</th>
-		<th>3</th>
-		<th>4</th>
-		<th>5</th>
-		<th>6</th>
-		<th>7</th>
-	</tr>
-	</thead>
-	<tbody>
-	@for(int row = 0; row < 32; row++){
-		<tr>
-			<td id="adressRam">@Convert.ToString((row*8),16)</td>
-
-			@for(int column = 0; column < 8; column++){
-				ram[column, row] = 0;
-				<td>@ram[column, row ]</td>
-			}
-		</tr>
-	}
-	</tbody>
-</table>
+</div>
 
 
 
@@ -141,52 +219,58 @@
 	public int Interval
 	{
 		get => _interval;
-		set { _interval = value; _geladenesProgramm.IntervalChange(value);}
+		set { _interval = value; _geladenesProgramm.IntervalChange(value); }
 	}
 
 
 	private bool _running = false;
 	public bool[] portA = new bool[] { false, false, false, false, false, false, false, false };
 	public bool[] portB = new bool[] { false, false, false, false, false, false, false, false };
-	private int[,] ram = new int[8,32];
-	
-	
-    private void LoadProgram()
-    {
-        _geladenesProgramm = new Programm(_interval,_logger);
-	   
-    }
+	private int[,] ram = new int[8, 32];
 
-    private void ToggleRun()
-    {
-        if (_running)
-        {
-            _geladenesProgramm.Stop();
-            _running = !_running;
-        }
-        else
-        {
-            _geladenesProgramm.Start();
-            _running = !_running;
-        }
-    }
-	
+
+	private void LoadProgram()
+	{
+		_geladenesProgramm = new Programm(_interval, _logger);
+
+	}
+
+	private void ToggleRun()
+	{
+		if (_running)
+		{
+			_geladenesProgramm.Stop();
+			_running = !_running;
+		}
+		else
+		{
+			_geladenesProgramm.Start();
+			_running = !_running;
+		}
+	}
+
 
 	private void Step()
-    {
-        _geladenesProgramm.Step();
-    //TODO Implement Step
-    }
-    
-    private void BreakpointCheckBoxClicked(int lineCounter, object aChecked)
-    {
-        if ((bool) aChecked)
-        {
-	        _geladenesProgramm._SelectedBreakpoints.Add(lineCounter);
-        }
-        else
-        {
-	        _geladenesProgramm._SelectedBreakpoints.Remove(lineCounter);
-        }
-    }
+	{
+		_geladenesProgramm.Step();
+		//TODO Implement Step
+	}
+
+	private void BreakpointCheckBoxClicked(int lineCounter, object aChecked)
+	{
+		if ((bool)aChecked)
+		{
+			_geladenesProgramm._SelectedBreakpoints.Add(lineCounter);
+		}
+		else
+		{
+			_geladenesProgramm._SelectedBreakpoints.Remove(lineCounter);
+		}
+	}
+
+
+	//public void ChangeColorRow(){
+	//	programmcode.Rows[0].BackColor = System.Drawing.Color.Pink;
+	//}
+
 }
