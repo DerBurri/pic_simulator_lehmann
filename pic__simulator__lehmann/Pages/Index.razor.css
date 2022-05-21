@@ -1,7 +1,9 @@
 ﻿body {
 }
 
+#box{
 
+}
 
 
 .ram tr {
@@ -69,20 +71,32 @@
         text-align: center;
     }
 
-.programmcode tr {
-    width: 100%;
-    display: inline-table;
-    table-layout: fixed;
+
+
+
+.programmcode {
+    overflow: scroll;
+    height: 20rem;
+    width: 50rem;
 }
 
 .programmcode table {
-    height: 300px;
-    /*// <-- Select the height of the table display: block;*/
+    border-collapse: collapse;
 }
 
-.programmcode tbody {
-    overflow-y: scroll;
-    height: 200px;
-    /*// <-- Select the height of the body width: 100%;*/
-    position: absolute;
-}
+    .programmcode table th,
+    table td {
+        max-width: 30rem;
+        padding: 8px 16px;
+        border: 1px solid #ddd;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+.programmcode table thead {
+    position: sticky;
+    inset-block-start: 0;
+    background-color: #ddd;
+    padding-top:1rem;    
+    }
