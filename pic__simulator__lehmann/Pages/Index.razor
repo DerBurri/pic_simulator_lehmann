@@ -94,6 +94,32 @@
 	 </tr>
 	 </tbody>
 	 </table>
+	 <table class="ram">
+		 <thead>
+		 <tr>  
+			 <th class="adressRam">&nbsp</th>
+			 <th>0</th>
+			 <th>1</th>
+			 <th>2</th>
+			 <th>3</th>
+			 <th>4</th>
+			 <th>5</th>
+			 <th>6</th>
+			 <th>7</th>
+		 </tr>
+		 </thead>
+		 <tbody>
+		 @for(int row = 0; row < 32; row++){
+			 <tr>
+				 <td id="adressRam">@Convert.ToString((row*8),16)</td>
+
+				 @for(int column = 0; column < 8; column++){
+					 <td>@_geladenesProgramm.getRAMValue(row+column)</td>
+				 }
+			 </tr>
+		 }
+		 </tbody>
+	 </table>
  }
  else
  {
@@ -102,33 +128,7 @@
 <button style="margin-bottom: 5px;" @onclick="@(()=>modal.Show<Ports>("Port Settings"))"class="btn btn-primary">Port Settings</button>  
 
 
-<table class="ram">
-	<thead>
-	<tr>  
-		<th class="adressRam">&nbsp</th>
-		<th>0</th>
-		<th>1</th>
-		<th>2</th>
-		<th>3</th>
-		<th>4</th>
-		<th>5</th>
-		<th>6</th>
-		<th>7</th>
-	</tr>
-	</thead>
-	<tbody>
-	@for(int row = 0; row < 32; row++){
-		<tr>
-			<td id="adressRam">@Convert.ToString((row*8),16)</td>
 
-			@for(int column = 0; column < 8; column++){
-				ram[column, row] = 0;
-				<td>@ram[column, row ]</td>
-			}
-		</tr>
-	}
-	</tbody>
-</table>
 
 
 
@@ -143,18 +143,18 @@
 		get => _interval;
 		set { _interval = value; _geladenesProgramm.IntervalChange(value);}
 	}
-
-
+	
 	private bool _running = false;
+	
 	public bool[] portA = new bool[] { false, false, false, false, false, false, false, false };
 	public bool[] portB = new bool[] { false, false, false, false, false, false, false, false };
-	private int[,] ram = new int[8,32];
+	
 	
 	
     private void LoadProgram()
     {
         _geladenesProgramm = new Programm(_interval,_logger);
-	   
+
     }
 
     private void ToggleRun()
@@ -175,7 +175,6 @@
 	private void Step()
     {
         _geladenesProgramm.Step();
-    //TODO Implement Step
     }
     
     private void BreakpointCheckBoxClicked(int lineCounter, object aChecked)

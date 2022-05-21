@@ -25,6 +25,11 @@ namespace pic__simulator__lehmann.Models
             get { return _w_register; }
         }
 
+        public int GetRAMValue(int addr)
+        {
+            return _datenspeicher.At(addr).Read();
+        }
+
         public bool[] StatusRegister
         {
             get
@@ -43,7 +48,7 @@ namespace pic__simulator__lehmann.Models
             {
                 _logger.LogWarning(opcode.ToString());
             }
-            _datenspeicher = new Datenspeicher(4096);
+            _datenspeicher = new Datenspeicher(256);
             _stack = new CircularBuffer<int>(7);
             _programmcounter = 0;
             KonfiguriereTimer(interval);
@@ -701,8 +706,6 @@ namespace pic__simulator__lehmann.Models
         {
             int addr = Befehl & 127;
             int value = _datenspeicher.At(addr).Read();
-            
-            
         }
     }
 }

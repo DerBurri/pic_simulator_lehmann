@@ -77,4 +77,9 @@ public class Programm
     {
         return _controller.StatusRegister;
     }
+
+    public int getRAMValue(int addr)
+    {
+        return _controller.GetRAMValue(addr);
+    }
 }

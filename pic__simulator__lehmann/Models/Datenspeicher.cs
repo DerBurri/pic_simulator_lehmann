@@ -56,14 +56,23 @@ namespace pic__simulator__lehmann.Models
             
             return _speicher[index];
         }
-        
-        
-        
-   
-
         public void Write(int addr, int value)
         {
             _speicher[addr].Write(value);
+        }
+
+        public int[,] GetRamArray()
+        {
+            int[,] ram = new int[_size, 8];
+            for (int i = 0; i < _speicher.Length; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    ram[i,j] = _speicher[i+j].Read();
+                }
+            }
+
+            return ram;
         }
     }
 }
