@@ -23,6 +23,8 @@ public class Programm
     private void Einlesen()
     {
         _programm = new List<String>();
+        _programmzeilen = new List<String>();
+        
         FileStream fs = new FileStream("geladenesProgramm", FileMode.Open);
         StreamReader sr = new StreamReader(fs, Encoding.Latin1);
         String line;
@@ -34,27 +36,14 @@ public class Programm
 
         foreach (String line2 in _programm)
         {
-            _programmzeilen = new List<string>();
-            //Splitte Kommentar ab
-            String[] tokens = line2.Split(';', StringSplitOptions.RemoveEmptyEntries);
-            //splitte in einzelne Kommandoteile
-            var commandparts = tokens[0].Trim().Split(' ',StringSplitOptions.RemoveEmptyEntries);
-            //Gebe String Teile aus Commandparts aus #debug
-            foreach (var part in commandparts)
-            { 
-                Console.Write("|");
-                Console.Write(part); 
-            }
-            if (commandparts.Length > 4)
+            if (Char.IsDigit(line2[0]))
             {
                 _logger.LogCritical("Voller Teil");
-                Console.WriteLine(commandparts[0]);
-                _programmzeilen.Add(commandparts[0]);
+                _programmzeilen.Add(line2.Substring(0, 4));
             }
             else
             {
                 _logger.LogCritical("Leerer Teil");
-                Console.WriteLine(commandparts[0]);
                 _programmzeilen.Add(" ");
             }
         }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.ComponentModel;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using System.Timers;
 using pic__simulator__lehmann.Pages;
 using RingByteBuffer;
@@ -19,6 +20,7 @@ namespace pic__simulator__lehmann.Models
         private System.Timers.Timer _taktgeber;
 
         private int _programmcounter;
+        private int _cyclecounter;
         private CircularBuffer<int> _stack;
         
         public int W_register
@@ -78,6 +80,7 @@ namespace pic__simulator__lehmann.Models
             _datenspeicher = new Datenspeicher(256);
             _stack = new CircularBuffer<int>(7);
             _programmcounter = 0;
+            _cyclecounter = 0;
             KonfiguriereTimer(interval);
             //throw new NotImplementedException();
         }
@@ -101,8 +104,9 @@ namespace pic__simulator__lehmann.Models
                 Console.WriteLine("Folgender Befehl wurde erkannt {0}", decoded);
                 //Execute
                 execute(decoded, befehl);
-                _logger.LogCritical("Programmzähler: {0}",_programmcounter.ToString());
+                _logger.LogWarning("Programmzähler: {0}",_programmcounter.ToString());
                 _programmcounter++;
+                _cyclecounter++;
             }
             catch (Exception ex)
             {
@@ -114,8 +118,8 @@ namespace pic__simulator__lehmann.Models
         {
             int befehlteil1 = (Befehl & (int) Befehlsmaske.MASKE2) / 256;
             int befehlsteil2 = (Befehl & (int) Befehlsmaske.MASKE3) / 16;
-            _logger.LogCritical(Befehl.ToString());
-            _logger.LogCritical(Convert.ToString(Befehl,2));
+            _logger.LogWarning(Befehl.ToString());
+            _logger.LogWarning(Convert.ToString(Befehl,2));
             if (Befehl == 0)
             {
                 return Befehlsliste.Befehle.NOP;
@@ -254,11 +258,13 @@ namespace pic__simulator__lehmann.Models
                         decf(value);
                     break;
                     case Befehlsliste.Befehle.DECFSZ:
+                        decfsz(value);
                         break;
                     case Befehlsliste.Befehle.INCF  :
                         incf(value);
                     break;
                     case Befehlsliste.Befehle.INCFSZ:
+                        incfsz(value);
                     break;
                     case Befehlsliste.Befehle.IORWF :
                         iorwf(value);
@@ -272,8 +278,10 @@ namespace pic__simulator__lehmann.Models
                     case Befehlsliste.Befehle.NOP   :
                     break;
                     case Befehlsliste.Befehle.RLF   :
+                        rlf(value);
                     break;
                     case Befehlsliste.Befehle.RRF   :
+                        rrf(value);
                     break;
                     case Befehlsliste.Befehle.SUBWF :
                         subwf(value);
@@ -325,7 +333,7 @@ namespace pic__simulator__lehmann.Models
                     case Befehlsliste.Befehle.ERROR :
                     break;
             }
-            _logger.LogCritical("Inhalt W Register: {0}",_w_register);
+            _logger.LogWarning("Inhalt W Register: {0}",_w_register);
         }
         
     public void Stop()
@@ -350,15 +358,17 @@ namespace pic__simulator__lehmann.Models
             _taktgeber.Interval = interval* 1000;
         }
 
-        public void checkZero(int value)
+        public bool checkZero(int value)
         {
             if (value == 0)
             {
-                _datenspeicher._speicher[3].WriteBit(2, true);
+                _datenspeicher.At(3).WriteBit(2, true);
+                return true;
             }
             else
             {
-                _datenspeicher._speicher[3].WriteBit(2,false);
+                _datenspeicher.At(3).WriteBit(2,false);
+                return false;
             }
         }
         
@@ -366,11 +376,11 @@ namespace pic__simulator__lehmann.Models
         {
             if (value == 0)
             {
-                _datenspeicher._speicher[3].WriteBit(2, false);
+                _datenspeicher.At(3).WriteBit(2, false);
             }
             else
             {
-                _datenspeicher._speicher[3].WriteBit(2,true);
+                _datenspeicher.At(3).WriteBit(2,true);
             }
         }
         private bool checkCarry(int value)
@@ -441,24 +451,24 @@ namespace pic__simulator__lehmann.Models
             //Fehler im PIC, Carry wird falsch gesetzt. Carryflag müsste invertiert werden. Wenn Ergebnis von Subtraktion < 0 dann muss Carry gelöscht werden. Wenn Ergebnis > 0 muss Carry gesetzt werden
             if (checkCarry(_w_register))
             {
-                 _datenspeicher._speicher[3].WriteBit(0,false);
+                 _datenspeicher.At(3).WriteBit(0,false);
             }
             else
             {
-                _datenspeicher._speicher[3].WriteBit(0,true);
-                _logger.LogCritical("Carry Set");
+                _datenspeicher.At(3).WriteBit(0,true);
+                _logger.LogWarning("Carry Set");
             }
             // Setze übrige Bits aus Integer auf 0;
             _w_register &= 255;
 
             if (checkDC(_w_register,payload))
             {
-                _datenspeicher._speicher[3].WriteBit(1,false);
+                _datenspeicher.At(3).WriteBit(1,false);
             }
             else
             {
-                _datenspeicher._speicher[3].WriteBit(1,true);
-                _logger.LogCritical("DigitCarry Set");
+                _datenspeicher.At(3).WriteBit(1,true);
+                _logger.LogWarning("DigitCarry Set");
 
             }
 
@@ -479,20 +489,20 @@ namespace pic__simulator__lehmann.Models
             _w_register += payload;
             if (checkCarry(_w_register))
             {
-                _datenspeicher._speicher[3].WriteBit(0,true);
+                _datenspeicher.At(3).WriteBit(0,true);
             }
             else
             {
-                _datenspeicher._speicher[3].WriteBit(0,false);
+                _datenspeicher.At(3).WriteBit(0,false);
             }
 
             if (checkDC(payload, befehl))
             {
-                _datenspeicher._speicher[3].WriteBit(1, true);
+                _datenspeicher.At(3).WriteBit(1, true);
             }
             else
             {
-                _datenspeicher._speicher[3].WriteBit(1,false);
+                _datenspeicher.At(3).WriteBit(1,false);
             }
             checkZero(_w_register);
             _w_register &= 255;
@@ -501,13 +511,11 @@ namespace pic__simulator__lehmann.Models
         private void _goto(int Befehl)
         {
             int payload = Befehl & 2047;
-            int temp = _programmcounter & 2047;
             _programmcounter = _datenspeicher.At(10).Read();
             _programmcounter <<= 11;
-            _programmcounter += temp;
+            _programmcounter += payload -1  ;
             //Programmzähler wird wieder um eins erhöht dann steht die richtige Adresse drinnen.
-            _programmcounter += payload - 2;
-            _logger.LogCritical("Programm Counter {0}", payload);
+            _logger.LogWarning("Programm Counter {0}", payload);
         }
 
         private void call(int Befehl)
@@ -543,20 +551,20 @@ namespace pic__simulator__lehmann.Models
             
             if (checkCarry(value))
             {
-                _datenspeicher._speicher[3].WriteBit(0,true);
+                _datenspeicher.At(3).WriteBit(0,true);
             }
             else
             {
-                _datenspeicher._speicher[3].WriteBit(0,false);
+                _datenspeicher.At(3).WriteBit(0,false);
             }
 
             if (checkDC(value, _w_register))
             {
-                _datenspeicher._speicher[3].WriteBit(1,true);
+                _datenspeicher.At(3).WriteBit(1,true);
             }
             else
             {
-                _datenspeicher._speicher[3].WriteBit(1,false);
+                _datenspeicher.At(3).WriteBit(1,false);
             }
             
             bool destinationbit = Convert.ToBoolean(Befehl & 128);
@@ -594,7 +602,7 @@ namespace pic__simulator__lehmann.Models
             checkZero(value);
         }
 
-        private void decf(int Befehl)
+        private int decf(int Befehl)
         {
             int addr = Befehl & 127;
             int value = _datenspeicher.At(addr).Read() - 1;
@@ -609,10 +617,17 @@ namespace pic__simulator__lehmann.Models
             {
                 _w_register = value;
             }
-            
+
+            return value;
+        }
+        
+        public void decfsz(int Befehl)
+        {
+            int value = decf(Befehl);
+            if (value == 0) _programmcounter++;
         }
 
-        private void incf(int Befehl)
+        private int incf(int Befehl)
         {
             int addr = Befehl & 127;
             int value = _datenspeicher.At(addr).Read() + 1;
@@ -628,7 +643,17 @@ namespace pic__simulator__lehmann.Models
                 _w_register = value;
             }
 
+            return value;
         }
+
+        public void incfsz(int Befehl)
+        {
+            int value = incf(Befehl);
+            if (value == 0) _programmcounter++;
+
+
+        }
+
 
         private void movf(int Befehl)
         {
@@ -670,24 +695,24 @@ namespace pic__simulator__lehmann.Models
             //Fehler im PIC, Carry wird falsch gesetzt. Carryflag müsste invertiert werden. Wenn Ergebnis von Subtraktion < 0 dann muss Carry gelöscht werden. Wenn Ergebnis > 0 muss Carry gesetzt werden
             if (checkCarry(value))
             {
-                _datenspeicher._speicher[3].WriteBit(0,false);
+                _datenspeicher.At(3).WriteBit(0,false);
             }
             else
             {
-                _datenspeicher._speicher[3].WriteBit(0,true);
-                _logger.LogCritical("Carry Set");
+                _datenspeicher.At(3).WriteBit(0,true);
+                _logger.LogWarning("Carry Set");
             }
             // Setze übrige Bits aus Integer auf 0;
             value &= 255;
 
             if (checkDC(value,_datenspeicher.At(addr).Read()))
             {
-                _datenspeicher._speicher[3].WriteBit(1,false);
+                _datenspeicher.At(3).WriteBit(1,false);
             }
             else
             {
-                _datenspeicher._speicher[3].WriteBit(1,true);
-                _logger.LogCritical("DigitCarry Set");
+                _datenspeicher.At(3).WriteBit(1,true);
+                _logger.LogWarning("DigitCarry Set");
 
             }
 
@@ -734,6 +759,43 @@ namespace pic__simulator__lehmann.Models
         {
             int addr = Befehl & 127;
             int value = _datenspeicher.At(addr).Read();
+
+            value <<= 1;
+            if (Convert.ToBoolean(_datenspeicher.At(3).Read() & 1)) value++;
+            if (checkCarry(value)) _datenspeicher.At(3).WriteBit(0,true);
+            else _datenspeicher.At(3).WriteBit(0,false);
+
+            value &= 255;
+
+            bool destinationbit = Convert.ToBoolean(Befehl & 128);
+            if (destinationbit) _datenspeicher.At(addr).Write(value);
+            else _w_register = value;
+
+        }
+
+        private void rrf(int Befehl)
+        {
+            int addr = Befehl & 127;
+            //Lese aktuellen Wert aus F Register
+            int value = _datenspeicher.At(addr).Read();
+            //Check if LSB bit is set to actualize Carry if needed
+            bool lsb_set = Convert.ToBoolean(value & 1);
+            //Shift Value to right
+            value >>= 1;
+            //If Carry Bit was already set before add +128 to set MSB Bit
+            if (Convert.ToBoolean(_datenspeicher.At(3).Read())) value += 128;
+            //Set new Carry Bit with info from lsb set
+            _datenspeicher.At(3).WriteBit(0,lsb_set);
+
+            value &= 255;
+
+            bool destinationbit = Convert.ToBoolean(Befehl & 128);
+            if (destinationbit) _datenspeicher.At(addr).Write(value);
+            else _w_register = value;
+
+
+
+
         }
     }
 }
