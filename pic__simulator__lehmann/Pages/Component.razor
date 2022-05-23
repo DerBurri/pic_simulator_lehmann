@@ -79,6 +79,8 @@
 					}
 					</tbody>
 				</table>
+
+
 			}
 			</div>
 
@@ -106,8 +108,7 @@
 						<th>7</th>
 					</tr>
 					</thead>
-					@if (_geladenesProgramm != null)
-					{
+
 						<tbody>
 						@{
 							int counter = 0;
@@ -115,17 +116,27 @@
 							{
 								<tr>
 									<td id="adressRam">@Convert.ToString((row * 8), 16)</td>
-
-									@for (int column = 0; column < 8; column++)
+									@if (_geladenesProgramm != null)
 									{
-										<td>@Convert.ToString(_geladenesProgramm.GetRAMValue(counter), 16)</td>
-										counter++;
-									}
-								</tr>
+
+										@for (int column = 0; column < 8; column++)
+										{
+											//Im Ausführungsblock wird eine andere Referenz benutzt deswegen muss eine neue lokale Variable erstellt werden.
+												int kung = counter;
+												string cell = Convert.ToString(_geladenesProgramm.GetRAMValue(counter), 16);
+												<td><input type="text" id="ramInput" value="@cell" @onchange="eventArgs => { changeRam(kung, eventArgs.Value);}"></td>
+												
+
+
+
+											counter++;
+										}
+								}
+										</tr>
 							}
 						}
 						</tbody>
-					}
+					
 				</table>
 
 				</div>
@@ -158,7 +169,7 @@
 									W-Register:
 								</td>
 								<td>
-									@Convert.ToString(_geladenesProgramm.GetWRegister(),16);
+									@Convert.ToString(_geladenesProgramm.GetWRegister(),16)
 								</td>
 							</tr>
 							<tr>
@@ -166,7 +177,7 @@
 									PCL:
 								</td>
 								<td>
-									@Convert.ToString(_geladenesProgramm.GetPCL(),16);
+									@Convert.ToString(_geladenesProgramm.GetPCL(),16)
 								</td>
 							</tr>
 							<tr>
@@ -174,7 +185,7 @@
 									PCLATH:
 								</td>
 								<td>
-									@Convert.ToString(_geladenesProgramm.GetPCLath(),16);
+									@Convert.ToString(_geladenesProgramm.GetPCLath(),16)
 								</td>
 							</tr>
 							<tr>
@@ -235,7 +246,7 @@
 
 
 @*Programmcode*@
-		<div class="col-md-7">
+		<div class="col-md-6">
 
 			<div class="middle-bottom">
 
@@ -286,7 +297,7 @@
 
 
 @*SFR*@
-		<div class="col-md-3">
+		<div class="col-md-4">
 
 			<div class="rightside-bottom">
 
@@ -317,6 +328,59 @@
 					</tbody>
 				</table>
 
+
+				<h5>Option-Register</h5>
+				<table class="RegisterBits">
+					<thead>
+						<tr>
+							<th class="Register">PS0</th>
+							<th class="Register">PS1</th>
+							<th class="Register">PS2</th>
+							<th class="Register">PSA</th>
+							<th class="Register">T0SE</th>
+							<th class="Register">T0CS</th>
+							<th class="Register">INTEDG</th>
+							<th class="Register">RBPU</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							@if(_geladenesProgramm != null){
+	@*						@foreach (bool  in _geladenesProgramm())
+							{
+								<td class="Register">@Convert.ToInt32()</td>
+							}*@
+							}
+						</tr>
+					</tbody>
+				</table>
+
+
+				<h5>Intcon-Register</h5>
+				<table class="RegisterBits">
+					<thead>
+						<tr>
+							<th class="Register">RBIF</th>
+							<th class="Register">INTF</th>
+							<th class="Register">T0IF</th>
+							<th class="Register">RBIE</th>
+							<th class="Register">INTE</th>
+							<th class="Register">T0IE</th>
+							<th class="Register">EEIE</th>
+							<th class="Register">GIE</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							@if(_geladenesProgramm != null){
+@*							@foreach (bool  in _geladenesProgramm.())
+							{
+								<td class="Register">@Convert.ToInt32()</td>
+							}*@
+							}
+						</tr>
+					</tbody>
+				</table>
 			</div>
 
 		</div>
@@ -382,4 +446,14 @@
 			_geladenesProgramm._SelectedBreakpoints.Remove(lineCounter);
 		}
 	}
+
+
+	private void changeRam(int counter, object valueHex)
+	{
+		int value = Int32.Parse((string)valueHex, System.Globalization.NumberStyles.HexNumber);
+
+		_geladenesProgramm.SetRAMValue(counter, value);
+
+	}
+
 }

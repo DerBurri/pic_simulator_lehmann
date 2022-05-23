@@ -33,6 +33,12 @@ namespace pic__simulator__lehmann.Models
             return _datenspeicher.At(addr).Read();
         }
 
+        public void SetRAMValue(int addr, int value)
+        {
+            _datenspeicher.Write(addr, value);
+        }
+
+
         public int GetPCL()
         {
             return _programmcounter;
