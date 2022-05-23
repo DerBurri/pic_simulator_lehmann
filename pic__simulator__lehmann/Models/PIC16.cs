@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Security.Cryptography;
 using System.Timers;
+using pic__simulator__lehmann.Pages;
 using RingByteBuffer;
 
 using static pic__simulator__lehmann.Models.Befehlsliste;
@@ -10,7 +11,7 @@ namespace pic__simulator__lehmann.Models
 {
     public class PIC16
     {
-        private readonly ILogger<Programm> _logger;
+        private readonly ILogger<Einlesen> _logger;
 
         private Programmspeicher _programmspeicher;
         private Datenspeicher _datenspeicher;
@@ -44,7 +45,7 @@ namespace pic__simulator__lehmann.Models
         }
 
 
-        public PIC16(int interval, ILogger<Programm> logger, List<String> _programm)
+        public PIC16(int interval, ILogger<Einlesen> logger, List<String> _programm)
         {
             _logger = logger;
             _logger.LogWarning("Ausgabe Programmspeicher");

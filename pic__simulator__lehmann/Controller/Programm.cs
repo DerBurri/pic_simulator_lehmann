@@ -1,5 +1,6 @@
 
 using System.Globalization;
+using pic__simulator__lehmann.Pages;
 using System.Text;
 
 namespace pic__simulator__lehmann.Models;
@@ -9,11 +10,11 @@ public class Programm
     private PIC16 _controller;
     public  List<String> _programm;
     public List<String> _programmzeilen;
-    public readonly ILogger<Programm> _logger;
+    public readonly ILogger<Einlesen> _logger;
 
     public List<int> _SelectedBreakpoints { get; set; }  
     
-    public Programm(int interval, ILogger<Programm> logger)
+    public Programm(int interval, ILogger<Einlesen> logger)
     {
         _logger = logger;
         _SelectedBreakpoints = new List<int>();

@@ -1,0 +1,168 @@
+﻿body {
+}
+
+/*#region Grundstuktur*/
+    .row {
+        margin: 0.2rem;
+    }
+
+    /*2. Ebene*/
+    .leftside-top, .middleLeft-top, .middleRight-top, .rightside-top {
+        height: 35vh;
+        width: 100%;
+        padding: 0.5rem;
+    }
+
+    .leftside-bottom, .middle-bottom, .rightside-bottom {
+        height: 60vh;
+        width: 100%;
+    }
+
+
+    /*2. Ebene*/
+    .leftside-top {
+        background-color: red;
+    }
+
+    .middleLeft-top {
+        background-color: grey;
+    }
+
+    .middleRight-top {
+        background-color: green;
+    }
+
+    .rightside-top {
+        background-color: blue;
+    }
+
+    .leftside-bottom {
+        background-color: yellow;
+    }
+
+    .middle-bottom {
+        background-color: brown;
+    }
+
+    .rightside-bottom {
+        background-color: orange;
+    }
+/*#endregion Grundtruktur*/
+
+
+/*#region Einlesen/Laufzeit */
+/*#endregion EInlesen/Laufzeit */
+
+
+/*#region Ports */
+
+
+/*#endregion Ports */
+
+
+/*#region Stack */
+/*#endregion Stack */
+
+    
+/*#region Fileregister*/
+
+.ram {
+    overflow: scroll;
+    height: 100%;
+    width: 100%;
+}
+
+    .ram table {
+        border-collapse: collapse;
+    }
+
+        .ram table th,
+        table td {
+            max-width: 30rem;
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .ram table thead {
+            position: sticky;
+            inset-block-start: 0;
+            background-color: #ddd;
+            padding-top: 1rem;
+        }
+
+#adressRam {
+    background-color: #ddd;
+}
+
+/*#endregion Fileregister*/
+
+
+/*#region SFR+W */
+
+.Register{
+   margin-right: auto;
+   margin-left: auto;
+}
+/*#endregion SFR+W */
+
+
+/*#region programmcode*/
+.programmcode {
+    overflow: scroll;
+    height:100%;
+    width: 100%;
+}
+
+    .programmcode table {
+        border-collapse: collapse;
+    }
+
+        .programmcode table th,
+        table td {
+            max-width: 30rem;
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .programmcode table thead {
+            position: sticky;
+            inset-block-start: 0;
+            background-color: #ddd;
+            padding-top: 1rem;
+        }
+/*#endregion programmcode*/
+
+
+/*#region SFR / Register*/
+.RegisterBits {
+    border: 1px solid black;
+    margin-bottom: 0.5rem;
+    margin-right: auto;
+    margin-left: auto;
+    
+    width: 100%;
+    overflow: auto;
+}
+
+    .RegisterBits th {
+        border: 1px solid black;
+        background-color: blanchedalmond;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        text-align: center;
+    }
+
+    .RegisterBits td {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        border: 1px solid black;
+        text-align: center;
+    }
+/*#endregion SFR / Register*/
+
