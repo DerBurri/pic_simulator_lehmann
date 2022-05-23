@@ -33,33 +33,37 @@
 		<div class="programmcode">
 			<table class="programmcode" id="programmcode">
 				<thead>
-					<tr>
-						<th>ID</th>
-						<th>Breakpoints</th>
-						<th>Befehle</th>
-					</tr>
+				<tr>
+					<th>Zeile</th>
+					<th>Breakpoints</th>
+					<th>Programmzeile</th>
+					<th>Befehle</th>
+				</tr>
 				</thead>
 				<tbody>
-					@{
-						int lineCounter = 0;
-						foreach (var programmzeile in _geladenesProgramm._programm)
-						{
-							//Im Ausführungsblock wird eine andere Referenz benutzt deswegen muss eine neue lokale Variable erstellt werden.
-							int foo = lineCounter;
-							lineCounter++;
+				@{
+					int lineCounter = 0;
+					foreach (var programmzeile in _geladenesProgramm._programm)
+					{
+						//Im Ausführungsblock wird eine andere Referenz benutzt deswegen muss eine neue lokale Variable erstellt werden.
+						int foo = lineCounter;
+						lineCounter++;
 
-				 <tr class="codeLine">
-					 <td>@lineCounter</td>
-					 <td style="text-align: center">
-						 <input type="checkbox" class="btn"  @onchange="eventArgs => { BreakpointCheckBoxClicked(foo, eventArgs.Value); }">
-					 </td>
-					 <td>@programmzeile</td>
-				 </tr>
+						<tr class="codeLine">
+							<td>@lineCounter</td>
+							<td style="text-align: center">
+								<input type="checkbox" class="btn"  @onchange="eventArgs => { BreakpointCheckBoxClicked(foo, eventArgs.Value); }">
+							</td>
+							<td>@_geladenesProgramm._programmzeilen[lineCounter-1]</td>
+							<td>@programmzeile</td>
+						</tr>
+					}
 				}
-			}
-		</tbody>
-	</table>
-
+				</tbody>
+			</table>
+		</div>
+	</div>
+	
 
 	@*<button @onclick="ChangeColorRow">change</button>*@
 
@@ -81,6 +85,7 @@
 						PCL:
 					</td>
 					<td>
+						@Convert.ToString(_geladenesProgramm.GetPCL(),16);
 					</td>
 				</tr>
 				<tr>
@@ -140,11 +145,11 @@
 
 
 
-	<div id="box">
-		<h2>Flags</h2>
-		<h4>Status-Register</h4>
-		<table class="tg">
-			<thead>
+		<div id="box">
+			<h2>Flags</h2>
+			<h4>Status-Register</h4>
+			<table class="tg">
+				<thead>
 				<tr>
 					<th class="tg-0lax">C</th>
 					<th class="tg-0lax">DC</th>
@@ -155,63 +160,60 @@
 					<th class="tg-0lax">RB1</th>
 					<th class="tg-0lax">IRBS</th>
 				</tr>
-			</thead>
-			<tbody>
+				</thead>
+				<tbody>
 				<tr>
 					@foreach (bool statusflag in _geladenesProgramm.getStatusRegister())
 					{
 						<td class="tg-0lax">@Convert.ToInt32(statusflag)</td>
 					}
 				</tr>
-			</tbody>
-		</table>
-	</div>
-}
+				</tbody>
+			</table>
+		</div>
+		
+		<div id="box">
+        <table class="ram">
+        	<thead>
+        	<tr>
+        		<th id="adressRam">&nbsp</th>
+        		<th>0</th>
+        		<th>1</th>
+        		<th>2</th>
+        		<th>3</th>
+        		<th>4</th>
+        		<th>5</th>
+        		<th>6</th>
+        		<th>7</th>
+        	</tr>
+        	</thead>
+	        <tbody>
+	        @{
+		        int counter = 0;
+		        for (int row = 0; row < 32; row++)
+		        {
+			        <tr>
+				        <td id="adressRam">@Convert.ToString((row * 8), 16)</td>
+
+				        @for (int column = 0; column < 8; column++)
+				        {
+					        <td>@Convert.ToString(_geladenesProgramm.GetRAMValue(counter), 16)</td>
+					        counter++;
+				        }
+			        </tr>
+		        }
+	        }
+        	</tbody>
+        </table>
+        </div>
+		}
 else
 {
 	<h2>Noch kein Programm geladen</h2>
 }
 
 <button style="margin-bottom: 5px;" @onclick="@(()=>modal.Show<Ports>("Port Settings"))" class="btn btn-primary">Port Settings</button>
-
-<div id="box">
-<table class="ram">
-	<thead>
-	<tr>
-		<th id="adressRam">&nbsp</th>
-		<th>0</th>
-		<th>1</th>
-		<th>2</th>
-		<th>3</th>
-		<th>4</th>
-		<th>5</th>
-		<th>6</th>
-		<th>7</th>
-	</tr>
-	</thead>
-	<tbody>
-	@for (int row = 0; row < 32; row++)
-	{
-		<tr>
-			<td id="adressRam">@Convert.ToString((row*8),16)</td>
-
-			@for(int column = 0; column < 8; column++){
-				<td>@_geladenesProgramm.getRAMValue(row+column)</td>
-			}
-		</tr>
-	}
-	</tbody>
-</table>
-</div>
- }
- else
- {
-     <h2>Noch kein Programm geladen</h2>
- }
-<button style="margin-bottom: 5px;" @onclick="@(()=>modal.Show<Ports>("Port Settings"))"class="btn btn-primary">Port Settings</button>  
-
-
-
+		
 
 
 
@@ -271,12 +273,14 @@ else
 	        _geladenesProgramm._SelectedBreakpoints.Remove(lineCounter);
         }
     }
+
+	private void GetProgrammCounterForLine()
 	{
-		_geladenesProgramm.Step();
-		//TODO Implement Step
+		foreach (String line in _geladenesProgramm._programm)
+		{
+			
+		}
 	}
-
-
 	//public void ChangeColorRow(){
 	//	programmcode.Rows[0].BackColor = System.Drawing.Color.Pink;
 	//}
