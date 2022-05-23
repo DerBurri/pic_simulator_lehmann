@@ -100,9 +100,19 @@ public class Programm
         throw new NotImplementedException();
     }
 
-    public int GetSFR()
+    public int GetFSR()
     {
-        throw new NotImplementedException();
+        return _controller.GetFSR();
+    }
+    
+    public int GetPCLath()
+    {
+        return _controller.GetPCLath();
+    }
+
+    public int GetStatus()
+    {
+        return _controller.GetStatusRegister();
     }
 
     public int GetWRegister()

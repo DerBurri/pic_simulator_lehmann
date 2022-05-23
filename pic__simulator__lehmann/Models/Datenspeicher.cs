@@ -19,11 +19,13 @@ namespace pic__simulator__lehmann.Models
             }
             bool bank;
             //Bank 0
-            _speicher[0] = new Fsr(); //indf
+            //TODO Spiegelung und gute 
+            //indf
             _speicher[1] = new Tmr0(); ;
             _speicher[2] = new Pcl(); ;
             _speicher[3] = new StatusRegister();
             _speicher[4] = new Fsr();
+            _speicher[0] = _speicher[4];
             _speicher[5] = new PortA();
             _speicher[6] = new PortB();
             //_speicher[7] = ;
@@ -33,11 +35,11 @@ namespace pic__simulator__lehmann.Models
             _speicher[11] = new Intcon();
 
             //Bank 1
-            _speicher[128] = new Fsr();  //indf 
+            _speicher[128] = _speicher[4];//indf 
             _speicher[129] = new OptionReg();
             _speicher[130] = new Pcl();
             _speicher[131] = new StatusRegister();
-            _speicher[132] = new Fsr();
+            _speicher[132] = _speicher[4];
             _speicher[133] = new TrisA();
             _speicher[134] = new TrisB();
             //_speicher[19] = ;

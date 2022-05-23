@@ -36,6 +36,23 @@ namespace pic__simulator__lehmann.Models
             return _programmcounter;
         }
 
+        public int GetPCLath()
+        {
+            return _datenspeicher.At(10).Read();
+        }
+
+        public int GetStatusRegister()
+        {
+            return _datenspeicher.At(3).Read();
+        }
+
+        public int GetFSR()
+        {
+            return _datenspeicher.At(4).Read();
+        }
+        
+        
+
         public bool[] StatusRegister
         {
             get
