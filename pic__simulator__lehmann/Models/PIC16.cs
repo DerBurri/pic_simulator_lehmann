@@ -26,6 +26,33 @@ namespace pic__simulator__lehmann.Models
             get { return _w_register; }
         }
 
+        public int GetRAMValue(int addr)
+        {
+            return _datenspeicher.At(addr).Read();
+        }
+
+        public int GetPCL()
+        {
+            return _programmcounter;
+        }
+
+        public int GetPCLath()
+        {
+            return _datenspeicher.At(10).Read();
+        }
+
+        public int GetStatusRegister()
+        {
+            return _datenspeicher.At(3).Read();
+        }
+
+        public int GetFSR()
+        {
+            return _datenspeicher.At(4).Read();
+        }
+        
+        
+
         public bool[] StatusRegister
         {
             get
@@ -44,7 +71,7 @@ namespace pic__simulator__lehmann.Models
             {
                 _logger.LogWarning(opcode.ToString());
             }
-            _datenspeicher = new Datenspeicher(4096);
+            _datenspeicher = new Datenspeicher(256);
             _stack = new CircularBuffer<int>(7);
             _programmcounter = 0;
             KonfiguriereTimer(interval);
@@ -470,7 +497,6 @@ namespace pic__simulator__lehmann.Models
         private void _goto(int Befehl)
         {
             int payload = Befehl & 1023;
-            _programmcounter++;
             _programmcounter = _datenspeicher.At(4).Read();
             _programmcounter <<= 11;
             //Programmzähler wird wieder um eins erhöht dann steht die richtige Adresse drinnen.
@@ -702,8 +728,6 @@ namespace pic__simulator__lehmann.Models
         {
             int addr = Befehl & 127;
             int value = _datenspeicher.At(addr).Read();
-            
-            
         }
     }
 }

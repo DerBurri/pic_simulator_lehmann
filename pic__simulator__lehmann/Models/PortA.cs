@@ -19,16 +19,5 @@ public class PortA : Register
         RA2 = false;
         RA3 = false;
         RA4 = false;
-
-    }
-
-
-    public override int Read()
-    {
-        int bits = 0;
-
-        //bits = bits << Convert.ToInt32();
-
-        return bits;
     }
 }

@@ -1,4 +1,5 @@
 
+using System.Globalization;
 using pic__simulator__lehmann.Pages;
 using System.Text;
 
@@ -8,6 +9,7 @@ public class Programm
 {
     private PIC16 _controller;
     public  List<String> _programm;
+    public List<String> _programmzeilen;
     public readonly ILogger<Einlesen> _logger;
 
     public List<int> _SelectedBreakpoints { get; set; }  
@@ -31,7 +33,41 @@ public class Programm
             _logger.LogInformation(line);
             _programm.Add(line);
         }
+
+        foreach (String line2 in _programm)
+        {
+            _programmzeilen = new List<string>();
+            //Splitte Kommentar ab
+            String[] tokens = line2.Split(';', StringSplitOptions.RemoveEmptyEntries);
+            //splitte in einzelne Kommandoteile
+            var commandparts = tokens[0].Trim().Split(' ',StringSplitOptions.RemoveEmptyEntries);
+            //Gebe String Teile aus Commandparts aus #debug
+            foreach (var part in commandparts)
+            { 
+                Console.Write("|");
+               Console.Write(part); 
+            }
+            if (commandparts.Length > 4)
+            {
+                _logger.LogCritical("Voller Teil");
+                Console.WriteLine(commandparts[0]);
+                _programmzeilen.Add(commandparts[0]);
+            }
+            else
+            {
+                _logger.LogCritical("Leerer Teil");
+                Console.WriteLine(commandparts[0]);
+                _programmzeilen.Add(" ");
+            }
+        }
         fs.Close();
+
+        Console.WriteLine("Programmzeilen");
+
+        foreach (var zeile in _programmzeilen)
+        {
+            Console.WriteLine(zeile);
+        }
     }
 
     public void Start()
@@ -64,9 +100,19 @@ public class Programm
         throw new NotImplementedException();
     }
 
-    public int GetSFR()
+    public int GetFSR()
     {
-        throw new NotImplementedException();
+        return _controller.GetFSR();
+    }
+    
+    public int GetPCLath()
+    {
+        return _controller.GetPCLath();
+    }
+
+    public int GetStatus()
+    {
+        return _controller.GetStatusRegister();
     }
 
     public int GetWRegister()
@@ -77,5 +123,15 @@ public class Programm
     public bool[] getStatusRegister()
     {
         return _controller.StatusRegister;
+    }
+
+    public int GetRAMValue(int addr)
+    {
+        return _controller.GetRAMValue(addr);
+    }
+
+    public int GetPCL()
+    {
+        return _controller.GetPCL();
     }
 }
