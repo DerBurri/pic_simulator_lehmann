@@ -1,5 +1,3 @@
-
-using System.Globalization;
 using pic__simulator__lehmann.Pages;
 using System.Text;
 
@@ -45,7 +43,7 @@ public class Programm
             foreach (var part in commandparts)
             { 
                 Console.Write("|");
-               Console.Write(part); 
+                Console.Write(part); 
             }
             if (commandparts.Length > 4)
             {
@@ -123,6 +121,16 @@ public class Programm
     public bool[] getStatusRegister()
     {
         return _controller.StatusRegister;
+    }
+
+    public int GetPCIntern()
+    {
+        throw new NotImplementedException();
+    }
+    
+    public int[] GetStack()
+    {
+        return _controller.GetStack();
     }
 
     public int GetRAMValue(int addr)

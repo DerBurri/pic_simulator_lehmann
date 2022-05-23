@@ -50,7 +50,11 @@ namespace pic__simulator__lehmann.Models
         {
             return _datenspeicher.At(4).Read();
         }
-        
+
+        public int[] GetStack()
+        {
+            return _stack.ToArray();
+        }
         
 
         public bool[] StatusRegister

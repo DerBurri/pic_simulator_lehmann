@@ -5,6 +5,7 @@
 @using pic__simulator__lehmann.Models
 @using System.Xml.Linq
 @using System.ComponentModel.Design
+@using System.Runtime.InteropServices
 @inject ILogger<Einlesen> _logger;
 @inject IModalService modal;
 
@@ -61,21 +62,24 @@
 			<div class="middleRight-top">
 			
 				<h3>Stack</h3>
-
+			@if (_geladenesProgramm != null)
+			{
 				<table class="Stack">
 					<tbody>
-						@{int[]stack = _stack.toArray();}
-						@for (int i = 0; i <= 7; i++)
+					@{
+						int[] stack = _geladenesProgramm.GetStack();
+						for (int i = 0; i < stack.Length; i++)
 						{
-						<tr>
-							<td>
-								@stack[i];
-							</td>
-						</tr>
+							<tr>
+								<td>
+									@stack[i];
+								</td>
+							</tr>
 						}
+					}
 					</tbody>
 				</table>
-
+			}
 			</div>
 
 		</div>
@@ -90,32 +94,38 @@
 
 				<table class="ram">
 					<thead>
-						<tr>
-							<th id="adressRam">&nbsp</th>
-							<th>0</th>
-							<th>1</th>
-							<th>2</th>
-							<th>3</th>
-							<th>4</th>
-							<th>5</th>
-							<th>6</th>
-							<th>7</th>
-						</tr>
+					<tr>
+						<th id="adressRam">&nbsp</th>
+						<th>0</th>
+						<th>1</th>
+						<th>2</th>
+						<th>3</th>
+						<th>4</th>
+						<th>5</th>
+						<th>6</th>
+						<th>7</th>
+					</tr>
 					</thead>
-					<tbody>
-						@for (int row = 0; row < 32; row++)
-						{
-							<tr>
-								<td id="adressRam">@Convert.ToString((row*8),16)</td>
+					@if (_geladenesProgramm != null)
+					{
+						<tbody>
+						@{
+							int counter = 0;
+							for (int row = 0; row < 32; row++)
+							{
+								<tr>
+									<td id="adressRam">@Convert.ToString((row * 8), 16)</td>
 
-								@for (int column = 0; column < 8; column++)
-								{
-									ram[column, row] = 0;
-									<td>@ram[column, row ]</td>
-								}
-							</tr>
+									@for (int column = 0; column < 8; column++)
+									{
+										<td>@Convert.ToString(_geladenesProgramm.GetRAMValue(counter), 16)</td>
+										counter++;
+									}
+								</tr>
+							}
 						}
-					</tbody>
+						</tbody>
+					}
 				</table>
 
 				</div>
@@ -125,7 +135,6 @@
 		</div>
 
 	</div>
-
 
 
 
@@ -157,6 +166,7 @@
 									PCL:
 								</td>
 								<td>
+									@Convert.ToString(_geladenesProgramm.GetPCL(),16);
 								</td>
 							</tr>
 							<tr>
@@ -164,6 +174,7 @@
 									PCLATH:
 								</td>
 								<td>
+									@Convert.ToString(_geladenesProgramm.GetPCLath(),16);
 								</td>
 							</tr>
 							<tr>
@@ -171,6 +182,7 @@
 									PC intern:
 								</td>
 								<td>
+									@* @Convert.ToString(_geladenesProgramm.GetPCIntern(),16); *@
 								</td>
 							</tr>
 							<tr>
@@ -178,6 +190,7 @@
 									Status:
 								</td>
 								<td>
+									@Convert.ToString(_geladenesProgramm.GetStatus(),16)
 								</td>
 							</tr>
 							<tr>
@@ -185,6 +198,7 @@
 									FSR:
 								</td>
 								<td>
+									@Convert.ToString(_geladenesProgramm.GetFSR(),16)
 								</td>
 							</tr>
 							<tr>
@@ -325,9 +339,6 @@
 
 
 	private bool _running = false;
-	public bool[] portA = new bool[] { false, false, false, false, false, false, false, false };
-	public bool[] portB = new bool[] { false, false, false, false, false, false, false, false };
-	private int[,] ram = new int[8, 32];
 
 
 	async Task LoadProgram()
