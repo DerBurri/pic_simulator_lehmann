@@ -21,11 +21,12 @@ namespace pic__simulator__lehmann.Models
             //Bank 0
             //TODO Spiegelung und gute 
             //indf
+            _speicher[0] = new IND(_speicher[4], _speicher);
             _speicher[1] = new Tmr0(); ;
             _speicher[2] = new Pcl(); ;
             _speicher[3] = new StatusRegister();
             _speicher[4] = new Fsr();
-            _speicher[0] = _speicher[4];
+            
             _speicher[5] = new PortA();
             _speicher[6] = new PortB();
             //_speicher[7] = ;
