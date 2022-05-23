@@ -64,14 +64,15 @@
 
 				<table class="Stack">
 					<tbody>
-						<tr></tr>
-						<tr></tr>
-						<tr></tr>
-						<tr></tr>
-						<tr></tr>
-						<tr></tr>
-						<tr></tr>
-						<tr></tr>
+						@{int[]stack = _stack.toArray();}
+						@for (int i = 0; i <= 7; i++)
+						{
+						<tr>
+							<td>
+								@stack[i];
+							</td>
+						</tr>
+						}
 					</tbody>
 				</table>
 
@@ -136,77 +137,83 @@
 
 			<div class="leftside-bottom">
 
-				<h2>Register</h2>
-				<table class="Register">
-					<tbody>
-						<tr>
-							<td>
-								W-Register:
-							</td>
-							<td>
-								@*@Convert.ToString(_geladenesProgramm.GetWRegister(),16);*@
-							</td>
-						</tr>
-						<tr>
-							<td>
-								PCL:
-							</td>
-							<td>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								PCLATH:
-							</td>
-							<td>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								PC intern:
-							</td>
-							<td>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								Status:
-							</td>
-							<td>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								FSR:
-							</td>
-							<td>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								Option:
-							</td>
-							<td>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								Vorteiler:
-							</td>
-							<td>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								Timer0:
-							</td>
-							<td>
-							</td>
-						</tr>
+			<h2>Register</h2>
 
-					</tbody>
-				</table>
+				@if (_geladenesProgramm != null)
+				{
 
+					<table class="Register">
+						<tbody>
+							<tr>
+								<td>
+									W-Register:
+								</td>
+								<td>
+									@Convert.ToString(_geladenesProgramm.GetWRegister(),16);
+								</td>
+							</tr>
+							<tr>
+								<td>
+									PCL:
+								</td>
+								<td>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									PCLATH:
+								</td>
+								<td>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									PC intern:
+								</td>
+								<td>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									Status:
+								</td>
+								<td>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									FSR:
+								</td>
+								<td>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									Option:
+								</td>
+								<td>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									Vorteiler:
+								</td>
+								<td>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									Timer0:
+								</td>
+								<td>
+								</td>
+							</tr>
+
+						</tbody>
+					</table>
+
+				}
+				
 			</div>
 
 		</div>
@@ -244,6 +251,12 @@
 										<td>@programmzeile</td>
 									</tr>
 								}
+							}
+							else
+							{
+								<tr>
+									<td>kein Programm geladen</td>
+								</tr>
 							}
 						</tbody>
 					</table>
