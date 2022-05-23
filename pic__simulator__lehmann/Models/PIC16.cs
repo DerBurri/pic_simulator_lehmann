@@ -179,12 +179,13 @@ namespace pic__simulator__lehmann.Models
 
             else if (Befehl is < 8192 and > 4095) // 0x01
             {
-               if (false)
-               {}
-               else
-               {
-                   throw new NotImplementedException("Befehle noch nicht implementiert");
-               }
+                if (befehlteil1 is < 4 and >= 0) return Befehlsliste.Befehle.BCF;
+                if (befehlteil1 is < 8 and > 3) return Befehlsliste.Befehle.BSF;
+                if (befehlteil1 is < 12 and > 7) return Befehlsliste.Befehle.BTFSC;
+                if (befehlteil1 is < 16 and > 11) return Befehlsliste.Befehle.BTFSS;
+
+                throw new FormatException("Befehl nicht erkannt");
+
             }
             else if (Befehl is < 12288 and > 8191) //0x10
             {
@@ -299,12 +300,16 @@ namespace pic__simulator__lehmann.Models
                         xorwf(value);
                     break;
                     case Befehlsliste.Befehle.BCF   :
+                        bcf(value);
                     break;
                     case Befehlsliste.Befehle.BSF   :
+                        bsf(value);
                     break;
                     case Befehlsliste.Befehle.BTFSC :
+                        btfsc(value);
                     break;
                     case Befehlsliste.Befehle.BTFSS :
+                        btfss(value);
                     break;
                     case Befehlsliste.Befehle.ADDLW :
                         addlw(value);
@@ -574,7 +579,7 @@ namespace pic__simulator__lehmann.Models
             }
             
             bool destinationbit = Convert.ToBoolean(Befehl & 128);
-            _w_register &= 255;
+            value &= 255;
             if (destinationbit)
             {
                _datenspeicher.At(addr).Write(value);
@@ -656,11 +661,41 @@ namespace pic__simulator__lehmann.Models
         {
             int value = incf(Befehl);
             if (value == 0) _programmcounter++;
-
-
         }
 
+        public void bsf(int Befehl)
+        {
+            int addr = Befehl & 127;
+            int bitnumber = Befehl & 896;
+            bitnumber >>= 7;
+            _datenspeicher.At(addr).WriteBit(bitnumber, true);
+        }
 
+        public void bcf(int Befehl)
+        {
+            int addr = Befehl & 127;
+            int bitnumber = Befehl & 896;
+            bitnumber >>= 7;
+            _datenspeicher.At(addr).WriteBit(bitnumber,false);
+        }
+
+        public void btfsc(int Befehl)
+        {
+            int addr = Befehl & 127;
+            int bitnumber = Befehl & 896;
+            bitnumber >>= 7;
+            if (!Convert.ToBoolean(_datenspeicher.At(addr).ReadBit(bitnumber))) _programmcounter++;
+        }
+
+        public void btfss(int Befehl)
+        {
+            int addr = Befehl & 127;
+            int bitnumber = Befehl & 896;
+            bitnumber >>= 7;
+            if (Convert.ToBoolean(_datenspeicher.At(addr).ReadBit(bitnumber))) _programmcounter++;
+
+        }
+        
         private void movf(int Befehl)
         {
             int addr = Befehl & 127;
@@ -798,10 +833,6 @@ namespace pic__simulator__lehmann.Models
             bool destinationbit = Convert.ToBoolean(Befehl & 128);
             if (destinationbit) _datenspeicher.At(addr).Write(value);
             else _w_register = value;
-
-
-
-
         }
     }
 }
