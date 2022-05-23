@@ -1,8 +1,9 @@
-﻿@page "/"
+﻿@page "/index"
+@using System.Drawing
 @using pic__simulator__lehmann.Models
 @using System.Xml.Linq
 @using System.ComponentModel.Design
-@inject ILogger<Programm> _logger;
+@inject ILogger<Einlesen> _logger;
 @inject IModalService modal;
 
 <link href="Index.razor.css" rel="stylesheet">
@@ -62,8 +63,6 @@
 		</div>
 	</div>
 
-
-	@*<button @onclick="ChangeColorRow">change</button>*@
 
 
 	<div id="box">
@@ -268,9 +267,5 @@ else
 		}
 	}
 
-
-	//public void ChangeColorRow(){
-	//	programmcode.Rows[0].BackColor = System.Drawing.Color.Pink;
-	//}
 
 }
