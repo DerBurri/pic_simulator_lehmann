@@ -138,6 +138,11 @@ public class Programm
         return _controller.GetRAMValue(addr);
     }
 
+    public void SetRAMValue(int addr, int value)
+    {
+        _controller.SetRAMValue(addr, value);
+    }
+
     public int GetPCL()
     {
         return _controller.GetPCL();

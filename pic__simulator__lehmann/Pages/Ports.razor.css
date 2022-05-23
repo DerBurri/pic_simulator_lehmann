@@ -1,17 +1,9 @@
 ﻿body {
 }
 
-/*.ports {
+button{
+    margin: 0.5rem;
 }
-
-    .ports table {
-        border: 1px solid black;
-    }
-
-    .ports tr {
-        padding: 0.5rem;
-        border: 1px solid black;
-    }*/
 
 .ports{
     padding-top: 1rem;
