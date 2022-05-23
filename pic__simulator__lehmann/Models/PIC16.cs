@@ -500,11 +500,13 @@ namespace pic__simulator__lehmann.Models
         
         private void _goto(int Befehl)
         {
-            int payload = Befehl & 1023;
-            _programmcounter = _datenspeicher.At(4).Read();
+            int payload = Befehl & 2047;
+            int temp = _programmcounter & 2047;
+            _programmcounter = _datenspeicher.At(10).Read();
             _programmcounter <<= 11;
+            _programmcounter += temp;
             //Programmzähler wird wieder um eins erhöht dann steht die richtige Adresse drinnen.
-            _programmcounter += payload - 1;
+            _programmcounter += payload - 2;
             _logger.LogCritical("Programm Counter {0}", payload);
         }
 
