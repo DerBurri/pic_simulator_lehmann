@@ -30,6 +30,11 @@ namespace pic__simulator__lehmann.Models
             return _datenspeicher.At(addr).Read();
         }
 
+        public int GetPCL()
+        {
+            return _programmcounter;
+        }
+
         public bool[] StatusRegister
         {
             get
@@ -474,7 +479,6 @@ namespace pic__simulator__lehmann.Models
         private void _goto(int Befehl)
         {
             int payload = Befehl & 1023;
-            _programmcounter++;
             _programmcounter = _datenspeicher.At(4).Read();
             _programmcounter <<= 11;
             //Programmzähler wird wieder um eins erhöht dann steht die richtige Adresse drinnen.
