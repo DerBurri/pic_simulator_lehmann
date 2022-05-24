@@ -16,8 +16,12 @@ namespace pic__simulator__lehmann.Models
 
         private Programmspeicher _programmspeicher;
         private Datenspeicher _datenspeicher;
-        private int _w_register;
+        private int _wregister;
         private System.Timers.Timer _taktgeber;
+
+        private int Scaler;
+        private int _TR0Counter;
+        
 
         private int _programmcounter;
         private int _cyclecounter;
@@ -25,7 +29,7 @@ namespace pic__simulator__lehmann.Models
         
         public int W_register
         {
-            get { return _w_register; }
+            get { return _wregister; }
         }
 
         public int GetRAMValue(int addr)
@@ -102,6 +106,9 @@ namespace pic__simulator__lehmann.Models
             try
             {
                 //TODO checkInterrupt();
+                checkInterrupt();
+                //Steps Timer0 if configured
+                TimerStep();
                 //Fetch
                 int befehl = _programmspeicher.Read(_programmcounter);
                 Console.Write(befehl);
@@ -120,6 +127,47 @@ namespace pic__simulator__lehmann.Models
                 _programmcounter++;
             }
         }
+
+        private void TimerStep()
+        {
+            //TODO 
+            //Check if Prescaler is attached to TMR0
+            if (!_datenspeicher.At(129).ReadBit(3))
+            {
+                Scaler--;
+                if (Scaler == 0)
+                {
+                    ResetScaler();
+                    IncreaseTimer();
+                }
+                //check T0SE to check Clock Source
+                else
+                {
+                    IncreaseTimer();
+                }
+            }
+            else
+            {
+                IncreaseTimer();
+            }
+        }
+
+        private void IncreaseTimer()
+        {
+            int value = _datenspeicher.At(3).Read();
+            value++;
+            if (value > 255)
+            {
+                value &= 255;
+                _datenspeicher.At(0x0b).WriteBit(2,true);
+            }
+            _datenspeicher.At(3).Write(value);
+        }
+
+        private void ResetScaler()
+        {
+            Scaler = Convert.ToInt32(Math.Pow(2,_datenspeicher.At(129).Read()));
+        }
         private Befehlsliste.Befehle Decode(int Befehl)
         {
             int befehlteil1 = (Befehl & (int) Befehlsmaske.MASKE2) / 256;
@@ -135,6 +183,11 @@ namespace pic__simulator__lehmann.Models
                 if (Befehl == 8)
                 {
                     return Befehlsliste.Befehle.RETURN;
+                }
+
+                if (Befehl == 9)
+                {
+                    return Befehlsliste.Befehle.RETFIE;
                 }
                 switch (befehlteil1)
                 {
@@ -335,6 +388,9 @@ namespace pic__simulator__lehmann.Models
                     case Befehlsliste.Befehle.RETURN:
                         _return();
                         break;
+                    case Befehlsliste.Befehle.RETFIE:
+                        retfie();
+                        break;
                     case Befehlsliste.Befehle.SUBLW :
                         sublw(value);
                     break;
@@ -344,7 +400,7 @@ namespace pic__simulator__lehmann.Models
                     case Befehlsliste.Befehle.ERROR :
                     break;
             }
-            _logger.LogWarning("Inhalt W Register: {0}",_w_register);
+            _logger.LogWarning("Inhalt W Register: {0}",_wregister);
         }
         
     public void Stop()
@@ -369,6 +425,50 @@ namespace pic__simulator__lehmann.Models
             _taktgeber.Interval = interval* 1000;
         }
 
+        public void checkInterrupt()
+        {
+            //Check if already in Interrupt or Interrupts ar masked if yes cancel interrupt checks
+            if (_datenspeicher.At(11).ReadBit(7))
+            {
+                return;
+            }
+            //Check wich Interrupts are enabled and Check if Interrupt Flags are raised
+                //If Enabled and flag set call Interrupt Service Routine at Adress 4;
+                var intcon = new BitArray(new int[] {_datenspeicher.At(11).Read()});
+
+                if (intcon[3] && intcon[0])
+                {
+                    enterInterrupt();
+                }
+                //INTF Interrupt Bit wird automatisch zurückgesetzt laut Datenblatt
+                else if (intcon[4] && intcon[1])
+                {
+                    _datenspeicher.At(11).WriteBit(1,false);
+                    enterInterrupt();
+
+                }
+                else if (intcon[5] && intcon[2])
+                {
+                    
+                }
+                else
+                {
+                    return;
+                }
+
+        }
+
+        private void enterInterrupt()
+        {
+            _datenspeicher.At(11).WriteBit(7, true);
+            call(4);
+        }
+
+        public void retfie()
+        {
+            _datenspeicher.At(11).WriteBit(7, false);
+            _return();
+        }
         public bool checkZero(int value)
         {
             if (value == 0)
@@ -421,24 +521,24 @@ namespace pic__simulator__lehmann.Models
 
         private void movlw(int befehl)
         {
-            _w_register = (byte) befehl;
+            _wregister = (byte) befehl;
         }
 
         private void andlw(int befehl)
         {
-            _w_register = _w_register & (befehl & 255);
-            checkZero(_w_register);
+            _wregister = _wregister & (befehl & 255);
+            checkZero(_wregister);
         }
 
         private void andwf(int befehl)
         {
             int addr = befehl & 127;
-            int value = _w_register & _datenspeicher.At(addr).Read();
+            int value = _wregister & _datenspeicher.At(addr).Read();
             checkZero(value);
             bool destinationbit = Convert.ToBoolean(value & 128);
 
             if (destinationbit) _datenspeicher.At(addr).Write(value);
-            else _w_register = value;
+            else _wregister = value;
 
 
 
@@ -447,20 +547,20 @@ namespace pic__simulator__lehmann.Models
 
         private void iorlw(int befehl)
         {
-            _w_register = _w_register | (befehl & 255);
-            checkZero(_w_register);
+            _wregister = _wregister | (befehl & 255);
+            checkZero(_wregister);
         }
 
         private void sublw(int befehl)
         {
             int payload = (befehl & 255);
-            _w_register = ~_w_register;
-            _w_register += 1;
-            _w_register += payload;
+            _wregister = ~_wregister;
+            _wregister += 1;
+            _wregister += payload;
            
             
             //Fehler im PIC, Carry wird falsch gesetzt. Carryflag müsste invertiert werden. Wenn Ergebnis von Subtraktion < 0 dann muss Carry gelöscht werden. Wenn Ergebnis > 0 muss Carry gesetzt werden
-            if (checkCarry(_w_register))
+            if (checkCarry(_wregister))
             {
                  _datenspeicher.At(3).WriteBit(0,false);
             }
@@ -470,9 +570,9 @@ namespace pic__simulator__lehmann.Models
                 _logger.LogWarning("Carry Set");
             }
             // Setze übrige Bits aus Integer auf 0;
-            _w_register &= 255;
+            _wregister &= 255;
 
-            if (checkDC(_w_register,payload))
+            if (checkDC(_wregister,payload))
             {
                 _datenspeicher.At(3).WriteBit(1,false);
             }
@@ -490,15 +590,15 @@ namespace pic__simulator__lehmann.Models
         private void xorlw(int befehl)
         {
             int payload = befehl & 255;
-            _w_register = payload ^ _w_register;
-            checkZero(_w_register);
+            _wregister = payload ^ _wregister;
+            checkZero(_wregister);
         }
 
         private void addlw(int befehl)
         {
             int payload = befehl & 255;
-            _w_register += payload;
-            if (checkCarry(_w_register))
+            _wregister += payload;
+            if (checkCarry(_wregister))
             {
                 _datenspeicher.At(3).WriteBit(0,true);
             }
@@ -515,8 +615,8 @@ namespace pic__simulator__lehmann.Models
             {
                 _datenspeicher.At(3).WriteBit(1,false);
             }
-            checkZero(_w_register);
-            _w_register &= 255;
+            checkZero(_wregister);
+            _wregister &= 255;
         }
         
         private void _goto(int Befehl)
@@ -545,20 +645,20 @@ namespace pic__simulator__lehmann.Models
 
         private void retlw(int Befehl)
         {
-            _w_register = Befehl & 255;
+            _wregister = Befehl & 255;
             _return();
         }
 
         private void movwf(int Befehl)
         {
             int addr = Befehl & 127;
-            _datenspeicher.At(addr).Write(_w_register);
+            _datenspeicher.At(addr).Write(_wregister);
         }
         
         private void addwf(int Befehl)
         {
             int addr = Befehl & 127;
-            int value = _w_register + _datenspeicher.At(addr).Read();
+            int value = _wregister + _datenspeicher.At(addr).Read();
             
             if (checkCarry(value))
             {
@@ -569,7 +669,7 @@ namespace pic__simulator__lehmann.Models
                 _datenspeicher.At(3).WriteBit(0,false);
             }
 
-            if (checkDC(value, _w_register))
+            if (checkDC(value, _wregister))
             {
                 _datenspeicher.At(3).WriteBit(1,true);
             }
@@ -586,7 +686,7 @@ namespace pic__simulator__lehmann.Models
             }
             else
             { 
-                _w_register = value;
+                _wregister = value;
             } 
         }
 
@@ -609,7 +709,7 @@ namespace pic__simulator__lehmann.Models
             {
                 _datenspeicher.At(addr).Write(value);
             }
-            else _w_register = value;
+            else _wregister = value;
             checkZero(value);
         }
 
@@ -626,7 +726,7 @@ namespace pic__simulator__lehmann.Models
             }
             else
             {
-                _w_register = value;
+                _wregister = value;
             }
 
             return value;
@@ -651,7 +751,7 @@ namespace pic__simulator__lehmann.Models
             }
             else
             {
-                _w_register = value;
+                _wregister = value;
             }
 
             return value;
@@ -668,6 +768,7 @@ namespace pic__simulator__lehmann.Models
             int addr = Befehl & 127;
             int bitnumber = Befehl & 896;
             bitnumber >>= 7;
+            Console.WriteLine("Write Bitnumber {0} at addr {1}",bitnumber,addr);
             _datenspeicher.At(addr).WriteBit(bitnumber, true);
         }
 
@@ -706,20 +807,20 @@ namespace pic__simulator__lehmann.Models
             {
                 _datenspeicher.At(addr).Write(value);
             }
-            else _w_register = value;
+            else _wregister = value;
         }
 
         private void iorwf(int Befehl)
         {
             int addr = Befehl & 127;
-            int value = _datenspeicher.At(addr).Read() | _w_register;
+            int value = _datenspeicher.At(addr).Read() | _wregister;
             checkZeroNeg(value);
             bool destinationbit = Convert.ToBoolean(Befehl & 128);
             if (destinationbit)
             {
                 _datenspeicher.At(addr).Write(value);
             }
-            else _w_register = value;
+            else _wregister = value;
         }
 
         private void subwf(int Befehl)
@@ -729,7 +830,7 @@ namespace pic__simulator__lehmann.Models
             //Value - W Register
             int value = _datenspeicher.At(addr).Read();
 
-            int subtrahend = ~_w_register;
+            int subtrahend = ~_wregister;
             subtrahend += 1;
             value += subtrahend;
             
@@ -759,7 +860,7 @@ namespace pic__simulator__lehmann.Models
 
             bool destinationbit = Convert.ToBoolean(Befehl & 128);
             if (destinationbit) _datenspeicher.At(addr).Write(value);
-            else _w_register = value;
+            else _wregister = value;
 
         }
 
@@ -776,24 +877,24 @@ namespace pic__simulator__lehmann.Models
 
             bool destinationbit = Convert.ToBoolean(Befehl & 128);
             if (destinationbit) _datenspeicher.At(addr).Write(value);
-            else _w_register = value;
+            else _wregister = value;
         }
 
         private void xorwf(int Befehl)
         {
             int addr = Befehl & 127;
             
-            int value = _datenspeicher.At(addr).Read() ^ _w_register;
+            int value = _datenspeicher.At(addr).Read() ^ _wregister;
             checkZero(value);
             bool destinationbit = Convert.ToBoolean(Befehl & 128);
             if (destinationbit) _datenspeicher.At(addr).Write(value);
-            else _w_register = value;
+            else _wregister = value;
         }
 
         private void clrw()
         {
-            _w_register = 0;
-            checkZero(_w_register);
+            _wregister = 0;
+            checkZero(_wregister);
         }
 
         private void rlf(int Befehl)
@@ -810,7 +911,7 @@ namespace pic__simulator__lehmann.Models
 
             bool destinationbit = Convert.ToBoolean(Befehl & 128);
             if (destinationbit) _datenspeicher.At(addr).Write(value);
-            else _w_register = value;
+            else _wregister = value;
 
         }
 
@@ -832,7 +933,7 @@ namespace pic__simulator__lehmann.Models
 
             bool destinationbit = Convert.ToBoolean(Befehl & 128);
             if (destinationbit) _datenspeicher.At(addr).Write(value);
-            else _w_register = value;
+            else _wregister = value;
         }
     }
 }

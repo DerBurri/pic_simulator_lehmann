@@ -8,16 +8,9 @@ namespace pic__simulator__lehmann.Models
         // Bank1 = 128 - 255
         public readonly Register[] _speicher;
         private readonly int _size;
-
-        private bool bankselect
-        {
-            get
-            {
-                return _speicher[3].ReadBit(5);
-            }
-            
-        }
         
+
+
         public Datenspeicher(int size)
         {
             _size = size;
@@ -36,6 +29,7 @@ namespace pic__simulator__lehmann.Models
             _speicher[3] = new StatusRegister();
             _speicher[4] = new Fsr();
             
+            //Notwendig da IND auf andere Register für die indirekte Adressierung zugreift.
             _speicher[0] = new IND(_speicher[4], this);
             _speicher[5] = new PortA();
             _speicher[6] = new PortB();
@@ -44,6 +38,8 @@ namespace pic__simulator__lehmann.Models
             _speicher[9] = new Eeadr();
             _speicher[10] = new Pclath();
             _speicher[11] = new Intcon();
+            
+            
 
             //Bank 1
             _speicher[128] = _speicher[4];//indf 
@@ -66,9 +62,15 @@ namespace pic__simulator__lehmann.Models
             {
                 throw new OverflowException("Datenspeicher Ende erreicht");
             }
-
-            if (bankselect) return _speicher[index + 128];
-            else return _speicher[index];
+            
+            if (_speicher[3].ReadBit(5))
+            {
+                return _speicher[index + 128];
+            }
+            else
+            {
+                return _speicher[index];
+            }
         }
         public void Write(int addr, int value)
         {
