@@ -8,6 +8,15 @@ namespace pic__simulator__lehmann.Models
         // Bank1 = 128 - 255
         public readonly Register[] _speicher;
         private readonly int _size;
+
+        private bool bankselect
+        {
+            get
+            {
+                return _speicher[3].ReadBit(5);
+            }
+            
+        }
         
         public Datenspeicher(int size)
         {
@@ -17,7 +26,7 @@ namespace pic__simulator__lehmann.Models
             {
                 _speicher[i] = new Register();
             }
-            bool bank;
+            
             //Bank 0
             //TODO Spiegelung und gute 
             //indf
@@ -26,6 +35,7 @@ namespace pic__simulator__lehmann.Models
             _speicher[2] = new Pcl(); ;
             _speicher[3] = new StatusRegister();
             _speicher[4] = new Fsr();
+            
             _speicher[0] = new IND(_speicher[4], this);
             _speicher[5] = new PortA();
             _speicher[6] = new PortB();
@@ -38,26 +48,27 @@ namespace pic__simulator__lehmann.Models
             //Bank 1
             _speicher[128] = _speicher[4];//indf 
             _speicher[129] = new OptionReg();
-            _speicher[130] = new Pcl();
-            _speicher[131] = new StatusRegister();
+            _speicher[130] = _speicher[2];
+            _speicher[131] = _speicher[3];
             _speicher[132] = _speicher[4];
             _speicher[133] = new TrisA();
             _speicher[134] = new TrisB();
             //_speicher[19] = ;
             _speicher[136] = new Eecon1();
             _speicher[137] = new Eecon2();
-            _speicher[138] = new Pclath();
-            _speicher[139] = new Intcon();
+            _speicher[138] = _speicher[10];
+            _speicher[139] = _speicher[11];
         } 
 
         public Register At(int index)
         {
             if (index > _size)
             {
-                throw new OverflowException("Programmspeicher Ende erreicht");
+                throw new OverflowException("Datenspeicher Ende erreicht");
             }
-            
-            return _speicher[index];
+
+            if (bankselect) return _speicher[index + 128];
+            else return _speicher[index];
         }
         public void Write(int addr, int value)
         {
