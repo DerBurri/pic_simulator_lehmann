@@ -5,129 +5,223 @@
 	<h3>Ports</h3>
 
 	<div class="ports">
-			<table id="portA">
-				<thead>
-					<tr>
-						<th>Port A</th>
-						<th></th>
+		<div class="row">
+			<div class="col">
 
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>RA0</td>
-						<td><input type="checkbox" @bind="@portA[0]" /></td>
-					</tr>
-					<tr>
-						<td>RA1</td>
-						<td><input type="checkbox" @bind="@portA[1]" /></td>
-					</tr>
-					<tr>
-						<td>RA2</td>
-						<td><input type="checkbox" @bind="@portA[2]" /></td>
-					</tr>
-					<tr>
-						<td>RA3</td>
-						<td><input type="checkbox" @bind="@portA[3]" /></td>
-					</tr>
-					<tr>
-						<td>RA4</td>
-						<td><input type="checkbox" @bind="@portA[4]" /></td>
-					</tr>
-				</tbody>
-			</table>
+		@*PortA = 05h*@
+		<table id="portA">
+			<thead>
+				<tr>
+					<th>Port A</th>
+					<th></th>
 
-
-			<table id="trisA">
-				<thead>
-					<tr>
-						<th>Tris A</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>RB0</td>
-						<td><input type="checkbox" @bind="@portB[0]" /></td>
-					</tr>
-					<tr>
-						<td>RB1</td>
-						<td><input type="checkbox" @bind="@portB[1]" /></td>
-					</tr>
-					<tr>
-						<td>RB2</td>
-						<td><input type="checkbox" @bind="@portB[2]" /></td>
-					</tr>
-					<tr>
-						<td>RB3</td>
-						<td><input type="checkbox" @bind="@portB[3]" /></td>
-					</tr>
-					<tr>
-						<td>RB4</td>
-						<td><input type="checkbox" @bind="@portB[4]" /></td>
-					</tr>
-					<tr>
-						<td>RB5</td>
-						<td><input type="checkbox" @bind="@portB[5]" /></td>
-					</tr>
-					<tr>
-						<td>RB6</td>
-						<td><input type="checkbox" @bind="@portB[6]" /></td>
-					</tr>
-					<tr>
-						<td>RB7</td>
-						<td><input type="checkbox" @bind="@portB[7]" /></td>
-					</tr>
-				</tbody>
-	</table>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>RA0</td>
+					<td><input type="checkbox" value="@getPortBit(0, addressPortA)" @onchange="eventArgs => { changeRamPorts(0, addressPortA, eventArgs.Value);}"/></td>
+				</tr>
+				<tr>
+					<td>RA1</td>
+					<td><input type="checkbox" value="@getPortBit(1, addressPortA)" @onchange="eventArgs => { changeRamPorts(1, addressPortA, eventArgs.Value);}"/></td>
+				</tr>
+				<tr>
+					<td>RA2</td>
+					<td><input type="checkbox" value="@getPortBit(2, addressPortA)" @onchange="eventArgs => { changeRamPorts(2, addressPortA, eventArgs.Value);}"/></td>
+				</tr>
+				<tr>
+					<td>RA3</td>
+					<td><input type="checkbox" value="@getPortBit(3, addressPortA)" @onchange="eventArgs => { changeRamPorts(3, addressPortA, eventArgs.Value);}"/></td>
+				</tr>
+				<tr>
+					<td>RA4</td>
+					<td><input type="checkbox" value="@getPortBit(4, addressPortA)" @onchange="eventArgs => { changeRamPorts(4, addressPortA, eventArgs.Value);}"/></td>
+				</tr>
+			</tbody>
+		</table>
 
 
-			<table id="portB">
-				<thead>
-					<tr>
-						<th>Port B</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>RB0</td>
-						<td><input type="checkbox" @bind="@portB[0]" /></td>
-					</tr>
-					<tr>
-						<td>RB1</td>
-						<td><input type="checkbox" @bind="@portB[1]" /></td>
-					</tr>
-					<tr>
-						<td>RB2</td>
-						<td><input type="checkbox" @bind="@portB[2]" /></td>
-					</tr>
-					<tr>
-						<td>RB3</td>
-						<td><input type="checkbox" @bind="@portB[3]" /></td>
-					</tr>
-					<tr>
-						<td>RB4</td>
-						<td><input type="checkbox" @bind="@portB[4]" /></td>
-					</tr>
-					<tr>
-						<td>RB5</td>
-						<td><input type="checkbox" @bind="@portB[5]" /></td>
-					</tr>
-					<tr>
-						<td>RB6</td>
-						<td><input type="checkbox" @bind="@portB[6]" /></td>
-					</tr>
-					<tr>
-						<td>RB7</td>
-						<td><input type="checkbox" @bind="@portB[7]" /></td>
-					</tr>
-				</tbody>
-	</table>
+		</div>
+		<div class="col">
+
+
+		@*TrisA = 85h*@
+		<table id="trisA">
+			<thead>
+				<tr>
+					<th>Tris A</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>0</td>
+					<td><input type="checkbox" readonly value="@getPortBit(0, addressTrisA)" /></td>
+				</tr>
+				<tr>
+					<td>1</td>
+					<td><input type="checkbox" readonly value="@getPortBit(1, addressTrisA)" /></td>
+				</tr>
+				<tr>
+					<td>2</td>
+					<td><input type="checkbox" readonly value="@getPortBit(2, addressTrisA)" /></td>
+				</tr>
+				<tr>
+					<td>3</td>
+					<td><input type="checkbox" readonly value="@getPortBit(3, addressTrisA)" /></td>
+				</tr>
+				<tr>
+					<td>4</td>
+					<td><input type="checkbox" readonly value="@getPortBit(4, 133)" /></td>
+				</tr>
+			</tbody>
+		</table>
+
+		</div>
+		</div>
+
+		<div class="row">
+			<div class="col">
+
+		
+		@*PortB = 06h*@
+		<table id="portB">
+			<thead>
+				<tr>
+					<th>Port B</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>RB0</td>
+					<td><input type="checkbox" value="@getPortBit(0, addressPortB)" @onchange="eventArgs => { changeRamPorts(0, addressPortB, eventArgs.Value);}"/></td>
+				</tr>
+				<tr>
+					<td>RB1</td>
+					<td><input type="checkbox" value="@getPortBit(1, addressPortB)" @onchange="eventArgs => { changeRamPorts(0, addressPortB, eventArgs.Value);}" /></td>
+				</tr>
+				<tr>
+					<td>RB2</td>
+					<td><input type="checkbox" value="@getPortBit(2, addressPortB)" @onchange="eventArgs => { changeRamPorts(1, addressPortB, eventArgs.Value);}" /></td>
+				</tr>
+				<tr>
+					<td>RB3</td>
+					<td><input type="checkbox" value="@getPortBit(3, addressPortB)" @onchange="eventArgs => { changeRamPorts(2, addressPortB, eventArgs.Value);}" /></td>
+				</tr>
+				<tr>
+					<td>RB4</td>
+					<td><input type="checkbox" value="@getPortBit(4, addressPortB)" @onchange="eventArgs => { changeRamPorts(3, addressPortB, eventArgs.Value);}" /></td>
+				</tr>
+				<tr>
+					<td>RB5</td>
+					<td><input type="checkbox" value="@getPortBit(5, addressPortB)" @onchange="eventArgs => { changeRamPorts(4, addressPortB, eventArgs.Value);}" /></td>
+				</tr>
+				<tr>
+					<td>RB6</td>
+					<td><input type="checkbox" value="@getPortBit(6, addressPortB)" @onchange="eventArgs => { changeRamPorts(5, addressPortB, eventArgs.Value);}" /></td>
+				</tr>
+				<tr>
+					<td>RB7</td>
+					<td><input type="checkbox" value="@getPortBit(7, addressPortB)" @onchange="eventArgs => { changeRamPorts(6, addressPortB, eventArgs.Value);}" /></td>
+				</tr>
+			</tbody>
+		</table>
+
+
+		</div>
+		<div class="col">
+
+
+		@*PortB = 86h*@
+		<table id="trisB">
+			<thead>
+				<tr>
+					<th>Tris B</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>0</td>
+					<td><input type="checkbox" readonly value="@getPortBit(0, addressTrisB)" /></td>
+				</tr>
+				<tr>
+					<td>1</td>
+					<td><input type="checkbox" readonly value="@getPortBit(1, addressTrisB)" /></td>
+				</tr>
+				<tr>
+					<td>2</td>
+					<td><input type="checkbox" readonly value="@getPortBit(2, addressTrisB)" /></td>
+				</tr>
+				<tr>
+					<td>3</td>
+					<td><input type="checkbox" readonly value="@getPortBit(3, addressTrisB)" /></td>
+				</tr>
+				<tr>
+					<td>4</td>
+					<td><input type="checkbox" readonly value="@getPortBit(4, addressTrisB)" /></td>
+				</tr>
+				<tr>
+					<td>5</td>
+					<td><input type="checkbox" readonly value="@getPortBit(5, addressTrisB)" /></td>
+				</tr>
+				<tr>
+					<td>6</td>
+					<td><input type="checkbox" readonly value="@getPortBit(6, addressTrisB)" /></td>
+				</tr>
+				<tr>
+					<td>7</td>
+					<td><input type="checkbox" readonly value="@getPortBit(7, addressTrisB)" /></td>
+				</tr>
+			</tbody>
+		</table>
+
+			</div>
+		</div>
 
 	</div>
 </div>
 
 @code {
-    
+
+	private int addressPortA = 5;
+	private int addressPortB = 6;
+	private int addressTrisA = 133;
+	private int addressTrisB = 134;
+
+		private bool getPortBit(int bit, int address ){
+			if(_geladenesProgramm != null)
+			{
+				BitArray _inhaltPort = new BitArray(new int[] {_geladenesProgramm.GetRAMValue(address)});
+
+				return _inhaltPort[bit];
+			}
+			return false;
+		}
+
+
+
+		private void changeRamPorts(int bit, int address, object value)
+		{
+			if(_geladenesProgramm != null){
+
+			BitArray _inhalt = new BitArray(new int[] {_geladenesProgramm.GetRAMValue(address)});
+
+			_inhalt[bit] = (bool)value;
+
+			int portByte = 0;
+
+			for (int i = 0; i < _inhalt.Count; i++)
+			{
+            if (_inhalt[i])
+                portByte += Convert.ToInt32(Math.Pow(2, i));
+			}
+
+			_geladenesProgramm.SetRAMValue(address, portByte);
+			}
+
+		}
 }
+
