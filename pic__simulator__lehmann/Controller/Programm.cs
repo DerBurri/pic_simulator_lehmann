@@ -127,9 +127,9 @@ public class Programm
         return _controller.GetRAMValueUI(addr);
     }
 
-    public void SetRAMValue(int addr, int value)
+    public void SetRAMValueUI(int addr, int value)
     {
-        _controller.SetRAMValue(addr, value);
+        _controller.SetRAMValueUI(addr, value);
     }
 
     public int GetPCL()

@@ -37,9 +37,9 @@ namespace pic__simulator__lehmann.Models
             return _datenspeicher.At(addr,true).Read();
         }
 
-        public void SetRAMValue(int addr, int value)
+        public void SetRAMValueUI(int addr, int value)
         {
-            _datenspeicher.Write(addr, value);
+            _datenspeicher.At(addr, true).Write(value);
         }
 
 
@@ -50,17 +50,17 @@ namespace pic__simulator__lehmann.Models
 
         public int GetPCLath()
         {
-            return _datenspeicher.At(10).Read();
+            return _datenspeicher.At(10,true).Read();
         }
 
         public int GetStatusRegister()
         {
-            return _datenspeicher.At(3).Read();
+            return _datenspeicher.At(3, true).Read();
         }
 
         public int GetFSR()
         {
-            return _datenspeicher.At(4).Read();
+            return _datenspeicher.At(4, true).Read();
         }
 
         public int[] GetStack()
@@ -73,7 +73,7 @@ namespace pic__simulator__lehmann.Models
         {
             get
             {
-                return new BitArray(new byte[] {(byte) _datenspeicher.At(3).Read()}).Cast<bool>().ToArray();
+                return new BitArray(new byte[] {(byte) _datenspeicher.At(3, true).Read()}).Cast<bool>().ToArray();
             }
         }
 
@@ -109,7 +109,7 @@ namespace pic__simulator__lehmann.Models
                 //TODO checkInterrupt();
                 checkInterrupt();
                 //Steps Timer0 if configured
-                TimerStep();
+                //TimerStep();
                 //Fetch
                 int befehl = _programmspeicher.Read(_programmcounter);
                 Console.Write(befehl);

@@ -194,7 +194,7 @@
 		private bool getPortBit(int bit, int address ){
 			if(_geladenesProgramm != null)
 			{
-				BitArray _inhaltPort = new BitArray(new int[] {_geladenesProgramm.GetRAMValue(address)});
+				BitArray _inhaltPort = new BitArray(new int[] {_geladenesProgramm.GetRAMValueUI(address)});
 
 				return _inhaltPort[bit];
 			}
@@ -207,7 +207,7 @@
 		{
 			if(_geladenesProgramm != null){
 
-			BitArray _inhalt = new BitArray(new int[] {_geladenesProgramm.GetRAMValue(address)});
+			BitArray _inhalt = new BitArray(new int[] {_geladenesProgramm.GetRAMValueUI(address)});
 
 			_inhalt[bit] = (bool)value;
 
@@ -219,7 +219,7 @@
                 portByte += Convert.ToInt32(Math.Pow(2, i));
 			}
 
-			_geladenesProgramm.SetRAMValue(address, portByte);
+			_geladenesProgramm.SetRAMValueUI(address, portByte);
 			}
 
 		}
