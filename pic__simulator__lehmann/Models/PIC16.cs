@@ -32,9 +32,9 @@ namespace pic__simulator__lehmann.Models
             get { return _wregister; }
         }
 
-        public int GetRAMValue(int addr)
+        public int GetRAMValueUI(int addr)
         {
-            return _datenspeicher.At(addr).Read();
+            return _datenspeicher.At(addr,true).Read();
         }
 
         public void SetRAMValue(int addr, int value)

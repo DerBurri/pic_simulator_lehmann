@@ -128,7 +128,7 @@
 										{
 											//Im Ausführungsblock wird eine andere Referenz benutzt deswegen muss eine neue lokale Variable erstellt werden.
 												int kung = counter;
-												string cell = Convert.ToString(_geladenesProgramm.GetRAMValue(counter), 16);
+												string cell = Convert.ToString(_geladenesProgramm.GetRAMValueUI(counter), 16);
 												<td><input type="text" id="ramInput" value="@cell" @onchange="eventArgs => { changeRam(kung, eventArgs.Value);}"></td>
 												
 

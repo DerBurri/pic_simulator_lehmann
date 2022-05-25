@@ -72,6 +72,15 @@ namespace pic__simulator__lehmann.Models
                 return _speicher[index];
             }
         }
+
+        public Register At(int index, bool ui)
+        {
+            if (index > _size)
+            {
+                throw new OverflowException("Datenspeicher Ende erreicht");
+            }
+            return _speicher[index];
+        }
         public void Write(int addr, int value)
         {
             _speicher[addr].Write(value);

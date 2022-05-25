@@ -122,9 +122,9 @@ public class Programm
         return _controller.GetStack();
     }
 
-    public int GetRAMValue(int addr)
+    public int GetRAMValueUI(int addr)
     {
-        return _controller.GetRAMValue(addr);
+        return _controller.GetRAMValueUI(addr);
     }
 
     public void SetRAMValue(int addr, int value)
