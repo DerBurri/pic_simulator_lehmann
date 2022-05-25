@@ -20,7 +20,7 @@ namespace pic__simulator__lehmann.Models
         private System.Timers.Timer _taktgeber;
 
         private int Scaler;
-        private int _TR0Counter;
+        private bool _RA4_timerWertAlt;
         
 
         private int _programmcounter;
@@ -109,7 +109,7 @@ namespace pic__simulator__lehmann.Models
                 //TODO checkInterrupt();
                 checkInterrupt();
                 //Steps Timer0 if configured
-                //TimerStep();
+                TimerStep();
                 //Fetch
                 int befehl = _programmspeicher.Read(_programmcounter);
                 Console.Write(befehl);
@@ -132,16 +132,20 @@ namespace pic__simulator__lehmann.Models
         private void TimerStep()
         {
             //TODO 
-            //Check if Prescaler is attached to TMR0
-            if (!_datenspeicher.At(129).ReadBit(3))
+            //check T0CS to check Clock Source
+            if (!_datenspeicher.At(129).ReadBit(5))
             {
-                Scaler--;
-                if (Scaler == 0)
+                //Check if Prescaler is attached to T0SE ()
+                if (!_datenspeicher.At(129).ReadBit(3))
                 {
-                    ResetScaler();
-                    IncreaseTimer();
+                    Scaler--;
+                    if (Scaler == 0)
+                    {
+                        //Reset Scaler
+                        Scaler = Convert.ToInt32(Math.Pow(2,_datenspeicher.At(129).Read()& 7));
+                        IncreaseTimer();
+                    }
                 }
-                //check T0SE to check Clock Source
                 else
                 {
                     IncreaseTimer();
@@ -149,7 +153,13 @@ namespace pic__simulator__lehmann.Models
             }
             else
             {
-                IncreaseTimer();
+                if (_datenspeicher.At(5).ReadBit(4) ^ _RA4_timerWertAlt)
+                {
+                    if (_RA4_timerWertAlt ==_datenspeicher.At(129).ReadBit(4))
+                    {
+                        IncreaseTimer();
+                    }
+                }
             }
         }
 
@@ -165,10 +175,7 @@ namespace pic__simulator__lehmann.Models
             _datenspeicher.At(3).Write(value);
         }
 
-        private void ResetScaler()
-        {
-            Scaler = Convert.ToInt32(Math.Pow(2,_datenspeicher.At(129).Read()));
-        }
+
         private Befehlsliste.Befehle Decode(int Befehl)
         {
             int befehlteil1 = (Befehl & (int) Befehlsmaske.MASKE2) / 256;
