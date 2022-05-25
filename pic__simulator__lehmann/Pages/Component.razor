@@ -74,11 +74,11 @@
 						int[] stack = _geladenesProgramm.GetStack();
 						for (int i = 0; i < stack.Length; i++)
 						{
-							<tr>
-								<td>
-									@stack[i];
-								</td>
-							</tr>
+								<tr>
+									<td>
+										@stack[i];
+									</td>
+								</tr>
 						}
 					}
 					</tbody>
@@ -119,17 +119,17 @@
 							int counter = 0;
 							for (int row = 0; row < 32; row++)
 							{
-								<tr>
-									<td id="adressRam">@Convert.ToString((row * 8), 16)</td>
-									@if (_geladenesProgramm != null)
+									<tr>
+										<td id="adressRam">@Convert.ToString((row * 8), 16)</td>
+										@if (_geladenesProgramm != null)
 									{
 
-										@for (int column = 0; column < 8; column++)
+											@for (int column = 0; column < 8; column++)
 										{
 											//Im Ausführungsblock wird eine andere Referenz benutzt deswegen muss eine neue lokale Variable erstellt werden.
 												int kung = counter;
 												string cell = Convert.ToString(_geladenesProgramm.GetRAMValueUI(counter), 16);
-												<td><input type="text" id="ramInput" value="@cell" @onchange="eventArgs => { changeRam(kung, eventArgs.Value);}"></td>
+													<td><input type="text" id="ramInput" value="@cell" @onchange="eventArgs => { changeRam(kung, eventArgs.Value);}"></td>
 												
 
 
@@ -137,7 +137,7 @@
 											counter++;
 										}
 								}
-										</tr>
+											</tr>
 							}
 						}
 						</tbody>
@@ -257,7 +257,7 @@
 			<div class="middle-bottom">
 
 			<div class="programmcode">
-				<table class="programmcode" id="programmcode">
+				<table class="programmcodeTable" id="programmcode" >
 						<thead>
 							<tr>
 								<th>ID</th>
@@ -275,7 +275,20 @@
 									int foo = lineCounter;
 									lineCounter++;
 
-									<tr class="codeLine">
+									string colorLine="white";
+									int result;
+									if (Int32.TryParse(_geladenesProgramm._programmzeilen[lineCounter-1], out result))
+									{
+
+
+										if (_geladenesProgramm.GetPCL() == result)
+										{ colorLine = "blue"; }
+										else
+										{
+											colorLine = "white";
+										}
+									}
+													<tr class="codeLine" style="background-color:@colorLine">
 										<td>@lineCounter</td>
 										<td style="text-align: center">
 											<input type="checkbox" class="btn" @onchange="eventArgs => { BreakpointCheckBoxClicked(foo, eventArgs.Value); }">
@@ -418,6 +431,7 @@
 		var loading  = modal.Show<Einlesen>("Einlesen");
 		var result = await loading.Result;
 		if (!result.Cancelled) _geladenesProgramm = new Programm(_interval, _logger);
+		
 	}
 
 	private void ToggleRun()
@@ -469,6 +483,8 @@
 	//	{
 	//		if( _geladenesProgramm.GetPCL() == Int32.Parse(_geladenesProgramm._programmzeilen[i]))
 	//		{
+				
+	//			//codeLine.Style.Add(HtmlTextWriterStyle.BackgroundColor, "Red");
 	//			//hightlight line pcl
 	//		}
 	//		else
@@ -477,5 +493,7 @@
 	//		}
 	//	}
 	//}
+
+
 
 }
