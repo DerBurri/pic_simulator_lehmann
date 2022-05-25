@@ -28,7 +28,7 @@
 					{
 						<button class="btn btn-primary" @onclick="ToggleRun">Start</button>
 						<button class="btn btn-primary" @onclick="Step">Step</button>
-						<button class="btn btn-primary" @onclick="LoadProgram">Reset</button>
+						<button class="btn btn-primary" @onclick="Reset">Reset</button>
 					}
 					else
 					{
@@ -413,7 +413,7 @@
 
 @code {
 	public Programm? _geladenesProgramm;
-	
+
 	[CascadingParameter] public IModalService Modal { get; set; }
 
 	private int _interval = 5;
@@ -439,8 +439,7 @@
 	{
 		var loading  = modal.Show<Einlesen>("Einlesen");
 		var result = await loading.Result;
-		if (!result.Cancelled) _geladenesProgramm = new Programm(_interval, _logger);
-		
+		if (!result.Cancelled) _geladenesProgramm = new Programm(_interval, _logger,this);
 	}
 
 	private void ToggleRun()
@@ -461,7 +460,17 @@
 	private void Step()
 	{
 		_geladenesProgramm.Step();
-		//TODO Implement Step
+
+	}
+
+	private void Reset()
+	{
+		_geladenesProgramm = new Programm(_interval, _logger,this);
+	}
+
+	public void RefreshUI()
+	{
+		this.StateHasChanged();
 	}
 
 	private void BreakpointCheckBoxClicked(int lineCounter, object aChecked)

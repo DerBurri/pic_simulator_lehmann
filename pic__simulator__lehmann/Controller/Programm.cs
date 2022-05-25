@@ -9,18 +9,20 @@ public class Programm
     public  List<String> _programm;
     public List<String> _programmzeilen;
     public readonly ILogger<Einlesen> _logger;
+    public Component _ui;
 
     public List<int> _SelectedBreakpoints { get; set; }  
     
-    public Programm(int interval, ILogger<Einlesen> logger)
-    {
-        _logger = logger;
-        _SelectedBreakpoints = new List<int>();
-        Einlesen();
-        _controller = new PIC16(interval, logger,_programm);
-    }
+    public Programm(int interval, ILogger<Einlesen> logger, Component ui)
+	{
+		_logger = logger;
+		_SelectedBreakpoints = new List<int>();
+		Einlesen();
+		_controller = new PIC16(interval, logger, _programm, this);
+		_ui = ui;
+	}
 
-    private void Einlesen()
+	private void Einlesen()
     {
         _programm = new List<String>();
         _programmzeilen = new List<String>();
@@ -71,6 +73,11 @@ public class Programm
     {
         _controller.Step();
     }
+
+    public void RefreshUI()
+	{
+        _ui.RefreshUI();
+	}
 
     public void IntervalChange(int interval)
     {

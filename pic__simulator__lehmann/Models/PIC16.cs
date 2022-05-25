@@ -13,6 +13,7 @@ namespace pic__simulator__lehmann.Models
     public class PIC16
     {
         private readonly ILogger<Einlesen> _logger;
+        public Programm _programm;
 
         private Programmspeicher _programmspeicher;
         private Datenspeicher _datenspeicher;
@@ -68,7 +69,7 @@ namespace pic__simulator__lehmann.Models
             return _stack.ToArray();
         }
         
-
+        
         public bool[] StatusRegister
         {
             get
@@ -79,24 +80,25 @@ namespace pic__simulator__lehmann.Models
 
 
 
-        public PIC16(int interval, ILogger<Einlesen> logger, List<String> _programm)
-        {
-            _logger = logger;
-            _logger.LogWarning("Ausgabe Programmspeicher");
-            _programmspeicher = new Programmspeicher(4096, _programm);
-            foreach (var opcode in _programmspeicher._speicher)
-            {
-                _logger.LogWarning(opcode.ToString());
-            }
-            _datenspeicher = new Datenspeicher(256);
-            _stack = new CircularBuffer<int>(7);
-            _programmcounter = 0;
-            _cyclecounter = 0;
-            KonfiguriereTimer(interval);
-            //throw new NotImplementedException();
-        }
+        public PIC16(int interval, ILogger<Einlesen> logger, List<String> _programm, Programm programm)
+		{
+			_logger = logger;
+			_logger.LogWarning("Ausgabe Programmspeicher");
+			_programmspeicher = new Programmspeicher(4096, _programm);
+			foreach (var opcode in _programmspeicher._speicher)
+			{
+				_logger.LogWarning(opcode.ToString());
+			}
+			_datenspeicher = new Datenspeicher(256);
+			_stack = new CircularBuffer<int>(7);
+			_programmcounter = 0;
+			_cyclecounter = 0;
+			KonfiguriereTimer(interval);
+			this._programm = programm;
+			//throw new NotImplementedException();
+		}
 
-        private void KonfiguriereTimer(int interval)
+		private void KonfiguriereTimer(int interval)
         {
             _taktgeber = new System.Timers.Timer(interval*1000);
             _taktgeber.Elapsed += OnTakt;
@@ -121,6 +123,7 @@ namespace pic__simulator__lehmann.Models
                 _logger.LogWarning("Programmzähler: {0}",_programmcounter.ToString());
                 _programmcounter++;
                 _cyclecounter++;
+                this._programm.RefreshUI();
             }
             catch (Exception ex)
             {
