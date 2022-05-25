@@ -50,7 +50,7 @@
 
 			<div class="middleLeft-top">
 
-				<button style="margin-bottom: 5px;" @onclick="@(()=>modal.Show<Ports>("Port Settings"))" class="btn btn-primary">Port Settings</button>
+				<button style="margin-bottom: 5px;" @onclick="@(()=>ShowPorts())" class="btn btn-primary">Port Settings</button>
 
 
 			</div>
@@ -412,7 +412,9 @@
 
 
 @code {
-	protected Programm? _geladenesProgramm;
+	public Programm? _geladenesProgramm;
+	
+	[CascadingParameter] public IModalService Modal { get; set; }
 
 	private int _interval = 5;
 
@@ -425,6 +427,13 @@
 
 	private bool _running = false;
 
+	void ShowPorts()
+	{
+		var parameters = new ModalParameters();
+		parameters.Add(nameof(Ports.GeladenesProgramm),_geladenesProgramm);
+
+		Modal.Show<Ports>("Port Settings",parameters);
+	}
 
 	async Task LoadProgram()
 	{

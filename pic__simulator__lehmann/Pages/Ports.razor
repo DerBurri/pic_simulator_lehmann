@@ -1,4 +1,5 @@
 @using System.Collections
+@using pic__simulator__lehmann.Models
 @inherits Component
 
 <div class="IO">
@@ -185,17 +186,23 @@
 </div>
 
 @code {
+	[CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+	
+	[Parameter] public Programm GeladenesProgramm { get; set; }
 
 	private int addressPortA = 5;
 	private int addressPortB = 6;
 	private int addressTrisA = 133;
 	private int addressTrisB = 134;
-
+	BitArray _inhaltPort;
+	
+	
 		private bool getPortBit(int bit, int address ){
-			if(_geladenesProgramm != null)
-			{
-				BitArray _inhaltPort = new BitArray(new int[] {_geladenesProgramm.GetRAMValueUI(address)});
 
+			if(GeladenesProgramm != null)
+			{
+				_inhaltPort = new BitArray(new int[] {GeladenesProgramm.GetRAMValueUI(address)});
+				Console.WriteLine(_inhaltPort[bit]);
 				return _inhaltPort[bit];
 			}
 			return false;
@@ -205,9 +212,9 @@
 
 		private void changeRamPorts(int bit, int address, object value)
 		{
-			if(_geladenesProgramm != null){
+			if(GeladenesProgramm != null){
 
-			BitArray _inhalt = new BitArray(new int[] {_geladenesProgramm.GetRAMValueUI(address)});
+			BitArray _inhalt = new BitArray(new int[] {GeladenesProgramm.GetRAMValueUI(address)});
 
 			_inhalt[bit] = (bool)value;
 
@@ -219,7 +226,7 @@
                 portByte += Convert.ToInt32(Math.Pow(2, i));
 			}
 
-			_geladenesProgramm.SetRAMValueUI(address, portByte);
+			GeladenesProgramm.SetRAMValueUI(address, portByte);
 			}
 
 		}
