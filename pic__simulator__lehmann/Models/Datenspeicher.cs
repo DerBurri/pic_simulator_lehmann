@@ -43,7 +43,6 @@ namespace pic__simulator__lehmann.Models
 
             //Bank 1
             _speicher[128] = _speicher[4];//indf 
-            _speicher[129] = new OptionReg();
             _speicher[130] = _speicher[2];
             _speicher[131] = _speicher[3];
             _speicher[132] = _speicher[4];

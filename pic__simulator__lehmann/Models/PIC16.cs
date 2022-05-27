@@ -17,7 +17,7 @@ namespace pic__simulator__lehmann.Models
 
         private Programmspeicher _programmspeicher;
         private Datenspeicher _datenspeicher;
-        private int _wregister;
+        private int _wregister; 
         private System.Timers.Timer _taktgeber;
 
         private int Scaler;
