@@ -694,7 +694,7 @@ namespace pic__simulator__lehmann.Models
             int payload = Befehl & 2047;
             _programmcounter = _datenspeicher.At(10).Read();
             _programmcounter <<= 11;
-            _programmcounter += payload;
+            _programmcounter += payload-1;
             //Programmzähler wird wieder um eins erhöht dann steht die richtige Adresse drinnen.
             _logger.LogWarning("Programm Counter {0}", payload);
             nopcycle = true;
