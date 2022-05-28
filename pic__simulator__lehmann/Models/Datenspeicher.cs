@@ -8,10 +8,11 @@ namespace pic__simulator__lehmann.Models
         // Bank1 = 128 - 255
         public readonly Register[] _speicher;
         private readonly int _size;
+        private PIC16 _controller;
         
 
 
-        public Datenspeicher(int size)
+        public Datenspeicher(int size, PIC16 controller)
         {
             _size = size;
             _speicher = new Register[_size];
@@ -19,7 +20,8 @@ namespace pic__simulator__lehmann.Models
             {
                 _speicher[i] = new Register();
             }
-            
+
+            _controller = controller;
             //Bank 0
             //TODO Spiegelung und gute 
             //indf
@@ -43,6 +45,7 @@ namespace pic__simulator__lehmann.Models
 
             //Bank 1
             _speicher[128] = _speicher[4];//indf 
+            _speicher[129] = new OptionReg(_controller);
             _speicher[130] = _speicher[2];
             _speicher[131] = _speicher[3];
             _speicher[132] = _speicher[4];
@@ -55,14 +58,14 @@ namespace pic__simulator__lehmann.Models
             _speicher[139] = _speicher[11];
         } 
 
-        public Register At(int index)
+        public Register At(int index,bool ignoreBankValue = false)
         {
             if (index > _size)
             {
                 throw new OverflowException("Datenspeicher Ende erreicht");
             }
             
-            if (_speicher[3].ReadBit(5))
+            if (_speicher[3].ReadBit(5) && !(ignoreBankValue))
             {
                 return _speicher[index + 128];
             }
@@ -71,15 +74,7 @@ namespace pic__simulator__lehmann.Models
                 return _speicher[index];
             }
         }
-
-        public Register At(int index, bool ui)
-        {
-            if (index > _size)
-            {
-                throw new OverflowException("Datenspeicher Ende erreicht");
-            }
-            return _speicher[index];
-        }
+        
         public void Write(int addr, int value)
         {
             _speicher[addr].Write(value);

@@ -11,7 +11,7 @@ public class Programm
     public readonly ILogger<Einlesen> _logger;
     public Component _ui;
 
-    public List<int> _SelectedBreakpoints { get; set; }  
+    public List<int> _SelectedBreakpoints;
     
     public Programm(int interval, ILogger<Einlesen> logger, Component ui)
 	{
@@ -109,12 +109,32 @@ public class Programm
         return _controller.GetStatusRegister();
     }
 
+    public bool[] GetOptionRegister()
+    {
+        return _controller.OptionRegister;
+    }
+
+    public bool[] GetIntconRegister()
+    {
+        return _controller.IntConRegister;
+    }
+
     public int GetWRegister()
     {
         return _controller.W_register;
     }
 
-    public bool[] getStatusRegister()
+    public int GetTimer0()
+    {
+        return _controller.Timer0;
+    }
+
+    public int GetPrescaler()
+    {
+        return _controller.Scaler;
+    }
+
+    public bool[] GetStatusRegister()
     {
         return _controller.StatusRegister;
     }

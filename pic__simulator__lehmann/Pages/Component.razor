@@ -1,10 +1,10 @@
-﻿
-@page "/"
+﻿@page "/"
 
 @using System.Drawing
 @using pic__simulator__lehmann.Models
 @using System.Xml.Linq
 @using System.ComponentModel.Design
+@using System.Globalization
 @using System.Runtime.InteropServices
 @inject ILogger<Einlesen> _logger;
 @inject IModalService modal;
@@ -13,505 +13,506 @@
 
 <body>
 
-	<div class="row">
+<div class="row">
 
-@*Einlesen + Laufzeit*@
-		<div class="col-md-3">
+    @*Einlesen + Laufzeit*@
+    <div class="col-md-3">
 
-			<div class="leftside-top">
+        <div class="leftside-top">
 
-				<button class="btn btn-primary" @onclick="LoadProgram">Lade Programm</button>
-				@if (_geladenesProgramm != null)
-				{
-
-					@if (!_running)
-					{
-						<button class="btn btn-primary" @onclick="ToggleRun">Start</button>
-						<button class="btn btn-primary" @onclick="Step">Step</button>
-						<button class="btn btn-primary" @onclick="Reset">Reset</button>
-					}
-					else
-					{
-						<button class="btn btn-primary" @onclick="ToggleRun">Pause</button>
-					}
-					<p><input @bind="Interval" /> s</p>
-				}
-
-
-			</div>
-
-		</div>
+            <button class="btn btn-primary" @onclick="LoadProgram">Lade Programm</button>
+            @if (_geladenesProgramm != null)
+            {
+                @if (!_running)
+                {
+                    <button class="btn btn-primary" @onclick="ToggleRun">Start</button>
+                    <button class="btn btn-primary" @onclick="Step">Step</button>
+                    <button class="btn btn-primary" @onclick="Reset">Reset</button>
+                }
+                else
+                {
+                    <button class="btn btn-primary" @onclick="ToggleRun">Pause</button>
+                }
+                <p><input @bind="Interval"/> s</p>
+            }
 
 
+        </div>
 
-@*Ports*@
-
-		<div class="col-md-3">
-
-			<div class="middleLeft-top">
-
-				<button style="margin-bottom: 5px;" @onclick="@(()=>ShowPorts())" class="btn btn-primary">Port Settings</button>
+    </div>
 
 
-			</div>
+    @*Ports*@
 
-		</div>
+    <div class="col-md-3">
 
+        <div class="middleLeft-top">
 
-
-@*Stack*@
-
-		<div class="col-md-2">
-
-			<div class="middleRight-top">
-			
-				<h3>Stack</h3>
-			@if (_geladenesProgramm != null)
-			{
-				<table class="Stack">
-					<tbody>
-					@{
-						int[] stack = _geladenesProgramm.GetStack();
-						for (int i = 0; i < stack.Length; i++)
-						{
-								<tr>
-									<td>
-										@stack[i];
-									</td>
-								</tr>
-						}
-					}
-					</tbody>
-				</table>
+            <button style="margin-bottom: 5px;" @onclick="@(() => ShowPorts())" class="btn btn-primary">Port Settings</button>
 
 
-			}
-			</div>
+        </div>
 
-		</div>
-
+    </div>
 
 
-@*Filereister*@
-		<div class="col-md-4">
+    @*Stack*@
 
-			<div class="rightside-top">
+    <div class="col-md-2">
 
-				<div class="ram">
+        <div class="middleRight-top">
 
-				<table class="ram">
-					<thead>
-					<tr>
-						<th id="adressRam">&nbsp</th>
-						<th>0</th>
-						<th>1</th>
-						<th>2</th>
-						<th>3</th>
-						<th>4</th>
-						<th>5</th>
-						<th>6</th>
-						<th>7</th>
-					</tr>
-					</thead>
+            <h3>Stack</h3>
+            @if (_geladenesProgramm != null)
+            {
+                <table class="Stack">
+                    <tbody>
+                    @{
+                        int[] stack = _geladenesProgramm.GetStack();
+                        for (int i = 0; i < stack.Length; i++)
+                        {
+                            <tr>
+                                <td>
+                                    @stack[i];
+                                </td>
+                            </tr>
+                        }
+                    }
+                    </tbody>
+                </table>
+            }
+        </div>
 
-						<tbody>
-						@{
-							int counter = 0;
-							for (int row = 0; row < 32; row++)
-							{
-									<tr>
-										<td id="adressRam">@Convert.ToString((row * 8), 16)</td>
-										@if (_geladenesProgramm != null)
-									{
-
-											@for (int column = 0; column < 8; column++)
-										{
-											//Im Ausführungsblock wird eine andere Referenz benutzt deswegen muss eine neue lokale Variable erstellt werden.
-												int kung = counter;
-												string cell = Convert.ToString(_geladenesProgramm.GetRAMValueUI(counter), 16);
-													<td><input type="text" id="ramInput" value="@cell" @onchange="eventArgs => { changeRam(kung, eventArgs.Value);}"></td>
-												
+    </div>
 
 
+    @*Filereister*@
+    <div class="col-md-4">
 
-											counter++;
-										}
-								}
-											</tr>
-							}
-						}
-						</tbody>
-					
-				</table>
+        <div class="rightside-top">
 
-				</div>
+            <div class="ram">
 
-			</div>
+                <table class="ram">
+                    <thead>
+                    <tr>
+                        <th id="adressRam">&nbsp</th>
+                        <th>0</th>
+                        <th>1</th>
+                        <th>2</th>
+                        <th>3</th>
+                        <th>4</th>
+                        <th>5</th>
+                        <th>6</th>
+                        <th>7</th>
+                    </tr>
+                    </thead>
 
-		</div>
+                    <tbody>
+                    @{
+                        int counter = 0;
+                        for (int row = 0; row < 32; row++)
+                        {
+                            <tr>
+                                <td id="adressRam">@Convert.ToString((row * 8), 16)</td>
+                                @if (_geladenesProgramm != null)
+                                {
+                                    @for (int column = 0; column < 8; column++)
+                                    {
+                                        //Im Ausführungsblock wird eine andere Referenz benutzt deswegen muss eine neue lokale Variable erstellt werden.
+                                        int kung = counter;
+                                        string cell = Convert.ToString(_geladenesProgramm.GetRAMValueUI(counter), 16);
+                                        <td>
+                                            <input type="text" id="ramInput" value="@cell" @onchange="eventArgs => { changeRam(kung, eventArgs.Value); }">
+                                        </td>
 
-	</div>
-	
+
+                                        counter++;
+                                    }
+                                }
+                            </tr>
+                        }
+                    }
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
 
-
-	<div class="row">
+<div class="row">
 
 @*SFR + W*@
 
-		<div class="col-md-2">
+<div class="col-md-2">
 
-			<div class="leftside-bottom">
+    <div class="leftside-bottom">
 
-			<h2>Register</h2>
+        <h2>Register</h2>
 
-				@if (_geladenesProgramm != null)
-				{
+        @if (_geladenesProgramm != null)
+        {
+            <table class="Register">
+                <tbody>
+                <tr>
+                    <td>
+                        W-Register:
+                    </td>
+                    <td>
+                        @Convert.ToString(_geladenesProgramm.GetWRegister(), 16)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        PCL:
+                    </td>
+                    <td>
+                        @Convert.ToString(_geladenesProgramm.GetPCL(), 16)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        PCLATH:
+                    </td>
+                    <td>
+                        @Convert.ToString(_geladenesProgramm.GetPCLath(), 16)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        PC intern:
+                    </td>
+                    <td>
+                        @* @Convert.ToString(_geladenesProgramm.GetPCIntern(),16); *@
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Status:
+                    </td>
+                    <td>
+                        @Convert.ToString(_geladenesProgramm.GetStatus(), 16)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        FSR:
+                    </td>
+                    <td>
+                        @Convert.ToString(_geladenesProgramm.GetFSR(), 16)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Option:
+                    </td>
+                    <td>
 
-					<table class="Register">
-						<tbody>
-							<tr>
-								<td>
-									W-Register:
-								</td>
-								<td>
-									@Convert.ToString(_geladenesProgramm.GetWRegister(),16)
-								</td>
-							</tr>
-							<tr>
-								<td>
-									PCL:
-								</td>
-								<td>
-									@Convert.ToString(_geladenesProgramm.GetPCL(),16)
-								</td>
-							</tr>
-							<tr>
-								<td>
-									PCLATH:
-								</td>
-								<td>
-									@Convert.ToString(_geladenesProgramm.GetPCLath(),16)
-								</td>
-							</tr>
-							<tr>
-								<td>
-									PC intern:
-								</td>
-								<td>
-									@* @Convert.ToString(_geladenesProgramm.GetPCIntern(),16); *@
-								</td>
-							</tr>
-							<tr>
-								<td>
-									Status:
-								</td>
-								<td>
-									@Convert.ToString(_geladenesProgramm.GetStatus(),16)
-								</td>
-							</tr>
-							<tr>
-								<td>
-									FSR:
-								</td>
-								<td>
-									@Convert.ToString(_geladenesProgramm.GetFSR(),16)
-								</td>
-							</tr>
-							<tr>
-								<td>
-									Option:
-								</td>
-								<td>
-									
-								</td>
-							</tr>
-							<tr>
-								<td>
-									Vorteiler:
-								</td>
-								<td>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									Timer0:
-								</td>
-								<td>
-								</td>
-							</tr>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Vorteiler:
+                    </td>
+                    <td>
+                        @Convert.ToString(_geladenesProgramm.GetPrescaler())
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Timer0:
+                    </td>
+                    <td>
+                        @Convert.ToString(_geladenesProgramm.GetTimer0(), 16)
 
-						</tbody>
-					</table>
+                    </td>
+                </tr>
 
-				}
-				
-			</div>
+                </tbody>
+            </table>
+        }
 
-		</div>
+    </div>
 
+</div>
 
 
 @*Programmcode*@
-		<div class="col-md-6">
+<div class="col-md-6">
 
-			<div class="middle-bottom">
+    <div class="middle-bottom">
 
-			<div class="programmcode">
-				<table class="programmcodeTable" id="programmcode" >
-						<thead>
-							<tr>
-								<th>ID</th>
-								<th>Breakpoints</th>
-								<th>Programmzeile</th>
-								<th>Befehle</th>
-							</tr>
-						</thead>
-						<tbody>
-							@if (_geladenesProgramm != null){
-								int lineCounter = 0;
-								foreach (var programmtext in _geladenesProgramm._programm)
-								{
-									//Im Ausführungsblock wird eine andere Referenz benutzt deswegen muss eine neue lokale Variable erstellt werden.
-									int foo = lineCounter;
-									lineCounter++;
+        <div class="programmcode">
+            <table class="programmcodeTable" id="programmcode">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Breakpoints</th>
+                    <th>Programmzeile</th>
+                    <th>Befehle</th>
+                </tr>
+                </thead>
+                <tbody>
+                @if (_geladenesProgramm != null)
+                {
+                    int lineCounter = 0;
+                    foreach (var programmtext in _geladenesProgramm._programm)
+                    {
+                        //Im Ausführungsblock wird eine andere Referenz benutzt deswegen muss eine neue lokale Variable erstellt werden.
+                        int foo = lineCounter;
+                        lineCounter++;
 
-									string colorLine="white";
-									int result;
-									if (Int32.TryParse(_geladenesProgramm._programmzeilen[lineCounter-1], out result))
-									{
+                        string colorLine = "white";
+                        int result;
+                        if (Int32.TryParse(_geladenesProgramm._programmzeilen[lineCounter - 1], NumberStyles.HexNumber, CultureInfo.CurrentCulture, out result))
+                        {
+                            if (_geladenesProgramm.GetPCL() == result)
+                            {
+                                colorLine = "blue";
+                            }
+                            else
+                            {
+                                colorLine = "white";
+                            }
+                        }
+                        <tr class="codeLine" style="background-color:@colorLine">
+                            <td>@lineCounter</td>
+                           
+                            <td style="text-align: center">
+                                 @if (!_geladenesProgramm._programmzeilen[lineCounter - 1].Contains(" "))
+                                 {
+                                     <input type="checkbox" class="btn" @onchange="eventArgs => { BreakpointCheckBoxClicked(foo, eventArgs.Value); }">
+                                 }
+                            </td>
+                            
+                            <td>@_geladenesProgramm._programmzeilen[lineCounter - 1]</td>
+                            <td>@programmtext</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td>kein Programm geladen</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
 
+    </div>
 
-										if (_geladenesProgramm.GetPCL() == result)
-										{ colorLine = "blue"; }
-										else
-										{
-											colorLine = "white";
-										}
-									}
-													<tr class="codeLine" style="background-color:@colorLine">
-										<td>@lineCounter</td>
-										<td style="text-align: center">
-											<input type="checkbox" class="btn" @onchange="eventArgs => { BreakpointCheckBoxClicked(foo, eventArgs.Value); }">
-										</td>
-										<td>@_geladenesProgramm._programmzeilen[lineCounter-1]</td>
-										<td>@programmtext</td>
-									</tr>
-								}
-							}
-							else
-							{
-								<tr>
-									<td>kein Programm geladen</td>
-								</tr>
-							}
-						</tbody>
-					</table>
-				</div>
-
-			</div>
-
-		</div>
-
+</div>
 
 
 @*SFR*@
 
-		<div class="col-md-4">
+<div class="col-md-4">
 
-			<div class="rightside-bottom">
+    <div class="rightside-bottom">
 
-				<h2>Flags</h2>
-				<h5>Status-Register</h5>
-				<table class="RegisterBits">
-					<thead>
-						<tr>
-							<th class="Register">C</th>
-							<th class="Register">DC</th>
-							<th class="Register">Z</th>
-							<th class="Register">PD</th>
-							<th class="Register">TO</th>
-							<th class="Register">RB0</th>
-							<th class="Register">RB1</th>
-							<th class="Register">IRBS</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							@if(_geladenesProgramm != null){
-							@foreach (bool statusflag in _geladenesProgramm.getStatusRegister())
-							{
-								<td class="Register">@Convert.ToInt32(statusflag)</td>
-							}
-							}
-						</tr>
-					</tbody>
-				</table>
-
-
-				<h5>Option-Register</h5>
-				<table class="RegisterBits">
-					<thead>
-						<tr>
-							<th class="Register">PS0</th>
-							<th class="Register">PS1</th>
-							<th class="Register">PS2</th>
-							<th class="Register">PSA</th>
-							<th class="Register">T0SE</th>
-							<th class="Register">T0CS</th>
-							<th class="Register">INTEDG</th>
-							<th class="Register">RBPU</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							@if(_geladenesProgramm != null){
-	@*						@foreach (bool  in _geladenesProgramm())
-							{
-								<td class="Register">@Convert.ToInt32()</td>
-							}*@
-							}
-						</tr>
-					</tbody>
-				</table>
+        <h2>Flags</h2>
+        <h5>Status-Register</h5>
+        <table class="RegisterBits">
+            <thead>
+            <tr>
+                <th class="Register">C</th>
+                <th class="Register">DC</th>
+                <th class="Register">Z</th>
+                <th class="Register">PD</th>
+                <th class="Register">TO</th>
+                <th class="Register">RB0</th>
+                <th class="Register">RB1</th>
+                <th class="Register">IRBS</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                @if (_geladenesProgramm != null)
+                {
+                    @foreach (bool statusflag in _geladenesProgramm.GetStatusRegister())
+                    {
+                        <td class="Register">@Convert.ToInt32(statusflag)</td>
+                    }
+                }
+            </tr>
+            </tbody>
+        </table>
 
 
-				<h5>Intcon-Register</h5>
-				<table class="RegisterBits">
-					<thead>
-						<tr>
-							<th class="Register">RBIF</th>
-							<th class="Register">INTF</th>
-							<th class="Register">T0IF</th>
-							<th class="Register">RBIE</th>
-							<th class="Register">INTE</th>
-							<th class="Register">T0IE</th>
-							<th class="Register">EEIE</th>
-							<th class="Register">GIE</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							@if(_geladenesProgramm != null){
-@*							@foreach (bool  in _geladenesProgramm.())
-							{
-								<td class="Register">@Convert.ToInt32()</td>
-							}*@
-							}
-						</tr>
-					</tbody>
-				</table>
-			</div>
+        <h5>Option-Register</h5>
+        <table class="RegisterBits">
+            <thead>
+            <tr>
+                <th class="Register">PS0</th>
+                <th class="Register">PS1</th>
+                <th class="Register">PS2</th>
+                <th class="Register">PSA</th>
+                <th class="Register">T0SE</th>
+                <th class="Register">T0CS</th>
+                <th class="Register">INTEDG</th>
+                <th class="Register">RBPU</th>
+            </tr>
+            </thead>
 
-		</div>
+            <tbody>
+            <tr>
+                @if (_geladenesProgramm != null)
+                {
+                    foreach (bool optionflag in _geladenesProgramm.GetOptionRegister())
+                    {
+                        <td class="Register">@Convert.ToInt32(optionflag)</td>
+                    }
+                }
+            </tr>
+            </tbody>
+        </table>
 
-	</div>
+
+        <h5>Intcon-Register</h5>
+        <table class="RegisterBits">
+            <thead>
+            <tr>
+                <th class="Register">RBIF</th>
+                <th class="Register">INTF</th>
+                <th class="Register">T0IF</th>
+                <th class="Register">RBIE</th>
+                <th class="Register">INTE</th>
+                <th class="Register">T0IE</th>
+                <th class="Register">EEIE</th>
+                <th class="Register">GIE</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                @if (_geladenesProgramm != null)
+                {
+                    foreach (bool intconflag in _geladenesProgramm.GetIntconRegister())
+                    {
+                        <td class="Register">@Convert.ToInt32(intconflag)</td>
+                    }
+                }
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</div>
 
 </body>
 
 
-
-
 @code {
-	public Programm? _geladenesProgramm;
+    public Programm? _geladenesProgramm;
 
-	[CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter]
+    public IModalService Modal { get; set; }
 
-	private int _interval = 5;
+    private int _interval = 5;
 
-	public int Interval
-	{
-		get => _interval;
-		set { _interval = value; _geladenesProgramm.IntervalChange(value); }
-	}
-
-
-	private bool _running = false;
-
-	void ShowPorts()
-	{
-		var parameters = new ModalParameters();
-		parameters.Add(nameof(Ports.GeladenesProgramm),_geladenesProgramm);
-
-		Modal.Show<Ports>("Port Settings",parameters);
-	}
-
-	async Task LoadProgram()
-	{
-		var loading  = modal.Show<Einlesen>("Einlesen");
-		var result = await loading.Result;
-		if (!result.Cancelled) _geladenesProgramm = new Programm(_interval, _logger,this);
-	}
-
-	private void ToggleRun()
-	{
-		if (_running)
-		{
-			_geladenesProgramm.Stop();
-			_running = !_running;
-		}
-		else
-		{
-			_geladenesProgramm.Start();
-			_running = !_running;
-		}
-	}
+    public int Interval
+    {
+        get => _interval;
+        set
+        {
+            _interval = value;
+            _geladenesProgramm.IntervalChange(value);
+        }
+    }
 
 
-	private void Step()
-	{
-		_geladenesProgramm.Step();
+    private bool _running = false;
 
-	}
+    void ShowPorts()
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(Ports.GeladenesProgramm), _geladenesProgramm);
 
-	private void Reset()
-	{
-		_geladenesProgramm = new Programm(_interval, _logger,this);
-	}
+        Modal.Show<Ports>("Port Settings", parameters);
+    }
 
-	public void RefreshUI()
-	{
-		this.StateHasChanged();
-	}
+    async Task LoadProgram()
+    {
+        var loading = modal.Show<Einlesen>("Einlesen");
+        var result = await loading.Result;
+        if (!result.Cancelled) _geladenesProgramm = new Programm(Interval, _logger, this);
+    }
 
-	private void BreakpointCheckBoxClicked(int lineCounter, object aChecked)
-	{
-		if ((bool)aChecked)
-		{
-			_geladenesProgramm._SelectedBreakpoints.Add(lineCounter);
-		}
-		else
-		{
-			_geladenesProgramm._SelectedBreakpoints.Remove(lineCounter);
-		}
-	}
-
-
-	private void changeRam(int counter, object valueHex)
-	{
-		int value = Int32.Parse((string)valueHex, System.Globalization.NumberStyles.HexNumber);
-
-		_geladenesProgramm.SetRAMValueUI(counter, value);
-
-	}
+    private void ToggleRun()
+    {
+        if (_running)
+        {
+            _geladenesProgramm.Stop();
+            _running = !_running;
+        }
+        else
+        {
+            _geladenesProgramm.Start();
+            _running = !_running;
+        }
+    }
 
 
-	//private void hightlightProgrammCode()
-	//{
-	//	for(int i = 0; i < _geladenesProgramm._programmzeilen.Count; i++)
-	//	{
-	//		if( _geladenesProgramm.GetPCL() == Int32.Parse(_geladenesProgramm._programmzeilen[i]))
-	//		{
-				
-	//			//codeLine.Style.Add(HtmlTextWriterStyle.BackgroundColor, "Red");
-	//			//hightlight line pcl
-	//		}
-	//		else
-	//		{
-	//			//make line normal
-	//		}
-	//	}
-	//}
+    private void Step()
+    {
+        _geladenesProgramm.Step();
+    }
+
+    private void Reset()
+    {
+        _geladenesProgramm = new Programm(_interval, _logger, this);
+    }
+
+    public void RefreshUI()
+    {
+        this.StateHasChanged();
+    }
+
+    private void BreakpointCheckBoxClicked(int lineCounter, object aChecked)
+    {
+        if ((bool)aChecked)
+        {
+            _geladenesProgramm._SelectedBreakpoints.Add(Int32.Parse(_geladenesProgramm._programmzeilen[lineCounter -1],NumberStyles.HexNumber));
+        }
+        else
+        {
+            _geladenesProgramm._SelectedBreakpoints.Remove(Int32.Parse(_geladenesProgramm._programmzeilen[lineCounter -1],NumberStyles.HexNumber));
+        }
+    }
+
+
+    private void changeRam(int counter, object valueHex)
+    {
+        int value = Int32.Parse((string)valueHex, System.Globalization.NumberStyles.HexNumber);
+
+        _geladenesProgramm.SetRAMValueUI(counter, value);
+    }
+
+
+    //private void hightlightProgrammCode()
+    //{
+    //	for(int i = 0; i < _geladenesProgramm._programmzeilen.Count; i++)
+    //	{
+    //		if( _geladenesProgramm.GetPCL() == Int32.Parse(_geladenesProgramm._programmzeilen[i]))
+    //		{
+
+    //			//codeLine.Style.Add(HtmlTextWriterStyle.BackgroundColor, "Red");
+    //			//hightlight line pcl
+    //		}
+    //		else
+    //		{
+    //			//make line normal
+    //		}
+    //	}
+    //}
 
 
 
