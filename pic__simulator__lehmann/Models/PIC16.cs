@@ -26,7 +26,8 @@ namespace pic__simulator__lehmann.Models
 
         private int _scaler;
         private bool _RA4_timerWertAlt = false;
-
+        private bool _RB0_alt = false;
+        private bool[] _RB47_alt = { false, false, false, false };
         
         private int _programmcounter
         {
@@ -153,7 +154,9 @@ namespace pic__simulator__lehmann.Models
                     //TODO checkInterrupt();
                     checkInterrupt();
                     //Steps Timer0 if configured
-                    TimerStep();  
+                    TimerStep();
+                    RB0Check();
+                    RB47Check();
                     if (!nopcycle)
                     {
                         //Fetch
@@ -182,6 +185,42 @@ namespace pic__simulator__lehmann.Models
             }
         }
 
+        private void RB0Check()
+        {
+            //Check for Edge
+            if (_datenspeicher.At(6, true).ReadBit(0) ^ _RB0_alt)
+            {
+                _RB0_alt = _datenspeicher.At(6, true).ReadBit(0);
+                if (!_RB0_alt && !_datenspeicher.At(129, true).ReadBit(6))
+                {
+                    _datenspeicher.At(11,true).WriteBit(1,true);
+                }
+                else if (_RB0_alt && _datenspeicher.At(129, true).ReadBit(6))
+                {
+                    _datenspeicher.At(11,true).WriteBit(1,true);
+                }
+            }
+        }
+
+        private void RB47Check()
+        {
+            for (int i = 4; i < 8; i++)
+            {
+                //Check for Edge and check if TRIS is set to Read
+                if ((_datenspeicher.At(6, true).ReadBit(i) ^ _RB47_alt[i-4]) && !_datenspeicher.At(134,true).ReadBit(i))
+                {
+                    _RB47_alt[i - 4] = _datenspeicher.At(6, true).ReadBit(i);
+                    if (!_RB47_alt[i - 4] && !_datenspeicher.At(129, true).ReadBit(6))
+                    {
+                        _datenspeicher.At(11,true).WriteBit(0,true);
+                    }
+                    else if (_RB47_alt[i - 4] && _datenspeicher.At(129, true).ReadBit(6))
+                    {
+                        _datenspeicher.At(11,true).WriteBit(0,true);
+                    }
+                }
+            }
+        }
         private void TimerStep()
         {
             //TODO 
@@ -211,7 +250,25 @@ namespace pic__simulator__lehmann.Models
                 {
                     _RA4_timerWertAlt = _datenspeicher.At(5, true).ReadBit(4);
                     //check for rising or falling edge if true the value before is false so rising otherwise fallign
-                    if (!_RA4_timerWertAlt && _datenspeicher.At(129,true).ReadBit(4))
+                    if (_RA4_timerWertAlt && _datenspeicher.At(129,true).ReadBit(4))
+                    {
+                        //check for attached Prescaler
+                        if (!_datenspeicher.At(129,true).ReadBit(3))
+                        {
+                            _scaler--;
+                            if (_scaler == 0)
+                            {
+                                //Reset Scaler
+                                ResetScaler();
+                                IncreaseTimer();
+                            }
+                        }
+                        else
+                        {
+                        IncreaseTimer();
+                        }
+                    }
+                    else if (!_RA4_timerWertAlt && !_datenspeicher.At(129, true).ReadBit(4))
                     {
                         if (!_datenspeicher.At(129,true).ReadBit(3))
                         {
@@ -225,25 +282,8 @@ namespace pic__simulator__lehmann.Models
                         }
                         else
                         {
-                            if (!_datenspeicher.At(129,true).ReadBit(3))
-                            {
-                                _scaler--;
-                                if (_scaler == 0)
-                                {
-                                    //Reset Scaler
-                                    ResetScaler();
-                                    IncreaseTimer();
-                                }
-                            }
-                            else
-                            {
-                                IncreaseTimer();
-                            }
+                            IncreaseTimer();
                         }
-                    }
-                    else if (_RA4_timerWertAlt && !_datenspeicher.At(129, true).ReadBit(4))
-                    {
-                        IncreaseTimer();
                     }
                 }
             }
@@ -543,7 +583,6 @@ namespace pic__simulator__lehmann.Models
                 //INTF Interrupt Bit wird automatisch zurückgesetzt laut Datenblatt
                 else if (intcon[4] && intcon[1])
                 {
-                    _datenspeicher.At(11,true).WriteBit(1,false);
                     enterInterrupt();
 
                 }
@@ -562,7 +601,7 @@ namespace pic__simulator__lehmann.Models
         private void enterInterrupt()
         {
             _datenspeicher.At(11,true).WriteBit(7, false);
-            call(4);
+            call(4,true);
         }
 
         public void retfie()
@@ -720,22 +759,23 @@ namespace pic__simulator__lehmann.Models
             _wregister &= 255;
         }
         
-        private void _goto(int Befehl)
+        private void _goto(int Befehl,bool interruptCall = false)
         {
             int payload = Befehl & 2047;
             _programmcounter = _datenspeicher.At(10).Read();
             _programmcounter <<= 11;
-            _programmcounter += payload-1;
+            if (!interruptCall) _programmcounter += payload - 1;
+            else _programmcounter += payload;
             //Programmzähler wird wieder um eins erhöht dann steht die richtige Adresse drinnen.
             _logger.LogWarning("Programm Counter {0}", payload);
             nopcycle = true;
         }
 
-        private void call(int Befehl)
+        private void call(int Befehl,bool interruptCall = false)
         {
             _stack.PushFront(_programmcounter);
             _logger.LogInformation("Stack Inhalt nach Call {0} vorne und {1} hinten", _stack.Front(), _stack.Back());
-            _goto(Befehl);
+            _goto(Befehl,interruptCall);
         }
         
         private void _return()
