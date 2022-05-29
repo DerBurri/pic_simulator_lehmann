@@ -25,7 +25,7 @@ namespace pic__simulator__lehmann.Models
         private System.Timers.Timer _taktgeber;
 
         private int _scaler;
-        private bool _RA4_timerWertAlt;
+        private bool _RA4_timerWertAlt = false;
 
         
         private int _programmcounter
@@ -209,8 +209,39 @@ namespace pic__simulator__lehmann.Models
                 //Check for Edge
                 if (_datenspeicher.At(5,true).ReadBit(4) ^ _RA4_timerWertAlt)
                 {
-                    //check for rising or falling edge
-                    if (_RA4_timerWertAlt ==_datenspeicher.At(129,true).ReadBit(4))
+                    _RA4_timerWertAlt = _datenspeicher.At(5, true).ReadBit(4);
+                    //check for rising or falling edge if true the value before is false so rising otherwise fallign
+                    if (!_RA4_timerWertAlt && _datenspeicher.At(129,true).ReadBit(4))
+                    {
+                        if (!_datenspeicher.At(129,true).ReadBit(3))
+                        {
+                            _scaler--;
+                            if (_scaler == 0)
+                            {
+                                //Reset Scaler
+                                ResetScaler();
+                                IncreaseTimer();
+                            }
+                        }
+                        else
+                        {
+                            if (!_datenspeicher.At(129,true).ReadBit(3))
+                            {
+                                _scaler--;
+                                if (_scaler == 0)
+                                {
+                                    //Reset Scaler
+                                    ResetScaler();
+                                    IncreaseTimer();
+                                }
+                            }
+                            else
+                            {
+                                IncreaseTimer();
+                            }
+                        }
+                    }
+                    else if (_RA4_timerWertAlt && !_datenspeicher.At(129, true).ReadBit(4))
                     {
                         IncreaseTimer();
                     }
