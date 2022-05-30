@@ -33,8 +33,8 @@ namespace pic__simulator__lehmann.Models
             
             //Notwendig da IND auf andere Register für die indirekte Adressierung zugreift.
             _speicher[0] = new IND(_speicher[4], this);
-            _speicher[5] = new PortA();
-            _speicher[6] = new PortB();
+            _speicher[5] = new PortA(_speicher[5]);
+            _speicher[6] = new PortB(_speicher[6]);
             //_speicher[7] = ;
             _speicher[8] = new Eedata();
             _speicher[9] = new Eeadr();

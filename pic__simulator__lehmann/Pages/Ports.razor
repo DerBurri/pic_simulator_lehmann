@@ -101,31 +101,31 @@
 				</tr>
 				<tr>
 					<td>RB1</td>
-					<td><input type="checkbox" checked="@getPortBit(1, addressPortB)" @onchange="eventArgs => { changeRamPorts(0, addressPortB, eventArgs.Value);}" /></td>
+					<td><input type="checkbox" checked="@getPortBit(1, addressPortB)" @onchange="eventArgs => { changeRamPorts(1, addressPortB, eventArgs.Value);}" /></td>
 				</tr>
 				<tr>
 					<td>RB2</td>
-					<td><input type="checkbox" checked="@getPortBit(2, addressPortB)" @onchange="eventArgs => { changeRamPorts(1, addressPortB, eventArgs.Value);}" /></td>
+					<td><input type="checkbox" checked="@getPortBit(2, addressPortB)" @onchange="eventArgs => { changeRamPorts(2, addressPortB, eventArgs.Value);}" /></td>
 				</tr>
 				<tr>
 					<td>RB3</td>
-					<td><input type="checkbox" checked="@getPortBit(3, addressPortB)" @onchange="eventArgs => { changeRamPorts(2, addressPortB, eventArgs.Value);}" /></td>
+					<td><input type="checkbox" checked="@getPortBit(3, addressPortB)" @onchange="eventArgs => { changeRamPorts(3, addressPortB, eventArgs.Value);}" /></td>
 				</tr>
 				<tr>
 					<td>RB4</td>
-					<td><input type="checkbox" checked="@getPortBit(4, addressPortB)" @onchange="eventArgs => { changeRamPorts(3, addressPortB, eventArgs.Value);}" /></td>
+					<td><input type="checkbox" checked="@getPortBit(4, addressPortB)" @onchange="eventArgs => { changeRamPorts(4, addressPortB, eventArgs.Value);}" /></td>
 				</tr>
 				<tr>
 					<td>RB5</td>
-					<td><input type="checkbox" checked="@getPortBit(5, addressPortB)" @onchange="eventArgs => { changeRamPorts(4, addressPortB, eventArgs.Value);}" /></td>
+					<td><input type="checkbox" checked="@getPortBit(5, addressPortB)" @onchange="eventArgs => { changeRamPorts(5, addressPortB, eventArgs.Value);}" /></td>
 				</tr>
 				<tr>
 					<td>RB6</td>
-					<td><input type="checkbox" checked="@getPortBit(6, addressPortB)" @onchange="eventArgs => { changeRamPorts(5, addressPortB, eventArgs.Value);}" /></td>
+					<td><input type="checkbox" checked="@getPortBit(6, addressPortB)" @onchange="eventArgs => { changeRamPorts(6, addressPortB, eventArgs.Value);}" /></td>
 				</tr>
 				<tr>
 					<td>RB7</td>
-					<td><input type="checkbox" checked="@getPortBit(7, addressPortB)" @onchange="eventArgs => { changeRamPorts(6, addressPortB, eventArgs.Value);}" /></td>
+					<td><input type="checkbox" checked="@getPortBit(7, addressPortB)" @onchange="eventArgs => { changeRamPorts(7, addressPortB, eventArgs.Value);}" /></td>
 				</tr>
 			</tbody>
 		</table>
@@ -220,7 +220,7 @@
 
 			int portByte = 0;
 
-			for (int i = 0; i < _inhalt.Count; i++)
+			for (int i = 0; i < 8; i++)
 			{
             if (_inhalt[i])
                 portByte += Convert.ToInt32(Math.Pow(2, i));
