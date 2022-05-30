@@ -23,4 +23,18 @@ public class IND : Register
         Console.WriteLine("indirect Write at {0}", _FSR.Read());
         _Speicher.At(_FSR.Read()).Write(value);
     }
+
+    public override void WriteBit(int bit, bool value)
+    {
+        Console.WriteLine("indirect Write at {0}", _FSR.Read());
+        _Speicher.At(_FSR.Read()).WriteBit(bit,value);
+        
+    }
+
+    public override bool ReadBit(int bit)
+    {
+        Console.WriteLine("indirect Read at {0}", _FSR.Read());
+        return _Speicher.At(_FSR.Read()).ReadBit(bit);
+
+    }
 }

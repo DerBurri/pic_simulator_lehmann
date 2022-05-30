@@ -27,7 +27,7 @@ namespace pic__simulator__lehmann.Models
             //indf
             
             _speicher[1] = new Tmr0(); ;
-            _speicher[2] = new Pcl(); ;
+            _speicher[2] = new Pcl(_speicher[10]); ;
             _speicher[3] = new StatusRegister();
             _speicher[4] = new Fsr();
             
