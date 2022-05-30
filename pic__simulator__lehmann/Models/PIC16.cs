@@ -151,7 +151,6 @@ namespace pic__simulator__lehmann.Models
             try
             {
 
-                    //TODO checkInterrupt();
                     checkInterrupt();
                     //Steps Timer0 if configured
                     TimerStep();
@@ -762,7 +761,9 @@ namespace pic__simulator__lehmann.Models
         private void _goto(int Befehl,bool interruptCall = false)
         {
             int payload = Befehl & 2047;
-            _programmcounter = _datenspeicher.At(10).Read();
+            _programmcounter = Convert.ToInt32(_datenspeicher.At(10).ReadBit(4));
+            _programmcounter <<= 1;
+            _programmcounter += Convert.ToInt32(_datenspeicher.At(10).ReadBit(3));
             _programmcounter <<= 11;
             if (!interruptCall) _programmcounter += payload - 1;
             else _programmcounter += payload;
@@ -782,7 +783,7 @@ namespace pic__simulator__lehmann.Models
         {
             _programmcounter = _stack.Back();
             _stack.PopBack();
-            _logger.LogInformation("Stack Inhalt nach Return {0} vorne und {1} hinten", _stack.Front(), _stack.Back());
+            //_logger.LogInformation("Stack Inhalt nach Return {0} vorne und {1} hinten", _stack.Front(), _stack.Back());
             nopcycle = true;
         }
 
@@ -824,13 +825,14 @@ namespace pic__simulator__lehmann.Models
             }
             
             bool destinationbit = Convert.ToBoolean(Befehl & 128);
-            value &= 255;
+
             if (destinationbit)
             {
                _datenspeicher.At(addr).Write(value);
             }
             else
             { 
+                value &= 255;
                 _wregister = value;
             } 
         }
@@ -1085,7 +1087,7 @@ namespace pic__simulator__lehmann.Models
             //Shift Value to right
             value >>= 1;
             //If Carry Bit was already set before add +128 to set MSB Bit
-            if (Convert.ToBoolean(_datenspeicher.At(3).Read())) value += 128;
+            if (Convert.ToBoolean(_datenspeicher.At(3).Read() & 128)) value += 128;
             //Set new Carry Bit with info from lsb set
             _datenspeicher.At(3).WriteBit(0,lsb_set);
 
