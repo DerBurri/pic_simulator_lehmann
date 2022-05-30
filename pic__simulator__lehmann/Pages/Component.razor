@@ -33,7 +33,8 @@
                 {
                     <button class="btn btn-primary" @onclick="ToggleRun">Pause</button>
                 }
-                <p><input @bind="Interval"/> s</p>
+                <p><input @bind="Interval"/>Zyklus pro Sekunde</p>
+                <p><input @bind="IntervalFrequency"/>Frequenz</p>
             }
 
 
@@ -49,7 +50,7 @@
         <div class="middleLeft-top">
 
             <button style="margin-bottom: 5px;" @onclick="@(() => ShowPorts())" class="btn btn-primary">Port Settings</button>
-
+            <button style="margin-bottom: 5px;" @onclick="@(() => ShowConfigReg())" class="btn btn-primary">Config Register Settings</button>
 
         </div>
 
@@ -213,7 +214,15 @@
                         Option:
                     </td>
                     <td>
-
+                        @Convert.ToString(_geladenesProgramm.GetOptionRegister(),16)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Intcon:
+                    </td>
+                    <td>
+                        @Convert.ToString(_geladenesProgramm.GetIntconRegister(),16)
                     </td>
                 </tr>
                 <tr>
@@ -230,10 +239,17 @@
                     </td>
                     <td>
                         @Convert.ToString(_geladenesProgramm.GetTimer0(), 16)
-
                     </td>
                 </tr>
-
+                
+                <tr>
+                    <td>
+                        Laufzeit
+                    </td>
+                    <td>
+                        @Convert.ToString(((IntervalFrequency * 4000000)*_geladenesProgramm.GetCycleCounter()  )/1000000) µs
+                    </td>
+                </tr>
                 </tbody>
             </table>
         }
@@ -365,7 +381,7 @@
             <tr>
                 @if (_geladenesProgramm != null)
                 {
-                    foreach (bool optionflag in _geladenesProgramm.GetOptionRegister())
+                    foreach (bool optionflag in _geladenesProgramm.GetOptionRegisterFlags())
                     {
                         <td class="Register">@Convert.ToInt32(optionflag)</td>
                     }
@@ -393,7 +409,7 @@
             <tr>
                 @if (_geladenesProgramm != null)
                 {
-                    foreach (bool intconflag in _geladenesProgramm.GetIntconRegister())
+                    foreach (bool intconflag in _geladenesProgramm.GetIntconRegisterFlags())
                     {
                         <td class="Register">@Convert.ToInt32(intconflag)</td>
                     }
@@ -415,17 +431,25 @@
 
     [CascadingParameter]
     public IModalService Modal { get; set; }
+    
 
-    private int _interval = 5;
-
-    public int Interval
+    public double Interval
     {
-        get => _interval;
+        get
+        {
+            if (_geladenesProgramm != null) return (1/_geladenesProgramm.GetFrequency());
+            else return 5;
+        }
         set
         {
-            _interval = value;
-            _geladenesProgramm.IntervalChange(value);
+            if(_geladenesProgramm != null) _geladenesProgramm.FrequencyChange(1/value);
         }
+    }
+
+    public double IntervalFrequency
+    {
+        get { return Interval * 4; }
+        set { Interval = value / 4; }
     }
 
 
@@ -468,7 +492,7 @@
 
     private void Reset()
     {
-        _geladenesProgramm = new Programm(_interval, _logger, this);
+        _geladenesProgramm = new Programm(Interval, _logger, this);
     }
 
     public void RefreshUI()
@@ -515,5 +539,12 @@
     //}
 
 
+    private void ShowConfigReg()
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(ConfigRegister.GeladenesProgramm), _geladenesProgramm);
+        Modal.Show<ConfigRegister>("Config Register Settings");
+
+    }
 
 }

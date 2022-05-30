@@ -14,6 +14,7 @@ namespace pic__simulator__lehmann.Models
 
         public override void Write(int value)
         {
+            //TODO PCLATH richtig berechnen
             int pcl = value & 2047;
             _inhalt = new BitArray(new int[] {pcl});
             int pclath = value & 14336;

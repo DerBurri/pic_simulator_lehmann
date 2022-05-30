@@ -1,0 +1,140 @@
+﻿@using System.Collections
+@using pic__simulator__lehmann.Models
+@inherits Component
+
+<h3>ConfigRegister</h3>
+<div class="IO">
+    <table id="trisA">
+        <thead>
+        <tr>
+            <th>ConfigRegister</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>0 FOCS0</td>
+            <td>
+                <input type="checkbox" checked="@GetConfigValue(0)" @onchange="eventArgs => { SetConfigValue(0, (bool) eventArgs.Value);}"/>
+            </td>
+        </tr>
+        <tr>
+            <td>1 FOCS1</td>
+            <td>
+                <input type="checkbox" checked="@GetConfigValue(1)" @onchange="eventArgs => { SetConfigValue(1, (bool) eventArgs.Value);}"/>
+            </td>
+        </tr>
+        <tr>
+            <td>2 WDTE</td>
+            <td>
+                <input type="checkbox" checked="@GetConfigValue(2)" @onchange="eventArgs => { SetConfigValue(2, (bool) eventArgs.Value);}"/>
+            </td>
+        </tr>
+        <tr>
+            <td>3 PWRTE</td>
+            <td>
+                <input type="checkbox" checked="@GetConfigValue(3)" @onchange="eventArgs => { SetConfigValue(3, (bool) eventArgs.Value);}"/>
+            </td>
+        </tr>
+        <tr>
+            <td>4 CP</td>
+            <td>
+                <input type="checkbox" checked="@GetConfigValue(4)" @onchange="eventArgs => { SetConfigValue(4, (bool) eventArgs.Value);}"/>
+            </td>
+        </tr>
+        <tr>
+            <td>5 CP</td>
+            <td>
+                <input type="checkbox" checked="@GetConfigValue(5)" @onchange="eventArgs => { SetConfigValue(5, (bool) eventArgs.Value);}"/>
+            </td>
+        </tr>
+        <tr>
+            <td>6 CP</td>
+            <td>
+                <input type="checkbox" checked="@GetConfigValue(6)" @onchange="eventArgs => { SetConfigValue(6, (bool) eventArgs.Value);}"/>
+            </td>
+        </tr>
+        <tr>
+            <td>7 CP</td>
+            <td>
+                <input type="checkbox" checked="@GetConfigValue(7)" @onchange="eventArgs => { SetConfigValue(7, (bool) eventArgs.Value);}"/>
+            </td>
+        </tr>
+        
+        <tr>
+            <td>8 CP</td>
+            <td>
+                <input type="checkbox" checked="@GetConfigValue(8)" @onchange="eventArgs => { SetConfigValue(8, (bool) eventArgs.Value);}"/>
+            </td>
+        </tr>
+        
+        <tr>
+            <td>9 CP</td>
+            <td>
+                <input type="checkbox" checked="@GetConfigValue(9)" @onchange="eventArgs => { SetConfigValue(9, (bool) eventArgs.Value);}"/>
+            </td>
+        </tr>
+        
+        <tr>
+            <td>10 CP</td>
+            <td>
+                <input type="checkbox" checked="@GetConfigValue(10)" @onchange="eventArgs => { SetConfigValue(10, (bool) eventArgs.Value);}"/>
+            </td>
+        </tr>
+        
+        <tr>
+            <td>11 CP</td>
+            <td>
+                <input type="checkbox" checked="@GetConfigValue(11)" @onchange="eventArgs => { SetConfigValue(11, (bool) eventArgs.Value);}"/>
+            </td>
+        </tr>
+        
+        <tr>
+            <td>12 CP</td>
+            <td>
+                <input type="checkbox" checked="@GetConfigValue(12)" @onchange="eventArgs => { SetConfigValue(12, (bool) eventArgs.Value);}"/>
+            </td>
+        </tr>
+        
+        <tr>
+            <td>13 CP</td>
+            <td>
+                <input type="checkbox" checked="@GetConfigValue(13)" @onchange="eventArgs => { SetConfigValue(13, (bool) eventArgs.Value);}"/>
+            </td>
+        </tr>
+        
+        
+        </tbody>
+    </table>
+
+</div>
+
+@code {
+
+    [CascadingParameter]
+    BlazoredModalInstance ModalInstance { get; set; }
+
+    [Parameter]
+    public Programm GeladenesProgramm { get; set; }
+
+    
+    private bool GetConfigValue(int bit)
+    {
+        var temp =  Programm.GetConfigRegister();
+        return temp[bit];
+    }
+
+    private void SetConfigValue(int bit, bool value)
+    {
+        if (GeladenesProgramm == null)
+        {
+            var temp = Programm.GetConfigRegister();
+            temp[bit] = value;
+        }
+        else
+        {
+            Console.WriteLine("Config Register kann nur geändert werden wenn das Programm nicht geladen ist");
+        }
+    }
+
+}

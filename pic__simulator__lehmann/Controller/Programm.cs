@@ -1,3 +1,4 @@
+using System.Collections;
 using pic__simulator__lehmann.Pages;
 using System.Text;
 
@@ -13,7 +14,7 @@ public class Programm
 
     public List<int> _SelectedBreakpoints;
     
-    public Programm(int interval, ILogger<Einlesen> logger, Component ui)
+    public Programm(double interval, ILogger<Einlesen> logger, Component ui)
 	{
 		_logger = logger;
 		_SelectedBreakpoints = new List<int>();
@@ -40,12 +41,10 @@ public class Programm
         {
             if (Char.IsDigit(line2[0]))
             {
-                _logger.LogCritical("Voller Teil");
                 _programmzeilen.Add(line2.Substring(0, 4));
             }
             else
             {
-                _logger.LogCritical("Leerer Teil");
                 _programmzeilen.Add(" ");
             }
         }
@@ -64,6 +63,10 @@ public class Programm
         _controller.Start();
     }
 
+    public List<int> GetSelectedBreakpoints()
+    {
+        return _SelectedBreakpoints;
+    }
     public void Stop()
     {
         _controller.Stop();
@@ -79,11 +82,15 @@ public class Programm
         _ui.RefreshUI();
 	}
 
-    public void IntervalChange(int interval)
+    public void FrequencyChange(double interval)
     {
-        _controller.IntervalChange(interval);
+        _controller.frequency = interval;
     }
-    
+
+    public int GetCycleCounter()
+    {
+        return _controller.GetCycleCounter();
+    }
     public int GetLst()
     {
         throw new NotImplementedException();
@@ -109,16 +116,34 @@ public class Programm
         return _controller.GetStatusRegister();
     }
 
-    public bool[] GetOptionRegister()
+    public bool[] GetOptionRegisterFlags()
     {
         return _controller.OptionRegister;
     }
 
-    public bool[] GetIntconRegister()
+    public bool[] GetIntconRegisterFlags()
     {
         return _controller.IntConRegister;
     }
 
+    public static BitArray GetConfigRegister()
+    {
+        return PIC16.configBits;
+    }
+
+    public double GetFrequency()
+    {
+        return _controller.frequency;
+    }
+    public int GetOptionRegister()
+    {
+        return _controller.GetOptionRegister();
+    }
+
+    public int GetIntconRegister()
+    {
+        return _controller.GetIntconRegister();
+    }
     public int GetWRegister()
     {
         return _controller.W_register;

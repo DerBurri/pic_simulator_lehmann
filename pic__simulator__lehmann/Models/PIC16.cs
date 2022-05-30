@@ -13,22 +13,39 @@ namespace pic__simulator__lehmann.Models
 {
     public class PIC16
     {
-        private readonly ILogger<Einlesen> _logger;
+        private ILogger<Einlesen> _logger;
         public Programm _programm;
 
         private Programmspeicher _programmspeicher;
         private Datenspeicher _datenspeicher;
+
+        private int _watchdogcounter;
         
         private int _wregister;
         private bool nopcycle;
         
-        private System.Timers.Timer _taktgeber;
+        private System.Timers.Timer _cycletaktgeber;
+
+        public double frequency
+        {
+            get
+            {
+                return _cycletaktgeber.Interval * 4 ;
+            }
+            set
+            {
+                _cycletaktgeber.Interval = value / 4;
+            }
+        }
 
         private int _scaler;
         private bool _RA4_timerWertAlt = false;
         private bool _RB0_alt = false;
         private bool[] _RB47_alt = { false, false, false, false };
         
+        //Statisch dass es schon konfiguriert werden kann bevor ein Programm geladen wird
+        public static BitArray configBits = new(14,true);
+
         private int _programmcounter
         {
             get => _datenspeicher.At(2).Read();
@@ -37,6 +54,7 @@ namespace pic__simulator__lehmann.Models
         
         private int _cyclecounter;
         private CircularBuffer<int> _stack;
+        private List<string> programmstring;
 
         //Readonly Properties for UI
         public int W_register => _wregister;
@@ -52,6 +70,11 @@ namespace pic__simulator__lehmann.Models
             return _datenspeicher.At(addr,true).Read();
         }
 
+        public int GetCycleCounter()
+        {
+            return _cyclecounter;
+        }
+        
         public void SetRAMValueUI(int addr, int value)
         {
             _datenspeicher.At(addr, true).Write(value);
@@ -117,33 +140,40 @@ namespace pic__simulator__lehmann.Models
 
 
 
-        public PIC16(int interval, ILogger<Einlesen> logger, List<String> _programm, Programm programm)
-		{
-			_logger = logger;
-			_logger.LogWarning("Ausgabe Programmspeicher");
-            
-			_programmspeicher = new Programmspeicher(4096, _programm);
-			foreach (var opcode in _programmspeicher._speicher)
-			{
-				_logger.LogWarning(opcode.ToString());
-			}
-            _datenspeicher = new Datenspeicher(256,this);
-            _stack = new CircularBuffer<int>(7);
-            _cyclecounter = 0;
-			KonfiguriereTimer(interval);
-			this._programm = programm;
-            //Defaut Werte für OptionRegister setzen
-
-            _scaler = Convert.ToInt32(Math.Pow(2,_datenspeicher.At(129, true).Read() & 7))*2;
-            nopcycle = false;
+        public PIC16(double interval, ILogger<Einlesen> logger, List<String> _programm, Programm programm)
+        {
+            Init(interval, logger, _programm, programm);
 
             //throw new NotImplementedException();
         }
 
-		private void KonfiguriereTimer(int interval)
+        private void Init(double interval, ILogger<Einlesen> logger, List<string> _programm, Programm programm)
         {
-            _taktgeber = new System.Timers.Timer(interval);
-            _taktgeber.Elapsed += OnTakt;
+            _logger = logger;
+            _logger.LogWarning("Ausgabe Programmspeicher");
+            this.programmstring = _programm;
+            _programmspeicher = new Programmspeicher(4096, _programm);
+            foreach (var opcode in _programmspeicher._speicher)
+            {
+                _logger.LogWarning(opcode.ToString());
+            }
+
+            _datenspeicher = new Datenspeicher(256, this);
+            _stack = new CircularBuffer<int>(7);
+            _cyclecounter = 0;
+            KonfiguriereTimer(interval);
+            this._programm = programm;
+            //Defaut Werte für OptionRegister setzen
+
+            _scaler = Convert.ToInt32(Math.Pow(2, _datenspeicher.At(129, true).Read() & 7)) * 2;
+            nopcycle = false;
+        }
+
+        private void KonfiguriereTimer(double interval)
+        {
+            _cycletaktgeber = new System.Timers.Timer(interval);
+            frequency = interval;
+            _cycletaktgeber.Elapsed += OnTakt;
         }
 
         private void OnTakt(Object source, ElapsedEventArgs e)
@@ -156,6 +186,10 @@ namespace pic__simulator__lehmann.Models
                     TimerStep();
                     RB0Check();
                     RB47Check();
+                    if (CheckWatchdog())
+                    {
+                        Init(frequency,_logger,programmstring,_programm);
+                    }
                     if (!nopcycle)
                     {
                         //Fetch
@@ -168,6 +202,7 @@ namespace pic__simulator__lehmann.Models
                         execute(decoded, befehl);
                         _logger.LogWarning("Programmzähler: {0}", _programmcounter.ToString());
                         _programmcounter++;
+                        
                     }
                     else
                     {
@@ -175,12 +210,25 @@ namespace pic__simulator__lehmann.Models
                         execute(Befehlsliste.Befehle.NOP,0);
                     }
 
+                    _cyclecounter++;
+
+                    //Check for Breakpoints
+    
+               
+                   
                     this._programm.RefreshUI();
+                    foreach (var breakpoint in _programm.GetSelectedBreakpoints())
+                    {
+                        if (breakpoint == _programmcounter+1)
+                        {
+                            _cycletaktgeber.Stop();
+                        }
+                    }
             }
             catch (Exception ex)
             {
                 _logger.LogCritical(ex.Message);
-                _programmcounter++;
+                //_programmcounter++;
             }
         }
 
@@ -208,18 +256,45 @@ namespace pic__simulator__lehmann.Models
                 //Check for Edge and check if TRIS is set to Read
                 if ((_datenspeicher.At(6, true).ReadBit(i) ^ _RB47_alt[i-4]) && !_datenspeicher.At(134,true).ReadBit(i))
                 {
-                    _RB47_alt[i - 4] = _datenspeicher.At(6, true).ReadBit(i);
-                    if (!_RB47_alt[i - 4] && !_datenspeicher.At(129, true).ReadBit(6))
-                    {
-                        _datenspeicher.At(11,true).WriteBit(0,true);
-                    }
-                    else if (_RB47_alt[i - 4] && _datenspeicher.At(129, true).ReadBit(6))
-                    {
-                        _datenspeicher.At(11,true).WriteBit(0,true);
-                    }
+                    _datenspeicher.At(11,true).WriteBit(0,true);
+                    // _RB47_alt[i - 4] = _datenspeicher.At(6, true).ReadBit(i);
+                    // if (!_RB47_alt[i - 4] && !_datenspeicher.At(129, true).ReadBit(6))
+                    // {
+                    //    
+                    // }
+                    // else if (_RB47_alt[i - 4] && _datenspeicher.At(129, true).ReadBit(6))
+                    // {
+                    //     _datenspeicher.At(11,true).WriteBit(0,true);
+                    // }
                 }
             }
         }
+
+        private bool CheckWatchdog()
+        {
+            if (_datenspeicher.At(129, true).ReadBit(3))
+            {
+                _scaler--;
+                if (_scaler == 0)
+                {
+                    //Reset Scaler
+                    ResetScaler();
+                    _watchdogcounter++;
+                }
+            }
+            else
+            {
+                _watchdogcounter++;
+            }
+
+            if (_watchdogcounter > 18600)
+            {
+                ResetScaler();
+                return true;
+            }
+            return false;
+        }
+        
         private void TimerStep()
         {
             //TODO 
@@ -227,7 +302,7 @@ namespace pic__simulator__lehmann.Models
             if (!_datenspeicher.At(129,true).ReadBit(5))
             {
                 //Check if Prescaler is attached to T0SE ()
-                if (!_datenspeicher.At(129,true).ReadBit(3))
+                if (!(_datenspeicher.At(129,true).ReadBit(3)))
                 {
                     _scaler--;
                     if (_scaler == 0)
@@ -327,6 +402,11 @@ namespace pic__simulator__lehmann.Models
                 if (Befehl == 9)
                 {
                     return Befehlsliste.Befehle.RETFIE;
+                }
+
+                if (Befehl == 0x64)
+                {
+                    return Befehlsliste.Befehle.CLRWDT;
                 }
                 switch (befehlteil1)
                 {
@@ -536,21 +616,30 @@ namespace pic__simulator__lehmann.Models
                     case Befehlsliste.Befehle.XORLW :
                         xorlw(value);
                     break;
+                    case Befehlsliste.Befehle.CLRWDT:
+                        clrwdt();
+                        break;
                     case Befehlsliste.Befehle.ERROR :
                     break;
             }
             _logger.LogWarning("Inhalt W Register: {0}",_wregister);
         }
-        
-    public void Stop()
+
+        private void clrwdt()
         {
-            _taktgeber.Stop();
+            ResetScaler();
+            
+        }
+
+        public void Stop()
+        {
+            _cycletaktgeber.Stop();
         }
 
         public void Start()
         {
-            _taktgeber.Start();
-            _taktgeber.AutoReset = true;
+            _cycletaktgeber.Start();
+            _cycletaktgeber.AutoReset = true;
         }
         
         public void Step()
@@ -561,7 +650,7 @@ namespace pic__simulator__lehmann.Models
         
         public void IntervalChange(int interval)
         {
-            _taktgeber.Interval = interval;
+            _cycletaktgeber.Interval = interval;
         }
 
         public void checkInterrupt()
