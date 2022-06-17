@@ -70,25 +70,25 @@ namespace pic__simulator__lehmann.Models
             return _datenspeicher.At(addr,true).Read();
         }
 
-        public int GetCycleCounter()
+        public int CycleCounter
         {
-            return _cyclecounter;
+            get { return _cyclecounter; }
         }
-        
+
         public void SetRAMValueUI(int addr, int value)
         {
             _datenspeicher.At(addr, true).Write(value);
         }
 
 
-        public int GetPCL()
+        public int PCL
         {
-            return _programmcounter;
+            get { return _programmcounter; }
         }
 
-        public int GetPCLath()
+        public int PCLath
         {
-            return _datenspeicher.At(10,true).Read();
+            get { return _datenspeicher.At(10, true).Read(); }
         }
 
         public int GetStatusRegister()
@@ -99,30 +99,31 @@ namespace pic__simulator__lehmann.Models
         {
             return _datenspeicher.At(129, true).Read();
         }
-        public int GetIntconRegister()
+
+        public int IntconRegister
         {
-            return _datenspeicher.At(11, true).Read();
+            get { return _datenspeicher.At(11, true).Read(); }
         }
 
-        public int GetFSR()
+        public int FSR
         {
-            return _datenspeicher.At(4, true).Read();
+            get { return _datenspeicher.At(4, true).Read(); }
         }
 
-        public int[] GetStack()
+        public int[] Stack
         {
-            return _stack.ToArray();
+            get { return _stack.ToArray(); }
         }
-        
-        
-        public bool[] StatusRegister
+
+
+        public bool[] StatusRegisterBits
         {
             get
             {
                 return new BitArray(new byte[] {(byte) _datenspeicher.At(3, true).Read()}).Cast<bool>().ToArray();
             }
         }
-        public bool[] OptionRegister
+        public bool[] OptionRegisterBits
         {
             get
             {

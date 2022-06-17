@@ -26,20 +26,17 @@ namespace pic__simulator__lehmann.Models
             //TODO Spiegelung und gute 
             //indf
             
-            _speicher[1] = new Tmr0(); ;
             _speicher[2] = new Pcl(_speicher[10]); ;
-            _speicher[3] = new StatusRegister();
-            _speicher[4] = new Fsr();
+   
+
             
             //Notwendig da IND auf andere Register für die indirekte Adressierung zugreift.
             _speicher[0] = new IND(_speicher[4], this);
             _speicher[5] = new PortA(_speicher[5]);
             _speicher[6] = new PortB(_speicher[6]);
             //_speicher[7] = ;
-            _speicher[8] = new Eedata();
-            _speicher[9] = new Eeadr();
             _speicher[10] = new Pclath();
-            _speicher[11] = new Intcon();
+ 
             
             
 
@@ -49,11 +46,6 @@ namespace pic__simulator__lehmann.Models
             _speicher[130] = _speicher[2];
             _speicher[131] = _speicher[3];
             _speicher[132] = _speicher[4];
-            _speicher[133] = new TrisA();
-            _speicher[134] = new TrisB();
-            //_speicher[19] = ;
-            _speicher[136] = new Eecon1();
-            _speicher[137] = new Eecon2();
             _speicher[138] = _speicher[10];
             _speicher[139] = _speicher[11];
         } 

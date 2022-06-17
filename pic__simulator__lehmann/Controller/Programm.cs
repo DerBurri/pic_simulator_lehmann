@@ -7,7 +7,7 @@ namespace pic__simulator__lehmann.Models;
 public class Programm
 {
     private PIC16 _controller;
-    public  List<String> _programm;
+    public  List<String> _programmopcodes;
     public List<String> _programmzeilen;
     public readonly ILogger<Einlesen> _logger;
     public Component _ui;
@@ -19,13 +19,13 @@ public class Programm
 		_logger = logger;
 		_SelectedBreakpoints = new List<int>();
 		Einlesen();
-		_controller = new PIC16(interval, logger, _programm, this);
+		_controller = new PIC16(interval, logger, _programmopcodes, this);
 		_ui = ui;
 	}
 
 	private void Einlesen()
     {
-        _programm = new List<String>();
+        _programmopcodes = new List<String>();
         _programmzeilen = new List<String>();
         
         FileStream fs = new FileStream("geladenesProgramm", FileMode.Open);
@@ -34,10 +34,10 @@ public class Programm
         while ((line = sr.ReadLine()) != null)
         {
             _logger.LogInformation(line);
-            _programm.Add(line);
+            _programmopcodes.Add(line);
         }
 
-        foreach (String line2 in _programm)
+        foreach (String line2 in _programmopcodes)
         {
             if (Char.IsDigit(line2[0]))
             {
@@ -89,7 +89,7 @@ public class Programm
 
     public int GetCycleCounter()
     {
-        return _controller.GetCycleCounter();
+        return _controller.CycleCounter;
     }
     public int GetLst()
     {
@@ -103,12 +103,12 @@ public class Programm
 
     public int GetFSR()
     {
-        return _controller.GetFSR();
+        return _controller.FSR;
     }
     
     public int GetPCLath()
     {
-        return _controller.GetPCLath();
+        return _controller.PCLath;
     }
 
     public int GetStatus()
@@ -118,7 +118,7 @@ public class Programm
 
     public bool[] GetOptionRegisterFlags()
     {
-        return _controller.OptionRegister;
+        return _controller.OptionRegisterBits;
     }
 
     public bool[] GetIntconRegisterFlags()
@@ -142,7 +142,7 @@ public class Programm
 
     public int GetIntconRegister()
     {
-        return _controller.GetIntconRegister();
+        return _controller.IntconRegister;
     }
     public int GetWRegister()
     {
@@ -161,7 +161,7 @@ public class Programm
 
     public bool[] GetStatusRegister()
     {
-        return _controller.StatusRegister;
+        return _controller.StatusRegisterBits;
     }
 
     public int GetPCIntern()
@@ -171,7 +171,7 @@ public class Programm
     
     public int[] GetStack()
     {
-        return _controller.GetStack();
+        return _controller.Stack;
     }
 
     public int GetRAMValueUI(int addr)
@@ -186,6 +186,6 @@ public class Programm
 
     public int GetPCL()
     {
-        return _controller.GetPCL();
+        return _controller.PCL;
     }
 }
